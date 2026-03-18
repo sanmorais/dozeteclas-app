@@ -1,5 +1,7 @@
 # 🎹 Doze Teclas | Laboratório Musical
 
+[👉 Clique aqui para testar o App](https://seu-usuario.github.io/dozeteclas-app/)
+
 ![Licença](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-est%C3%A1vel-success)
 
