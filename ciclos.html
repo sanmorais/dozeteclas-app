@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas | Ciclos</title>
+    <style>
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --gray-circle: #3d444d;
+            --gray-line: #5a626d;
+            --error: #ff4d4d;
+            --success: #4CAF50;
+            --kb-black: #121417;
+        }
+
+        body {
+            background-color: var(--bg-dark); 
+            color: var(--text-white);
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            padding: 20px 10px;
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* PADRONIZAÇÃO DO CABEÇALHO (Igual Campo Harmônico) */
+        .header { 
+            width: 100%; 
+            max-width: 420px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+        }
+        .back-btn { 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 14px; 
+            cursor: pointer;
+        }
+
+        /* PADRONIZAÇÃO DO CARD (Igual Campo Harmônico) */
+        .chord-card {
+            background-color: var(--card-bg); 
+            border-radius: 20px; 
+            padding: 18px;
+            width: 100%; 
+            max-width: 420px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            overflow: hidden; /* Garante que o shake não crie barras no card */
+        }
+
+        .label { 
+            font-size: 10px; 
+            color: var(--primary); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            margin-bottom: 10px; 
+            display: block; 
+            opacity: 0.8; 
+        }
+
+        .controls-row { display: flex; gap: 10px; margin-bottom: 20px; }
+        
+        .cycle-selector { 
+            flex: 1; 
+            background: var(--kb-black); 
+            border: 1px solid #444; 
+            color: white; 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-size: 14px; 
+            outline: none; 
+            font-weight: bold;
+        }
+
+        .play-pause-btn { 
+            background: rgba(255, 197, 2, 0.1);
+            border: 1px solid rgba(255, 197, 2, 0.3);
+            border-radius: 12px; 
+            width: 60px; 
+            height: 45px; 
+            cursor: pointer; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cycle-container {
+            position: relative; 
+            width: 280px; 
+            height: 280px; 
+            margin: 10px auto;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+        }
+
+        .wheel { position: absolute; width: 100%; height: 100%; border-radius: 50%; }
+        .note-wrapper { position: absolute; left: 50%; top: 50%; margin-left: -22px; margin-top: -22px; width: 44px; height: 44px; }
+
+        .note-circle {
+            width: 100%; height: 100%; background-color: var(--gray-circle);
+            border: 1.5px solid var(--gray-line); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; color: white; font-size: 15px; cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .center-display {
+            font-size: 75px; font-weight: 600; color: var(--primary);
+            z-index: 10; pointer-events: none; position: absolute;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .center-display.correct { 
+            color: var(--success); 
+            text-shadow: 0 0 25px var(--success);
+            transform: scale(1.1);
+        }
+
+        .center-display.wrong { color: var(--error); text-shadow: 0 0 15px var(--error); }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(10px); }
+        }
+        .shake { animation: shake 0.3s; }
+    </style>
+</head>
+<body>  
+
+    <div class="header">
+        <a href="/" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; text-transform: uppercase;">Ciclos</span>
+    </div>
+
+    <div class="chord-card">
+        <span class="label">Tipo de ciclo</span>
+        <div class="controls-row">
+            <select class="cycle-selector" id="cycleMode" onchange="updateCycleMode()">
+                <option value="4ths">Ciclo de quartas</option>
+                <option value="5ths">Ciclo de quintas</option>
+                <option value="relMinor">Relativa menor</option>
+                <option value="relMajor">Relativa maior</option>
+            </select>
+            <button class="play-pause-btn" id="btnPlay" onclick="togglePlay()">
+                <svg width="24" height="24" viewBox="0 0 24 24" style="pointer-events:none">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="var(--primary)"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="cycle-container" id="mainContainer">
+            <div class="wheel" id="wheel"></div>
+            <div class="center-display" id="targetDisplay">C</div>
+        </div>
+    </div>
+
+<script>
+    let rotationDirection = -0.18; 
+    const notesSharp = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const notesFlat  = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+    const relMinNamesSharp = ["Am", "A#m", "Bm", "Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m"];
+    const relMinNamesFlat = ["Am", "Bbm", "Bm", "Cm", "Dbm", "Dm", "Ebm", "Em", "Fm", "Gbm", "Gm", "Abm"];
+
+    const cycles = {
+        "5ths": [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5], // C -> G -> D...
+        "4ths": [0, 5, 10, 3, 8, 1, 6, 11, 4, 9, 2, 7], // C -> F -> Bb...
+        "relMinor": [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5],
+        "relMajor": [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5]
+    };
+
+    let isPlaying = true;
+    let currentRotation = 0;
+    let currentCycleKey = "4ths";
+    let targetIdx = 0; 
+    let animationId;
+
+    function getFormattedNote(idx, type) {
+        const useFlat = (currentCycleKey !== "5ths");
+        const nameBase = useFlat ? notesFlat[idx % 12] : notesSharp[idx % 12];
+        const relBase = useFlat ? relMinNamesFlat[idx % 12] : relMinNamesSharp[idx % 12];
+
+        if (currentCycleKey === "relMinor") {
+            return type === 'center' ? nameBase : relBase;
+        }
+        if (currentCycleKey === "relMajor") {
+            return type === 'center' ? relBase : nameBase;
+        }
+        if (idx % 12 === 6) return (currentCycleKey === "5ths") ? "F#" : "Gb";
+        return nameBase;
+    }
+
+    function createWheel() {
+        const wheel = document.getElementById('wheel');
+        wheel.innerHTML = '';
+        const sequence = cycles[currentCycleKey];
+
+        for (let i = 0; i < 12; i++) {
+            const angle = (i * 30) * (Math.PI / 180);
+            const x = 115 * Math.sin(angle); // Reduzido levemente para caber no novo card
+            const y = -115 * Math.cos(angle);
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'note-wrapper';
+            wrapper.style.transform = `translate(${x}px, ${y}px)`;
+            
+            const circle = document.createElement('div');
+            circle.className = 'note-circle';
+            const noteIndex = sequence[i]; 
+            circle.innerText = getFormattedNote(noteIndex, 'wheel');
+            circle.dataset.noteIdx = noteIndex;
+            
+            wrapper.appendChild(circle);
+            wheel.appendChild(wrapper);
+        }
+    }
+
+    function animate() {
+        if (!isPlaying) return;
+        currentRotation += rotationDirection; 
+        document.getElementById('wheel').style.transform = `rotate(${currentRotation}deg)`;
+        document.querySelectorAll('.note-wrapper').forEach(w => {
+            const t = w.style.transform.split('rotate')[0];
+            w.style.transform = `${t} rotate(${-currentRotation}deg)`;
+        });
+        animationId = requestAnimationFrame(animate);
+    }
+
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        const btn = document.getElementById('btnPlay');
+        if (btn) {
+            if (isPlaying) {
+                btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" style="pointer-events:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="#FFC502"/></svg>`;
+                animate();
+            } else {
+                btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" style="pointer-events:none"><path d="M8 5v14l11-7z" fill="#FFC502"/></svg>`;
+                cancelAnimationFrame(animationId);
+            }
+        }
+    }
+
+    function updateCycleMode() {
+        currentCycleKey = document.getElementById('cycleMode').value;
+        rotationDirection = (currentCycleKey === '4ths') ? -0.18 : 0.18;
+        pickRandomTarget();
+        createWheel();
+    }
+
+    function pickRandomTarget() {
+        targetIdx = Math.floor(Math.random() * 12);
+        document.getElementById('targetDisplay').innerText = getFormattedNote(targetIdx, 'center');
+    }
+
+    document.getElementById('wheel').addEventListener('click', (e) => {
+        if(e.target.classList.contains('note-circle')) {
+            const clicked = parseInt(e.target.dataset.noteIdx);
+            const seq = cycles[currentCycleKey];
+            let isCorrect = false;
+
+            if (currentCycleKey === "relMinor" || currentCycleKey === "relMajor") {
+                isCorrect = (clicked === targetIdx);
+            } else {
+                const currentPosInCycle = seq.indexOf(targetIdx);
+                const nextPos = (currentPosInCycle + 1) % 12;
+                isCorrect = (clicked === seq[nextPos]);
+            }
+            
+            const display = document.getElementById('targetDisplay');
+            const container = document.getElementById('mainContainer');
+
+            if(isCorrect) {
+                display.classList.add('correct');
+                setTimeout(() => {
+                    display.classList.remove('correct');
+                    pickRandomTarget();
+                }, 400);
+            } else {
+                display.classList.add('wrong');
+                container.classList.add('shake');
+                setTimeout(() => {
+                    display.classList.remove('wrong');
+                    container.classList.remove('shake');
+                }, 400);
+            }
+        }
+    });
+
+    createWheel();
+    pickRandomTarget();
+    animate();
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas | Campo Harmônico</title>
+    <style>
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --kb-black: #121417;
+            --line-thickness: 2px;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 20px 10px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .header { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 14px; }
+
+        .module-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 18px;
+            width: 100%;
+            max-width: 420px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; opacity: 0.8; }
+
+        .selector-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .btn-sel { 
+            background: var(--kb-black); border: 1px solid #444; color: white; 
+            padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
+        }
+        .btn-sel.active { background: var(--primary); color: #1e2227; border-color: var(--primary); }
+
+        /* GRELHA EM PIRÂMIDE INVERTIDA */
+        .ch-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .ch-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .ch-item {
+            background: var(--kb-black);
+            border: 1px solid #444;
+            padding: 12px 10px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1; /* Faz os itens serem mais largos */
+            max-width: 90px;
+        }
+
+        .ch-item.active {
+            border-color: var(--primary);
+            background: rgba(255, 197, 2, 0.1);
+            box-shadow: 0 0 10px rgba(255, 197, 2, 0.1);
+        }
+
+        .ch-degree { font-size: 10px; color: var(--primary); display: block; margin-bottom: 2px; font-weight: 800; }
+        .ch-chord { font-size: 15px; font-weight: bold; }
+
+        .results-card {
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            padding: 20px 15px;
+            width: 100%;
+            max-width: 420px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* TECLADO PADRONIZADO */
+        .piano-container {
+            position: relative;
+            width: 100%;
+            height: 75px;
+            background-color: #000;
+            padding: var(--line-thickness);
+            border-radius: 6px;
+            display: flex;
+            gap: var(--line-thickness);
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        .key-w { flex: 1; background: white; height: 100%; border-radius: 0 0 2px 2px; z-index: 1; }
+        .key-b {
+            position: absolute; background: var(--kb-black); width: 4.2%; height: 55%; z-index: 2; border-radius: 0 0 3px 3px;
+            border-left: 0.5px solid #000; border-right: 0.5px solid #000;
+        }
+
+        .key-w.active { background-color: var(--primary) !important; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1); }
+
+        .key-b.active {
+            background-color: var(--primary); /* O amarelo de destaque */
+            
+            /* O Outline: bem marcado e para fora */
+            outline: var(--line-thickness) solid var(--kb-black); 
+            
+            /* Garante que o contorno fique visível sobre as teclas brancas */
+            outline-offset: 0px; 
+            z-index: 10;
+        }
+
+        .chord-display-notes { 
+            margin-top: 15px;
+            font-size: 15px; 
+            color: var(--primary); 
+            font-weight: 700; 
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="/" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px;">CAMPO HARMÔNICO</span>
+    </div>
+
+    <div class="module-card">
+        <span class="label">Tonalidade</span>
+        <div class="selector-grid" id="noteSelector" style="margin-bottom:15px;"></div>
+        
+        <span class="label">Escala</span>
+        <div class="selector-grid" style="grid-template-columns: 1fr 1fr;">
+            <button class="btn-sel active" onclick="setScale('maj', this)">MAIOR</button>
+            <button class="btn-sel" onclick="setScale('min', this)">MENOR</button>
+        </div>
+    </div>
+
+    <div class="results-card">
+        <span class="label" style="align-self: flex-start; margin-left: 5px;">Acordes</span>
+        <div class="ch-container" id="chContainer"></div>
+        
+        <div class="piano-container" id="pianoCH"></div>
+        <div class="chord-display-notes" id="chordNotesDisplay">Selecione um acorde</div>
+    </div>
+
+    <script>
+	
+	// 1. MOTOR DE SOM (Inserir aqui, logo no início do script)
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioCtx();
+
+    function playTone(freq, duration = 0.8) { // Aumentamos a duração padrão de 0.5 para 0.8
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'triangle'; 
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        // VOLUME AJUSTADO: Subimos de 0.15 para 0.4
+        const volumeInicial = 0.4; 
+        gain.gain.setValueAtTime(volumeInicial, audioCtx.currentTime);
+        
+        // Rampa de decaimento levemente mais longa para um som mais natural
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function getFreq(noteIdx) {
+        return 130.81 * Math.pow(2, noteIdx / 12); // Frequência base C3
+    }
+
+    function playChord(notesArray) {
+        notesArray.forEach((note, i) => {
+            setTimeout(() => playTone(getFreq(note), 0.8), i * 35);
+        });
+    }
+	
+        const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        const FORMULAS = {
+            maj: {
+                steps: [0, 2, 4, 5, 7, 9, 11],
+                types: ["", "m", "m", "", "", "m", "dim"],
+                intervals: [[0,4,7], [0,3,7], [0,3,7], [0,4,7], [0,4,7], [0,3,7], [0,3,6]],
+                degrees: ["I", "ii", "iii", "IV", "V", "vi", "vii°"]
+            },
+            min: {
+                steps: [0, 2, 3, 5, 7, 8, 10],
+                types: ["m", "dim", "", "m", "m", "", ""],
+                intervals: [[0,3,7], [0,3,6], [0,4,7], [0,3,7], [0,3,7], [0,4,7], [0,4,7]],
+                degrees: ["i", "ii°", "III", "iv", "v", "VI", "VII"]
+            }
+        };
+
+        let currentRoot = 0;
+        let currentScale = 'maj';
+
+        function init() {
+            const grid = document.getElementById('noteSelector');
+            NOTES.forEach((n, i) => {
+                const b = document.createElement('button');
+                b.className = 'btn-sel' + (i === 0 ? ' active' : '');
+                b.innerText = n;
+                b.onclick = (e) => {
+                    document.querySelectorAll('#noteSelector .btn-sel').forEach(x => x.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentRoot = i;
+                    renderCH();
+                };
+                grid.appendChild(b);
+            });
+            renderCH();
+        }
+
+        function setScale(s, btn) {
+            btn.parentNode.querySelectorAll('.btn-sel').forEach(x => x.classList.remove('active'));
+            btn.classList.add('active');
+            currentScale = s;
+            renderCH();
+        }
+
+        function renderCH() {
+            const container = document.getElementById('chContainer');
+            container.innerHTML = '';
+            const formula = FORMULAS[currentScale];
+
+            // Criar as linhas para a Pirâmide Invertida (4-3 ou similar)
+            const row1 = document.createElement('div');
+            row1.className = 'ch-row';
+            const row2 = document.createElement('div');
+            row2.className = 'ch-row';
+
+            formula.steps.forEach((step, i) => {
+                const noteIdx = (currentRoot + step) % 12;
+                const item = document.createElement('div');
+                item.className = 'ch-item';
+                item.innerHTML = `
+                    <span class="ch-degree">${formula.degrees[i]}</span>
+                    <span class="ch-chord">${NOTES[noteIdx]}${formula.types[i]}</span>
+                `;
+                item.onclick = () => highlightChord(noteIdx, formula.intervals[i], item);
+                
+                if(i < 4) row1.appendChild(item);
+                else row2.appendChild(item);
+
+                if(i === 0) setTimeout(() => item.click(), 10);
+            });
+
+            container.appendChild(row1);
+            container.appendChild(row2);
+        }
+
+        function highlightChord(rootIdx, intervals, element) {
+            document.querySelectorAll('.ch-item').forEach(i => i.classList.remove('active'));
+            element.classList.add('active');
+
+            const absoluteNotes = intervals.map(iv => rootIdx + iv);
+            const notesText = absoluteNotes.map(n => NOTES[n % 12]).join(" – ");
+            document.getElementById('chordNotesDisplay').innerText = notesText;
+
+            drawKeyboard('pianoCH', absoluteNotes);
+			
+			// ADICIONE ESTA LINHA ABAIXO PARA TOCAR O SOM
+			playChord(absoluteNotes);
+			
+        }
+
+        function drawKeyboard(id, activeNotes) {
+            const p = document.getElementById(id);
+            p.innerHTML = '';
+            const whiteKeyNotes = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
+            whiteKeyNotes.forEach((noteValue) => {
+                const key = document.createElement('div');
+                key.className = 'key-w';
+                if (activeNotes.includes(noteValue)) key.classList.add('active');
+                p.appendChild(key);
+            });
+            const blackKeyMap = [
+                {n: 1, pos: 4.8}, {n: 3, pos: 12}, {n: 6, pos: 26.2}, {n: 8, pos: 33.4}, {n: 10, pos: 40.5},
+                {n: 13, pos: 54.8}, {n: 15, pos: 62}, {n: 18, pos: 76.2}, {n: 20, pos: 83.4}, {n: 22, pos: 90.5}
+            ];
+            blackKeyMap.forEach(item => {
+                const key = document.createElement('div');
+                key.className = 'key-b';
+                key.style.left = item.pos + '%';
+                if (activeNotes.includes(item.n)) key.classList.add('active');
+                p.appendChild(key);
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas | Escalas e Modos</title>
+    <style>
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --kb-black: #121417;
+            --line-thickness: 2px; /* Padronizado conforme seu teste */
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 20px 10px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .header { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 14px; cursor: pointer; }
+
+        .module-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 18px;
+            width: 100%;
+            max-width: 420px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; opacity: 0.8; }
+
+        .selector-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .btn-sel { 
+            background: var(--kb-black); border: 1px solid #444; color: white; 
+            padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
+        }
+        .btn-sel.active { background: var(--primary); color: #1e2227; border-color: var(--primary); }
+
+        .scale-select {
+            width: 100%; background: var(--kb-black); color: white; border: 1px solid #444;
+            padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; margin-top: 5px; outline: none;
+        }
+
+        .results-card {
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px 15px;
+            width: 100%;
+            max-width: 420px;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .scale-display-name { font-size: 20px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; color: #FFF; }
+        
+        /* TECLADO COM FIOS PADRONIZADOS */
+        .piano-container {
+            position: relative;
+            width: 100%;
+            height: 80px;
+            background-color: #000;
+            padding: var(--line-thickness);
+            border-radius: 6px;
+            display: flex;
+            gap: var(--line-thickness);
+            box-sizing: border-box;
+        }
+
+        .key-w { 
+            flex: 1; background: white; height: 100%; border-radius: 0 0 3px 3px; z-index: 1; 
+            transition: background-color 0.1s, transform 0.05s;
+        }
+        
+        .key-b {
+            position: absolute; background: var(--kb-black); width: 4.2%; height: 55%; z-index: 2; border-radius: 0 0 3px 3px;
+            border-left: 0.5px solid #000; border-right: 0.5px solid #000;
+            transition: background-color 0.1s, transform 0.05s;
+        }
+
+        /* ESTADOS ATIVOS (CORES PADRÃO) */
+        .key-w.active { background-color: var(--primary) !important; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1); }
+        .key-b.active {
+            background-color: var(--primary) !important;
+            outline: var(--line-thickness) solid var(--kb-black);
+            outline-offset: 0px;
+            z-index: 10;
+        }
+
+        /* EFEITO DE PRESSÃO (MAIS ESCURO AO TOCAR) */
+        .key-w.playing { background-color: #d4a502 !important; transform: translateY(2px); }
+        .key-b.playing { background-color: #d4a502 !important; transform: translateY(1px); z-index: 11; }
+
+        .scale-display-notes { 
+            margin-top: 20px; font-size: 14px; color: var(--primary); 
+            font-weight: 700; letter-spacing: 1px; line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="/" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; text-transform: uppercase;">Escalas e Modos</span>
+    </div>
+
+    <div class="module-card">
+        <span class="label">Tônica</span>
+        <div class="selector-grid" id="noteSelector" style="margin-bottom:15px;"></div>
+        
+        <span class="label">Escala / Modo</span>
+        <select id="scaleType" class="scale-select" onchange="updateScale()">
+            <optgroup label="Básicas">
+                <option value="major">Maior (Jônio)</option>
+                <option value="minor">Menor Natural (Eólio)</option>
+                <option value="m_harmonic">Menor Harmônica</option>
+                <option value="m_melodic">Menor Melódica</option>
+            </optgroup>
+            <optgroup label="Modos Gregos">
+                <option value="dorian">Dórico</option>
+                <option value="phrygian">Frígio</option>
+                <option value="lydian">Lídio</option>
+                <option value="mixolydian">Mixolídio</option>
+                <option value="locrian">Lócrio</option>
+            </optgroup>
+            <optgroup label="Pentatônicas">
+                <option value="penta_maj">Pentatônica Maior</option>
+                <option value="penta_min">Pentatônica Menor</option>
+                <option value="blues">Blues</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <div class="results-card">
+        <div class="scale-display-name" id="scaleNameDisplay">C MAIOR</div>
+        <div class="piano-container" id="pianoScale"></div>
+        <div class="scale-display-notes" id="scaleNotesDisplay">C – D – E – F – G – A – B – C</div>
+    </div>
+
+    <script>
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioCtx();
+
+        // MOTOR DE SOM COM SUSTAIN E VOLUME MELHORADOS
+        function playTone(freq, duration = 0.6) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            
+            // Volume ajustado para 0.4 conforme conversamos
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime); 
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function getFreq(noteIdx) {
+            return 130.81 * Math.pow(2, noteIdx / 12);
+        }
+
+        // NOVO MOTOR DE ARPEJO SINCRONIZADO COM O VISUAL
+        function playScaleSequence(notesArray) {
+            notesArray.forEach((note, i) => {
+                setTimeout(() => {
+                    playTone(getFreq(note), 0.7);
+                    animateKey(note);
+                }, i * 320); // Velocidade do arpejo
+            });
+        }
+
+        // ANIMAÇÃO DE PRESSÃO DA TECLA
+        function animateKey(noteValue) {
+            const key = document.querySelector(`[data-note="${noteValue}"]`);
+            if (key) {
+                key.classList.add('playing');
+                setTimeout(() => key.classList.remove('playing'), 200);
+            }
+        }
+
+        const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        const SCALES = {
+            "major": { name: "Maior", intervals: [0, 2, 4, 5, 7, 9, 11, 12] },
+            "minor": { name: "Menor Natural", intervals: [0, 2, 3, 5, 7, 8, 10, 12] },
+            "m_harmonic": { name: "Menor Harmônica", intervals: [0, 2, 3, 5, 7, 8, 11, 12] },
+            "m_melodic": { name: "Menor Melódica", intervals: [0, 2, 3, 5, 7, 9, 11, 12] },
+            "dorian": { name: "Dórico", intervals: [0, 2, 3, 5, 7, 9, 10, 12] },
+            "phrygian": { name: "Frígio", intervals: [0, 1, 3, 5, 7, 8, 10, 12] },
+            "lydian": { name: "Lídio", intervals: [0, 2, 4, 6, 7, 9, 11, 12] },
+            "mixolydian": { name: "Mixolídio", intervals: [0, 2, 4, 5, 7, 9, 10, 12] },
+            "locrian": { name: "Lócrio", intervals: [0, 1, 3, 5, 6, 8, 10, 12] },
+            "penta_maj": { name: "Pentatônica Maior", intervals: [0, 2, 4, 7, 9, 12] },
+            "penta_min": { name: "Pentatônica Menor", intervals: [0, 3, 5, 7, 10, 12] },
+            "blues": { name: "Blues", intervals: [0, 3, 5, 6, 7, 10, 12] }
+        };
+
+        let currentRoot = 0;
+
+        function init() {
+            const grid = document.getElementById('noteSelector');
+            NOTES.forEach((n, i) => {
+                const b = document.createElement('button');
+                b.className = 'btn-sel' + (i === 0 ? ' active' : '');
+                b.innerText = n;
+                b.onclick = (e) => {
+                    document.querySelectorAll('#noteSelector .btn-sel').forEach(x => x.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentRoot = i;
+                    updateScale();
+                };
+                grid.appendChild(b);
+            });
+            updateScale(false);
+        }
+
+        function updateScale(shouldPlay = true) {
+            const type = document.getElementById('scaleType').value;
+            const scaleData = SCALES[type];
+            const nameDisplay = document.getElementById('scaleNameDisplay');
+            const notesDisplay = document.getElementById('scaleNotesDisplay');
+            
+            nameDisplay.innerText = NOTES[currentRoot] + " " + scaleData.name;
+            
+            const absoluteNotes = scaleData.intervals.map(iv => (currentRoot + iv));
+            notesDisplay.innerText = absoluteNotes.map(n => NOTES[n % 12]).join(" – ");
+            
+            drawKeyboard('pianoScale', absoluteNotes);
+            if(shouldPlay) playScaleSequence(absoluteNotes);
+        }
+
+        function drawKeyboard(id, activeNotes) {
+            const p = document.getElementById(id);
+            p.innerHTML = '';
+            
+            // Teclas Brancas (2 Oitavas)
+            const whiteKeyNotes = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
+            whiteKeyNotes.forEach((noteValue) => {
+                const key = document.createElement('div');
+                key.className = 'key-w';
+                key.dataset.note = noteValue; // Importante para a animação
+                if (activeNotes.includes(noteValue)) key.classList.add('active');
+                p.appendChild(key);
+            });
+
+            // Teclas Pretas
+            const blackKeyMap = [
+                {n: 1, pos: 4.8}, {n: 3, pos: 12}, {n: 6, pos: 26.2}, {n: 8, pos: 33.4}, {n: 10, pos: 40.5},
+                {n: 13, pos: 54.8}, {n: 15, pos: 62}, {n: 18, pos: 76.2}, {n: 20, pos: 83.4}, {n: 22, pos: 90.5}
+            ];
+
+            blackKeyMap.forEach(item => {
+                const key = document.createElement('div');
+                key.className = 'key-b';
+                key.style.left = item.pos + '%';
+                key.dataset.note = item.n; // Importante para a animação
+                if (activeNotes.includes(item.n)) key.classList.add('active');
+                p.appendChild(key);
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>

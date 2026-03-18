@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas | Sobre</title>
+    <style>
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --kb-black: #121417;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; 
+            padding: 20px 15px; /* Padding lateral para o card não tocar a borda da tela */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* CABEÇALHO PADRONIZADO */
+        .header { 
+            width: 100%; 
+            max-width: 400px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+        }
+        
+        .back-btn { 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 14px; 
+        }
+
+        /* CARD ELEGANTE (Mesmo estilo dos módulos) */
+        .about-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px; /* Largura controlada */
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        .label { 
+            font-size: 10px; 
+            color: var(--primary); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            margin-bottom: 15px; 
+            display: block; 
+            opacity: 0.8; 
+            letter-spacing: 1px;
+        }
+
+        h2 { 
+            color: #FFF; 
+            text-transform: uppercase; 
+            font-weight: 800;
+            letter-spacing: 1px; 
+            margin: 0 0 15px 0; 
+            font-size: 20px; 
+        }
+
+        p { 
+            line-height: 1.6; 
+            color: #ccc; 
+            font-size: 15px; 
+            margin-bottom: 25px; 
+            text-align: center; /* Centralizado combina melhor com card pequeno */
+        }
+
+        /* SEÇÃO DE CONTATOS */
+        .contact-section {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text-white);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            background: var(--kb-black);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #444;
+            transition: all 0.3s ease;
+        }
+
+        .contact-link:active {
+            transform: scale(0.98);
+            background: #222;
+        }
+
+        .icon { 
+            width: 18px; 
+            height: 18px;
+            fill: var(--primary); 
+        }
+
+        /* Estilo do Header Interno do Card */
+        .brand-header-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tamanho do ícone */
+        .brand-icon {
+            width: 50px;
+            height: 50px;
+            color: var(--primary);
+        }
+
+        .brand-name {
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        /* Ajuste sutil no label para não brigar com o nome da marca */
+        .about-card .label {
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="/" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; text-transform: uppercase;">SOBRE</span>
+    </div>
+
+<div class="about-card">
+    <div class="brand-header-card">
+        <div class="brand-icon">
+        <svg version="1.1" id="Camada_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+            viewBox="0 0 800 800" style="enable-background:new 0 0 800 800;" xml:space="preserve">
+        <style type="text/css">
+            .st0{fill:#FFFFFF;}
+            .st1{fill:#343A43;}
+        </style>
+        <g>
+            <g>
+                <path class="st0" d="M398.8,696.4l-0.6,0c-4.9-0.3-9.5-1.5-13.8-3.7l-74.1-36.8L82.9,542.2c-11-5.5-17.8-16.6-17.7-28.9l2.5-377.1
+                    c0.1-12.2,6.9-23.1,17.8-28.5c5.5-2.7,11.6-4.2,17.7-4.2c6.1,0,12.2,1.4,17.7,4.1L400,246.1l279.1-138.4
+                    c5.5-2.7,11.6-4.1,17.7-4.1c6.1,0,12.2,1.4,17.7,4.1c11,5.4,17.8,16.4,17.8,28.6l2.5,377.1c0.1,12.3-6.7,23.4-17.7,28.9
+                    L488.7,656.5l-73,36.2c-4.3,2.1-8.9,3.4-13.8,3.7l-0.6,0l-1.1,0L398.8,696.4z"/>
+            </g>
+            <path class="st1" d="M710.5,136.4c0-3.9-2.2-7.4-5.7-9.1c-5-2.5-11-2.5-16,0L404.3,268.3c-1.2,0.6-2.5,1-3.9,1c-0.1,0-0.3,0-0.4,0
+                c-0.1,0-0.3,0-0.4,0c-1.4-0.1-2.7-0.4-3.9-1L111.2,127.3c-5-2.5-10.9-2.5-16,0c-3.4,1.7-5.7,5.2-5.7,9.1L87,513.5
+                c0,3.9,2.2,7.5,5.7,9.2l227.2,113.6l74.2,36.8c1.7,0.9,3.6,1.3,5.4,1.4c0.2,0,0.4,0,0.5,0c0.2,0,0.4,0,0.5,0
+                c1.9-0.1,3.7-0.6,5.4-1.4l73-36.2l228.4-114.2c3.5-1.8,5.7-5.3,5.7-9.2L710.5,136.4z M168.9,530.6c0,2-2.1,3.2-3.8,2.3L112,506.4
+                c-0.9-0.4-1.5-1.4-1.5-2.4V160c0-2,2.1-3.2,3.8-2.4l38.4,19.2c0.9,0.4,1.4,1.4,1.4,2.4V389c0,1,0.6,1.9,1.5,2.4l11.9,5.9
+                c0.9,0.5,1.4,1.4,1.4,2.4V530.6z M244.7,568.5c0,2-2.1,3.2-3.8,2.3l-61.5-30.7c-0.9-0.4-1.5-1.3-1.5-2.3v-131c0-2,2.1-3.2,3.8-2.4
+                l7.1,3.6c1.8,0.9,3.8-0.4,3.8-2.4V201c0-2,2.1-3.2,3.8-2.4l32,16c0.9,0.4,1.4,1.4,1.4,2.4v209.2c0,1,0.6,1.9,1.5,2.4l11.9,5.9
+                c0.9,0.5,1.4,1.4,1.4,2.4L244.7,568.5L244.7,568.5z M320.4,606.3c0,2-2,3.2-3.8,2.3L255.1,578c-0.9-0.4-1.5-1.3-1.5-2.3V444
+                c0-2,2.1-3.2,3.8-2.4l7.1,3.6c1.8,0.9,3.8-0.4,3.8-2.4V238.9c0-2,2.1-3.2,3.8-2.4l32,16c0.9,0.4,1.5,1.4,1.5,2.4v209.8
+                c0,1,0.6,1.9,1.5,2.4l11.9,5.9c0.9,0.5,1.5,1.4,1.5,2.4L320.4,606.3L320.4,606.3z M387.8,640c0,2-2,3.2-3.8,2.3l-53.1-26.6
+                c-0.9-0.4-1.5-1.3-1.5-2.3v-131c0-2,2.1-3.2,3.8-2.4l7.1,3.6c1.8,0.9,3.8-0.4,3.8-2.4V276.8c0-2,2.1-3.2,3.8-2.4l38.4,19.2
+                c0.9,0.5,1.5,1.4,1.5,2.4V640z M498.1,599.7c0,1-0.6,1.9-1.5,2.3L416,642.4c-1.8,0.9-3.8-0.4-3.8-2.3V296c0-1,0.6-1.9,1.5-2.4
+                l65.9-32.9c1.8-0.9,3.8,0.4,3.8,2.4v204.4c0,2,2.1,3.2,3.8,2.4l7.1-3.6c1.8-0.9,3.8,0.4,3.8,2.4L498.1,599.7L498.1,599.7z
+                M594.6,551.5c0,1-0.6,1.9-1.5,2.3L510.9,595c-1.8,0.9-3.8-0.4-3.8-2.3V461.5c0-1,0.6-1.9,1.5-2.4l11.8-5.9
+                c0.9-0.4,1.5-1.4,1.5-2.4V241.1c0-1,0.6-1.9,1.5-2.4l52.8-26.4c1.8-0.9,3.8,0.4,3.8,2.4v205.1c0,2,2.1,3.2,3.8,2.4l7.2-3.6
+                c1.8-0.9,3.8,0.4,3.8,2.4V551.5z M689.5,504c0,1-0.6,1.9-1.5,2.4l-80.6,40.3c-1.8,0.9-3.8-0.4-3.8-2.3V413.9c0-1,0.6-1.9,1.5-2.4
+                l11.8-5.9c0.9-0.4,1.5-1.4,1.5-2.4V192.9c0-1,0.6-1.9,1.5-2.4l65.8-32.9c1.8-0.9,3.8,0.4,3.8,2.4L689.5,504L689.5,504z"/>
+        </g>
+        </svg>
+        </div>
+        <span class="brand-name">DOZE TECLAS</span>
+    </div>
+        
+    <p>
+        Meu nome é Sandro, sou católico, músico, publicitário e entusiasta de tecnologia, principalmente musical.
+    </p>
+
+    <p>
+        No <b>Doze Teclas</b>, aplico os princípios de design através de interfaces interativas. Meu objetivo é criar ferramentas, que simplificam o estudo da música.
+    </p>
+
+        <div class="contact-section">
+            <span class="label">CONTATO</span>
+            
+            <a href="https://instagram.com/dozeteclas" target="_blank" class="contact-link">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849s-.011 3.584-.069 4.849c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.849-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849s.012-3.584.07-4.849c.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.058-1.689-.072-4.948-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                instagram
+            </a>
+            
+            <a href="mailto:dozeteclas@gmail.com" class="contact-link">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 7.713-9.518-7.713h19.036zm-19.518 14v-11.817l10 8.104 10-8.104v11.817h-20z"/></svg>
+                e-mail
+            </a>
+        </div>
+
+        <p style="font-style: italic; color: var(--primary); font-size: 12px; text-align: center; margin: 20px 0; line-height: 1.2;">
+        "Mais tempo criando música que emociona."
+        </p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas | Mapa de Inversões Otimizado</title>
+    <style>
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --kb-black: #121417;
+            --line-thickness: 2px;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 20px 10px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .header { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 14px; }
+
+        .module-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 18px;
+            width: 100%;
+            max-width: 420px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; opacity: 0.8; }
+
+        .selector-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .btn-sel { 
+            background: var(--kb-black); border: 1px solid #444; color: white; 
+            padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
+        }
+        .btn-sel.active { background: var(--primary); color: #1e2227; border-color: var(--primary); }
+
+        .results-card {
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            padding: 20px 15px;
+            width: 100%;
+            max-width: 420px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .inv-row { display: flex; flex-direction: column; gap: 8px; }
+        .inv-header { display: flex; justify-content: space-between; align-items: center; }
+        .inv-name { font-size: 13px; font-weight: 700; color: var(--text-white); }
+        .inv-notes { font-size: 12px; color: var(--primary); font-weight: 800; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px; }
+
+        .piano-mini {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            background-color: #000;
+            padding: var(--line-thickness);
+            border-radius: 4px;
+            display: flex;
+            gap: var(--line-thickness);
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .key-w { flex: 1; background: white; height: 100%; border-radius: 0 0 1px 1px; z-index: 1; }
+        .key-b {
+            position: absolute; background: var(--kb-black); width: 4.2%; height: 55%; z-index: 2; border-radius: 0 0 2px 2px;
+            border-left: 0.5px solid #000; border-right: 0.5px solid #000;
+        }
+
+                .key-w.active { background-color: var(--primary) !important; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1); }
+
+        .key-b.active {
+            background-color: var(--primary); /* O amarelo de destaque */
+            
+            /* O Outline: bem marcado e para fora */
+            outline: var(--line-thickness) solid var(--kb-black); 
+            
+            /* Garante que o contorno fique visível sobre as teclas brancas */
+            outline-offset: 0px; 
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="/" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; letter-spacing: 1px;">INVERSÕES</span>
+    </div>
+
+    <div class="module-card">
+        <span class="label">Nota Fundamental</span>
+        <div class="selector-grid" id="noteSelector" style="margin-bottom:15px;"></div>
+        
+        <span class="label">Tipo de Tríade</span>
+        <div class="selector-grid" style="grid-template-columns: 1fr 1fr;">
+            <button class="btn-sel active" onclick="setMode('Maj', this)">MAIOR</button>
+            <button class="btn-sel" onclick="setMode('m', this)">MENOR</button>
+        </div>
+    </div>
+
+    <div class="results-card">
+        <div class="inv-row" id="row-0"></div>
+        <div class="inv-row" id="row-1"></div>
+        <div class="inv-row" id="row-2"></div>
+    </div>
+
+    <script>
+        // --- MOTOR DE SOM ---
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioCtx();
+
+	function playTone(freq) {
+		if (audioCtx.state === 'suspended') audioCtx.resume();
+		
+		// Puxa as configurações do Ajustes (LocalStorage)
+		const savedTimbre = localStorage.getItem('dt_timbre') || 'triangle';
+		const savedVol = (localStorage.getItem('dt_volume') || 15) / 100;
+		const savedSus = parseFloat(localStorage.getItem('dt_sustain') || 0.6);
+
+		const osc = audioCtx.createOscillator();
+		const gain = audioCtx.createGain();
+		
+		osc.type = savedTimbre; // Usa o timbre escolhido
+		osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+		
+		gain.gain.setValueAtTime(savedVol, audioCtx.currentTime); // Usa o volume escolhido
+		gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + savedSus);
+		
+		osc.connect(gain);
+		gain.connect(audioCtx.destination);
+		
+		osc.start();
+		osc.stop(audioCtx.currentTime + savedSus); // Usa a duração escolhida
+	}
+
+
+        function getFreq(noteIdx) {
+            return 130.81 * Math.pow(2, noteIdx / 12);
+        }
+
+        function playChord(notesArray) {
+            notesArray.forEach((note, i) => {
+                setTimeout(() => playTone(getFreq(note), 0.8), i * 35);
+            });
+        }
+
+        // --- LÓGICA DE INVERSÕES ---
+        const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        let currentRoot = 0;
+        let currentMode = "Maj";
+
+        function init() {
+            const grid = document.getElementById('noteSelector');
+            NOTES.forEach((n, i) => {
+                const b = document.createElement('button');
+                b.className = 'btn-sel' + (i === 0 ? ' active' : '');
+                b.innerText = n;
+                b.onclick = (e) => {
+                    document.querySelectorAll('#noteSelector .btn-sel').forEach(x => x.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentRoot = i;
+                    renderAll();
+                };
+                grid.appendChild(b);
+            });
+            renderAll(false);
+        }
+
+        function setMode(mode, btn) {
+            btn.parentNode.querySelectorAll('.btn-sel').forEach(x => x.classList.remove('active'));
+            btn.classList.add('active');
+            currentMode = mode;
+            renderAll();
+        }
+
+        function renderAll(shouldPlay = true) {
+            const triad = currentMode === "Maj" ? [0, 4, 7] : [0, 3, 7];
+            const titles = ["Fundamental", "1ª Inversão", "2ª Inversão"];
+            let baseChordNotes = [];
+            
+            for (let inv = 0; inv < 3; inv++) {
+                let intervals = [...triad];
+                for(let i=0; i<inv; i++) {
+                    let first = intervals.shift();
+                    intervals.push(first + 12);
+                }
+
+                if (Math.max(...intervals) + currentRoot >= 24) {
+                    intervals = intervals.map(v => v - 12);
+                }
+
+                const absNotes = intervals.map(iv => iv + currentRoot);
+                if(inv === 0) baseChordNotes = absNotes; // Guarda a fundamental para o som
+
+                const row = document.getElementById(`row-${inv}`);
+                const notesText = intervals.map(iv => NOTES[((currentRoot + iv) % 12 + 12) % 12]).join(" – ");
+
+                row.innerHTML = `
+                    <div class="inv-header">
+                        <span class="inv-name">${titles[inv]}</span>
+                        <span class="inv-notes">${notesText}</span>
+                    </div>
+                    <div class="piano-mini" id="kb-${inv}"></div>
+                `;
+                drawKeyboard(`kb-${inv}`, absNotes);
+            }
+
+            if(shouldPlay) playChord(baseChordNotes);
+        }
+
+        function drawKeyboard(id, activeNotes) {
+            const p = document.getElementById(id);
+            const whiteKeyNotes = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
+            
+            whiteKeyNotes.forEach((noteValue) => {
+                const key = document.createElement('div');
+                key.className = 'key-w';
+                if (activeNotes.includes(noteValue)) key.classList.add('active');
+                p.appendChild(key);
+            });
+
+            const blackKeyMap = [
+                {n: 1, pos: 4.8}, {n: 3, pos: 12}, {n: 6, pos: 26.2}, {n: 8, pos: 33.4}, {n: 10, pos: 40.5},
+                {n: 13, pos: 54.8}, {n: 15, pos: 62}, {n: 18, pos: 76.2}, {n: 20, pos: 83.4}, {n: 22, pos: 90.5}
+            ];
+
+            blackKeyMap.forEach(item => {
+                const key = document.createElement('div');
+                key.className = 'key-b';
+                key.style.left = item.pos + '%';
+                if (activeNotes.includes(item.n)) key.classList.add('active');
+                p.appendChild(key);
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>
