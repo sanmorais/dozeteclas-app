@@ -29,7 +29,6 @@
             min-height: 100vh;
         }
 
-        /* PADRONIZAÇÃO DO CABEÇALHO (Igual Campo Harmônico) */
         .header { 
             width: 100%; 
             max-width: 420px; 
@@ -46,7 +45,6 @@
             cursor: pointer;
         }
 
-        /* PADRONIZAÇÃO DO CARD (Igual Campo Harmônico) */
         .chord-card {
             background-color: var(--card-bg); 
             border-radius: 20px; 
@@ -56,7 +54,7 @@
             box-sizing: border-box;
             border: 1px solid rgba(255,255,255,0.05);
             box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            overflow: hidden; /* Garante que o shake não crie barras no card */
+            overflow: hidden;
         }
 
         .label { 
@@ -120,6 +118,8 @@
             font-size: 75px; font-weight: 600; color: var(--primary);
             z-index: 10; pointer-events: none; position: absolute;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            width: 100%;
         }
 
         .center-display.correct { 
@@ -169,14 +169,17 @@
 
 <script>
     let rotationDirection = -0.18; 
+    // Arrays de referência baseados na escala cromática (0 a 11)
     const notesSharp = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     const notesFlat  = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-    const relMinNamesSharp = ["Am", "A#m", "Bm", "Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m"];
-    const relMinNamesFlat = ["Am", "Bbm", "Bm", "Cm", "Dbm", "Dm", "Ebm", "Em", "Fm", "Gbm", "Gm", "Abm"];
+    
+    // Array de Relativas Menores seguindo EXATAMENTE a sua lista de mapeamento
+    // Índices: 0:Am, 1:Bbm, 2:Bm, 3:Cm, 4:C#m, 5:Dm, 6:Ebm, 7:Em, 8:Fm, 9:F#m, 10:Gm, 11:G#m
+    const relMinCustom = ["Am", "Bbm", "Bm", "Cm", "C#m", "Dm", "Ebm", "Em", "Fm", "F#m", "Gm", "G#m"];
 
     const cycles = {
-        "5ths": [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5], // C -> G -> D...
-        "4ths": [0, 5, 10, 3, 8, 1, 6, 11, 4, 9, 2, 7], // C -> F -> Bb...
+        "5ths": [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5], 
+        "4ths": [0, 5, 10, 3, 8, 1, 6, 11, 4, 9, 2, 7], 
         "relMinor": [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5],
         "relMajor": [0, 7, 2, 9, 4, 11, 6, 1, 8, 3, 10, 5]
     };
@@ -188,17 +191,39 @@
     let animationId;
 
     function getFormattedNote(idx, type) {
-        const useFlat = (currentCycleKey !== "5ths");
-        const nameBase = useFlat ? notesFlat[idx % 12] : notesSharp[idx % 12];
-        const relBase = useFlat ? relMinNamesFlat[idx % 12] : relMinNamesSharp[idx % 12];
+        const i = (idx % 12 + 12) % 12; // Garantia de índice positivo
 
+        // 1. Determinação da Família (Bemol ou Sustenido)
+        let useFlat = false;
+        if (currentCycleKey === "4ths") {
+            useFlat = true;
+        } else if (currentCycleKey === "5ths") {
+            useFlat = false;
+        } else {
+            // Regra das Relativas: Notas F, Bb, Eb, Ab, Db, Gb usam família de Bemóis
+            useFlat = [1, 3, 5, 6, 8, 10].includes(i);
+        }
+
+        const nameBase = useFlat ? notesFlat[i] : notesSharp[i];
+        const relBase = relMinCustom[i];
+
+        // 2. Lógica de exibição por Modo
+        
+        // CICLO DE QUARTAS / QUINTAS (Simples no centro e no círculo)
+        if (currentCycleKey === "4ths" || currentCycleKey === "5ths") {
+            return nameBase;
+        }
+
+        // RELATIVA MENOR (Pergunta Maior no centro -> Resposta Menor no círculo)
         if (currentCycleKey === "relMinor") {
-            return type === 'center' ? nameBase : relBase;
+            return (type === 'center') ? nameBase : relBase;
         }
+
+        // RELATIVA MAIOR (Pergunta Menor no centro -> Resposta Maior no círculo)
         if (currentCycleKey === "relMajor") {
-            return type === 'center' ? relBase : nameBase;
+            return (type === 'center') ? relBase : nameBase;
         }
-        if (idx % 12 === 6) return (currentCycleKey === "5ths") ? "F#" : "Gb";
+
         return nameBase;
     }
 
@@ -209,7 +234,7 @@
 
         for (let i = 0; i < 12; i++) {
             const angle = (i * 30) * (Math.PI / 180);
-            const x = 115 * Math.sin(angle); // Reduzido levemente para caber no novo card
+            const x = 115 * Math.sin(angle);
             const y = -115 * Math.cos(angle);
             
             const wrapper = document.createElement('div');
@@ -219,6 +244,8 @@
             const circle = document.createElement('div');
             circle.className = 'note-circle';
             const noteIndex = sequence[i]; 
+            
+            // Aqui passamos 'wheel' para a função saber que é a nota do círculo
             circle.innerText = getFormattedNote(noteIndex, 'wheel');
             circle.dataset.noteIdx = noteIndex;
             
@@ -254,6 +281,7 @@
 
     function updateCycleMode() {
         currentCycleKey = document.getElementById('cycleMode').value;
+        // Quartas gira para um lado, o resto para o outro (opcional)
         rotationDirection = (currentCycleKey === '4ths') ? -0.18 : 0.18;
         pickRandomTarget();
         createWheel();
@@ -261,7 +289,12 @@
 
     function pickRandomTarget() {
         targetIdx = Math.floor(Math.random() * 12);
+        // Aqui passamos 'center' para a função saber que é a nota do sorteio
         document.getElementById('targetDisplay').innerText = getFormattedNote(targetIdx, 'center');
+        
+        // Ajuste de tamanho de fonte para notas menores (ex: F#m) caberem no centro
+        const display = document.getElementById('targetDisplay');
+        display.style.fontSize = (currentCycleKey === 'relMajor') ? '60px' : '75px';
     }
 
     document.getElementById('wheel').addEventListener('click', (e) => {
@@ -271,8 +304,10 @@
             let isCorrect = false;
 
             if (currentCycleKey === "relMinor" || currentCycleKey === "relMajor") {
+                // Em relativas, o índice da nota clicada deve ser igual ao índice da nota sorteada
                 isCorrect = (clicked === targetIdx);
             } else {
+                // Nos ciclos normais, o alvo é a PRÓXIMA nota na sequência
                 const currentPosInCycle = seq.indexOf(targetIdx);
                 const nextPos = (currentPosInCycle + 1) % 12;
                 isCorrect = (clicked === seq[nextPos]);
