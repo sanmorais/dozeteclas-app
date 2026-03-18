@@ -165,30 +165,33 @@
 
     <script>
 	
-	// 1. MOTOR DE SOM (Inserir aqui, logo no início do script)
+    // Adicione isso ao <script> de Ciclos, Escalas e Campo Harmônico
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    const audioCtx = new AudioCtx();
+    let audioCtx;
 
-    function playTone(freq, duration = 0.8) { // Aumentamos a duração padrão de 0.5 para 0.8
+    function playTone(freq) {
+        if (!audioCtx) audioCtx = new AudioCtx();
         if (audioCtx.state === 'suspended') audioCtx.resume();
+        
+        // BUSCA ATIVA DOS AJUSTES
+        const savedTimbre = localStorage.getItem('dt_timbre') || 'triangle';
+        const savedVol = (localStorage.getItem('dt_volume') || 15) / 100;
+        const savedSus = parseFloat(localStorage.getItem('dt_sustain') || 0.6);
+
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         
-        osc.type = 'triangle'; 
+        osc.type = savedTimbre;
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
         
-        // VOLUME AJUSTADO: Subimos de 0.15 para 0.4
-        const volumeInicial = 0.4; 
-        gain.gain.setValueAtTime(volumeInicial, audioCtx.currentTime);
-        
-        // Rampa de decaimento levemente mais longa para um som mais natural
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        gain.gain.setValueAtTime(savedVol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + savedSus);
         
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         
         osc.start();
-        osc.stop(audioCtx.currentTime + duration);
+        osc.stop(audioCtx.currentTime + savedSus);
     }
 
     function getFreq(noteIdx) {
