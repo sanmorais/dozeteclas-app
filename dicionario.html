@@ -2,6 +2,14 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-14023770857"></script>
+    <script>
+         window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-14023770857');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doze Teclas | Dicionário de Acordes</title>
     <style>
@@ -149,33 +157,34 @@
     </div>
 
     <script>
-        // --- MOTOR DE SOM (WEB AUDIO API) ---
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        const audioCtx = new AudioCtx();
+    // Adicione isso ao <script> de Ciclos, Escalas e Campo Harmônico
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
 
-	function playTone(freq) {
-		if (audioCtx.state === 'suspended') audioCtx.resume();
-		
-		// Puxa as configurações do Ajustes (LocalStorage)
-		const savedTimbre = localStorage.getItem('dt_timbre') || 'triangle';
-		const savedVol = (localStorage.getItem('dt_volume') || 15) / 100;
-		const savedSus = parseFloat(localStorage.getItem('dt_sustain') || 0.6);
+        function playTone(freq) {
+            if (!audioCtx) audioCtx = new AudioCtx();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            // BUSCA ATIVA DOS AJUSTES
+            const savedTimbre = localStorage.getItem('dt_timbre') || 'triangle';
+            const savedVol = (localStorage.getItem('dt_volume') || 15) / 100;
+            const savedSus = parseFloat(localStorage.getItem('dt_sustain') || 0.6);
 
-		const osc = audioCtx.createOscillator();
-		const gain = audioCtx.createGain();
-		
-		osc.type = savedTimbre; // Usa o timbre escolhido
-		osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-		
-		gain.gain.setValueAtTime(savedVol, audioCtx.currentTime); // Usa o volume escolhido
-		gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + savedSus);
-		
-		osc.connect(gain);
-		gain.connect(audioCtx.destination);
-		
-		osc.start();
-		osc.stop(audioCtx.currentTime + savedSus); // Usa a duração escolhida
-	}
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = savedTimbre;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            
+            gain.gain.setValueAtTime(savedVol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + savedSus);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + savedSus);
+        }
 
 
         function getFreq(noteIdx) {
