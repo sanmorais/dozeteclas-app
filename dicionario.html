@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-14023770857"></script>
     <script>
-         window.dataLayer = window.dataLayer || [];
+        window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'G-14023770857');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +17,7 @@
             --bg-dark: #1E2227;
             --card-bg: #2a2f36;
             --text-white: #ffffff;
+            --text-muted: #b0b3b8;
             --kb-black: #121417;
             --line-thickness: 2px;
         }
@@ -30,9 +30,11 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
+        /* HEADER */
         .header { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .back-btn { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 14px; }
 
+        /* CARD PRINCIPAL COM BOTÃO DE AJUDA */
         .module-card {
             background-color: var(--card-bg);
             border-radius: 20px;
@@ -42,14 +44,56 @@
             margin-bottom: 12px;
             box-sizing: border-box;
             border: 1px solid rgba(255,255,255,0.05);
+            position: relative; /* Necessário para o botão ? */
         }
 
-        .label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; opacity: 0.8; }
+        /* BOTÃO DE AJUDA ? */
+        .help-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 28px;
+            height: 28px;
+            background-color: rgba(255, 197, 2, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
 
-        .selector-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .help-btn:hover {
+            background-color: var(--primary);
+            color: #000;
+        }
+
+        .label { 
+            font-size: 10px; 
+            color: var(--primary); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            margin-bottom: 10px; 
+            display: block; 
+            opacity: 0.8; 
+        }
+
+        /* SELETORES COM RESPIRO */
+        .selector-grid { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 6px; 
+            margin-top: 30px; /* Respiro para o botão de ajuda */
+        }
+        
         .btn-sel { 
             background: var(--kb-black); border: 1px solid #444; color: white; 
-            padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
+            padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold;
         }
         .btn-sel.active { background: var(--primary); color: #1e2227; border-color: var(--primary); }
 
@@ -62,10 +106,12 @@
             border-radius: 8px;
             font-size: 14px;
             font-weight: bold;
-            margin-top: 5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
             outline: none;
         }
 
+        /* RESULTADOS */
         .results-card {
             background-color: var(--card-bg);
             border-radius: 24px;
@@ -79,46 +125,87 @@
             align-items: center;
         }
 
-        .chord-display-name { font-size: 28px; font-weight: 800; margin-bottom: 20px; }
-        
-        .chord-display-notes { 
-            margin-top: 20px;
-            font-size: 15px; 
-            color: var(--primary); 
-            font-weight: 700; 
-            letter-spacing: 1px;
-        }
+        .chord-display-name { font-size: 28px; font-weight: 800; margin-bottom: 10px; }
+        .chord-display-notes { margin-top: 20px; font-size: 15px; color: var(--primary); font-weight: 700; letter-spacing: 1px; }
 
+        /* PIANO */
         .piano-container {
-            position: relative;
-            width: 100%;
-            height: 80px;
-            background-color: #000;
-            padding: var(--line-thickness);
-            border-radius: 6px;
-            display: flex;
-            gap: var(--line-thickness);
-            box-sizing: border-box;
+            position: relative; width: 100%; height: 80px;
+            background-color: #000; padding: var(--line-thickness);
+            border-radius: 6px; display: flex; gap: var(--line-thickness); box-sizing: border-box;
         }
-
         .key-w { flex: 1; background: white; height: 100%; border-radius: 0 0 2px 2px; z-index: 1; }
         .key-b {
             position: absolute; background: var(--kb-black); width: 4.2%; height: 55%; z-index: 2; border-radius: 0 0 3px 3px;
             border-left: 0.5px solid #000; border-right: 0.5px solid #000;
         }
-
         .key-w.active { background-color: var(--primary) !important; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1); }
-
         .key-b.active {
-            background-color: var(--primary); /* O amarelo de destaque */
-            
-            /* O Outline: bem marcado e para fora */
+            background-color: var(--primary);
             outline: var(--line-thickness) solid var(--kb-black); 
-            
-            /* Garante que o contorno fique visível sobre as teclas brancas */
-            outline-offset: 0px; 
-            z-index: 10;
+            outline-offset: 0px; z-index: 10;
         }
+
+        /* MODAL EMOLDURADO */
+        .modal-help {
+            display: none; /* Alterado para flex via JS */
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            
+            /* ESTA PARTE É CRUCIAL PARA A MOLDURA */
+            align-items: center;     /* Centraliza verticalmente */
+            justify-content: center;    /* Centraliza horizontalmente */
+            padding: 20px;           /* Garante que o modal nunca toque na borda da tela */
+            box-sizing: border-box;
+        }
+
+        /* A "Caixa" de conteúdo (o encarte) */
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 40px 25px;
+            border-radius: 25px;
+            border: 1px solid var(--primary);
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            
+            /* Define a moldura: ele ocupa a largura disponível até o limite do padding do pai */
+            width: 100%; 
+            max-width: 380px; /* No mobile ele fica contido, no desktop não espalha */
+            
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .close-modal {
+            position: absolute; top: 15px; right: 20px;
+            color: var(--text-white); font-size: 30px; cursor: pointer; line-height: 1;
+        }
+
+        .modal-content h3 { color: var(--primary); margin: 0 0 20px 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; text-align: center;}
+        .modal-content p { line-height: 1.8; color: var(--text-muted); font-size: 16px; margin: 0; }
+
+        .tip-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 15px;
+            width: 100%;
+            max-width: 420px;
+            box-sizing: border-box;
+            border: 1px dashed rgba(255, 197, 2, 0.2);
+            text-align: justify;
+        }
+        .tip-title { color: var(--primary); font-size: 10px; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 5px; display: block; }
+        .tip-text { color: var(--text-muted); font-size: 13px; line-height: 1.4; margin: 0; }
     </style>
 </head>
 <body>
@@ -129,43 +216,69 @@
     </div>
 
     <div class="module-card">
+        <div class="help-btn" onclick="openHelp()">?</div>
+
         <span class="label">Nota Fundamental</span>
         <div class="selector-grid" id="noteSelector" style="margin-bottom:15px;"></div>
         
-        <span class="label">Tipo de Acorde</span>
-        <select id="chordType" class="chord-select" onchange="updateChord()">
-            <optgroup label="Tríades">
-                <option value="maj">Maior (Tríade)</option>
-                <option value="min">Menor (Tríade)</option>
-                <option value="dim">Diminuto (Tríade)</option>
-                <option value="aug">Aumentado</option>
-            </optgroup>
-            <optgroup label="Tétrades (7ª)">
-                <option value="maj7">Maj7</option>
-                <option value="7">Dominante (7)</option>
-                <option value="m7">m7</option>
-                <option value="m7b5">m7(b5)</option>
-                <option value="dim7">Diminuto (7dim)</option>
-            </optgroup>
-        </select>
+    <span class="label">Tipo de Acorde</span>
+    <select id="chordType" class="chord-select" onchange="updateChord()">
+        <optgroup label="Tríades">
+            <option value="maj">Maior</option>
+            <option value="min">Menor</option>
+            <option value="sus2">Sus2</option>
+            <option value="sus4">Sus4</option>
+            <option value="dim">Diminuto</option>
+            <option value="aug">Aumentado</option>
+        </optgroup>
+        <optgroup label="Tétrades (7ª)">
+            <option value="maj7">Maj7</option>
+            <option value="7">Dominante (7)</option>
+            <option value="m7">m7</option>
+            <option value="m7b5">m7(b5)</option>
+            <option value="dim7">Diminuto (7dim)</option>
+        </optgroup>
+        <optgroup label="Variações e Adições">
+            <option value="maj6">Maior com 6ª</option>
+            <option value="min6">Menor com 6ª</option>
+            <option value="add9">add9</option>
+            <option value="madd9">m(add9)</option>
+        </optgroup>
+    </select>
+        <br>
+        <center>
+            <div class="chord-display-name" id="chordNameDisplay">C</div>
+            <div class="piano-container" id="pianoMain"></div>
+            <div class="chord-display-notes" id="chordNotesDisplay">C – E – G</div>
+        </center>
     </div>
 
-    <div class="results-card">
-        <div class="chord-display-name" id="chordNameDisplay">C</div>
-        <div class="piano-container" id="pianoMain"></div>
-        <div class="chord-display-notes" id="chordNotesDisplay">C – E – G</div>
+    <div id="helpModal" class="modal-help">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeHelp()">&times;</span>
+            <h3>Como usar</h3>
+            <p>Dicionário de Acordes é o seu guia rápido para consulta de acordes e estudo.</p>
+            <ul>
+                <li>Escolha uma <b>nota fundamental</b> (a base do acorde).</li>
+                <li>Selecione o <b>tipo de acorde</b> (maior, menor, com sétima, etc.).</li>
+            </ul>
+        </div>
+    </div>
+        <div class="tip-card">
+        <span class="tip-title">DICAS</span>
+        <p class="tip-text">
+            Sabia que acordes surgem de 'pulos' na escala? Ao agrupar notas em intervalos de terça (como C-E-G), você cria a harmonia. A variação desses espaços define se o acorde soará alegre (Maior) ou melancólico (Menor).
+        </p>
     </div>
 
     <script>
-    // Adicione isso ao <script> de Ciclos, Escalas e Campo Harmônico
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
 
         function playTone(freq) {
             if (!audioCtx) audioCtx = new AudioCtx();
             if (audioCtx.state === 'suspended') audioCtx.resume();
             
-            // BUSCA ATIVA DOS AJUSTES
             const savedTimbre = localStorage.getItem('dt_timbre') || 'triangle';
             const savedVol = (localStorage.getItem('dt_volume') || 15) / 100;
             const savedSus = parseFloat(localStorage.getItem('dt_sustain') || 0.6);
@@ -186,11 +299,7 @@ let audioCtx;
             osc.stop(audioCtx.currentTime + savedSus);
         }
 
-
-        function getFreq(noteIdx) {
-            // C3 base a 130.81Hz
-            return 130.81 * Math.pow(2, noteIdx / 12);
-        }
+        function getFreq(noteIdx) { return 130.81 * Math.pow(2, noteIdx / 12); }
 
         function playChord(notesArray) {
             notesArray.forEach((note, i) => {
@@ -198,18 +307,29 @@ let audioCtx;
             });
         }
 
-        // --- LÓGICA DO DICIONÁRIO ---
+        // LÓGICA DO DICIONÁRIO
         const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
         const CHORDS = {
+            // Tríades Básicas e Suspensas
             "maj": { name: "", intervals: [0, 4, 7] },
             "min": { name: "m", intervals: [0, 3, 7] },
+            "sus2": { name: "sus2", intervals: [0, 2, 7] },
+            "sus4": { name: "sus4", intervals: [0, 5, 7] },
             "dim": { name: "dim", intervals: [0, 3, 6] },
             "aug": { name: "aug", intervals: [0, 4, 8] },
+            
+            // Tétrades
             "maj7": { name: "Maj7", intervals: [0, 4, 7, 11] },
             "7": { name: "7", intervals: [0, 4, 7, 10] },
             "m7": { name: "m7", intervals: [0, 3, 7, 10] },
             "m7b5": { name: "m7(b5)", intervals: [0, 3, 6, 10] },
-            "dim7": { name: "dim7", intervals: [0, 3, 6, 9] }
+            "dim7": { name: "dim7", intervals: [0, 3, 6, 9] },
+
+            // Sextas e Adições (Novas)
+            "maj6": { name: "6", intervals: [0, 4, 7, 9] },
+            "min6": { name: "m6", intervals: [0, 3, 7, 9] },
+            "add9": { name: "add9", intervals: [0, 4, 7, 14] }, // 14 é a nona na oitava de cima
+            "madd9": { name: "m(add9)", intervals: [0, 3, 7, 14] }
         };
 
         let currentRoot = 0;
@@ -228,7 +348,6 @@ let audioCtx;
                 };
                 grid.appendChild(b);
             });
-            // O som não toca no init para evitar disparos automáticos sem interação
             updateChord(false); 
         }
 
@@ -239,35 +358,27 @@ let audioCtx;
             const notesDisplay = document.getElementById('chordNotesDisplay');
             
             nameDisplay.innerText = NOTES[currentRoot] + chordData.name;
-            
             const absoluteNotes = chordData.intervals.map(iv => (currentRoot + iv));
             notesDisplay.innerText = absoluteNotes.map(n => NOTES[n % 12]).join(" – ");
-            
             drawKeyboard('pianoMain', absoluteNotes);
 
-            // Toca o som apenas se houver interação do usuário
-            if (shouldPlaySound) {
-                playChord(absoluteNotes);
-            }
+            if (shouldPlaySound) { playChord(absoluteNotes); }
         }
 
         function drawKeyboard(id, activeNotes) {
             const p = document.getElementById(id);
             p.innerHTML = '';
             const whiteKeyNotes = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
-            
             whiteKeyNotes.forEach((noteValue) => {
                 const key = document.createElement('div');
                 key.className = 'key-w';
                 if (activeNotes.includes(noteValue)) key.classList.add('active');
                 p.appendChild(key);
             });
-
             const blackKeyMap = [
                 {n: 1, pos: 4.8}, {n: 3, pos: 12}, {n: 6, pos: 26.2}, {n: 8, pos: 33.4}, {n: 10, pos: 40.5},
                 {n: 13, pos: 54.8}, {n: 15, pos: 62}, {n: 18, pos: 76.2}, {n: 20, pos: 83.4}, {n: 22, pos: 90.5}
             ];
-
             blackKeyMap.forEach(item => {
                 const key = document.createElement('div');
                 key.className = 'key-b';
@@ -275,6 +386,14 @@ let audioCtx;
                 if (activeNotes.includes(item.n)) key.classList.add('active');
                 p.appendChild(key);
             });
+        }
+
+        // FUNÇÕES DO MODAL
+        function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
+        function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
+        window.onclick = function(event) {
+            const modal = document.getElementById('helpModal');
+            if (event.target == modal) { closeHelp(); }
         }
 
         init();

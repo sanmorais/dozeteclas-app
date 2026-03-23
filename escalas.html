@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-14023770857"></script>
     <script>
-         window.dataLayer = window.dataLayer || [];
+        window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'G-14023770857');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,12 +35,15 @@
         .module-card {
             background-color: var(--card-bg);
             border-radius: 20px;
-            padding: 18px;
+            padding: 20px;
+            /* Aumentamos o padding superior para 45px para dar espaço ao botão */
+            padding-top: 40px; 
             width: 100%;
             max-width: 420px;
-            margin-bottom: 12px;
             box-sizing: border-box;
             border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            position: relative; 
         }
 
         .label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; opacity: 0.8; }
@@ -72,7 +74,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .scale-display-name { font-size: 20px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; color: #FFF; }
+        .scale-display-name { font-size: 20px; font-weight: 800; margin-top: 20px; margin-bottom: 20px; text-transform: uppercase; color: #FFF; }
         
         /* TECLADO COM FIOS PADRONIZADOS */
         .piano-container {
@@ -113,18 +115,65 @@
 
         .scale-display-notes { 
             margin-top: 20px; font-size: 14px; color: var(--primary); 
-            font-weight: 700; letter-spacing: 1px; line-height: 1.5;
+            font-weight: 700; letter-spacing: 1px; line-height: 1.5; text-align: center;
         }
+
+        .help-btn {
+            position: absolute;
+            top: 15px;      /* Mantém a distância do topo do card */
+            right: 15px;    /* Mantém a distância da direita */
+            width: 28px;
+            height: 28px;
+            background-color: rgba(255, 197, 2, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        /* Card de Dica no Rodapé */
+        .tip-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 15px; padding: 15px;
+            width: 100%; max-width: 420px;
+            margin-top: 15px; box-sizing: border-box;
+            border: 1px dashed rgba(255, 197, 2, 0.2);
+        }
+        .tip-title { color: var(--primary); font-size: 10px; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 5px; display: block; }
+        .tip-text { color: var(--text-muted); font-size: 13px; line-height: 1.4; margin: 0; text-align: justify;}
+
+        /* Estrutura do Modal de Ajuda */
+        .modal-help {
+            display: none; position: fixed; z-index: 9999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
+        }
+        .modal-content {
+            background-color: var(--card-bg); padding: 40px 25px; border-radius: 25px;
+            border: 1px solid var(--primary); position: relative; text-align: center;
+            width: 100%; max-width: 380px;
+        }
+        .close-modal { position: absolute; top: 15px; right: 20px; color: var(--text-white); font-size: 30px; cursor: pointer; }
+
     </style>
 </head>
 <body>
-
     <div class="header">
         <a href="index.html" class="back-btn">← VOLTAR</a>
         <span style="font-weight: 800; font-size: 14px; text-transform: uppercase;">Escalas e Modos</span>
     </div>
-
+    
     <div class="module-card">
+        <div class="help-btn" onclick="openHelp()">?</div>
         <span class="label">Tônica</span>
         <div class="selector-grid" id="noteSelector" style="margin-bottom:15px;"></div>
         
@@ -146,15 +195,38 @@
             <optgroup label="Pentatônicas">
                 <option value="penta_maj">Pentatônica Maior</option>
                 <option value="penta_min">Pentatônica Menor</option>
-                <option value="blues">Blues</option>
+                <option value="penta_blues">Penta Blues (Menor)</option> </optgroup>
+            <optgroup label="Sintéticas e Jazz">
+                <option value="whole_tone">Tons Inteiros (Hexafônica)</option>
+                <option value="altered">Alterada</option>
+                <option value="bebop_dom">Bebop Dominante</option>
             </optgroup>
         </select>
-    </div>
 
-    <div class="results-card">
         <div class="scale-display-name" id="scaleNameDisplay">C MAIOR</div>
         <div class="piano-container" id="pianoScale"></div>
         <div class="scale-display-notes" id="scaleNotesDisplay">C – D – E – F – G – A – B – C</div>
+    </div>
+
+    <div class="tip-card">
+    <span class="tip-title">DICA</span>
+    <p class="tip-text">
+        Não tente apenas decorar as notas, mas sim o intervalo entre elas. Entender a distância de tons e semitons que forma cada escala permite que você transponha qualquer melodia para os 12 tons. Comece praticando as escalas devagar e tente cantar as notas junto com o áudio.
+    </p>
+</div>
+
+<div id="helpModal" class="modal-help">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeHelp()">&times;</span>
+        <h3 style="color: var(--primary); text-transform: uppercase; margin-bottom: 15px; text-align: center;">Como Praticar</h3>
+        <p style="color: var(--text-muted); line-height: 1.6; font-size: 14px; text-align: justify;">
+            O módulo de Escalas permite visualizar o <b>"caminho"</b> das notas por todo o teclado: <br><br>
+            Selecione a <b>tonalidade</b> desejada.<br>
+            <br>
+            Escolha o <b>tipo de Escala</b> (Maior, Menor Natural, Pentatônica, etc.).<br>
+            <p style="color: var(--text-muted); line-height: 1.6; font-size: 14px; text-align: justify;">
+            O sistema exibirá as notas no teclado e tocará a sequência automaticamente. Use este recurso para memorizar os intervalos (tons e semitons) e para treinar a sua percepção auditiva.</p>
+        </p>
     </div>
 
     <script>
@@ -223,7 +295,12 @@
             "locrian": { name: "Lócrio", intervals: [0, 1, 3, 5, 6, 8, 10, 12] },
             "penta_maj": { name: "Pentatônica Maior", intervals: [0, 2, 4, 7, 9, 12] },
             "penta_min": { name: "Pentatônica Menor", intervals: [0, 3, 5, 7, 10, 12] },
-            "blues": { name: "Blues", intervals: [0, 3, 5, 6, 7, 10, 12] }
+            "penta_blues": { name: "Penta Blues", intervals: [0, 3, 5, 6, 7, 10, 12] },
+            
+            // Novas Adições
+            "whole_tone": { name: "Tons Inteiros", intervals: [0, 2, 4, 6, 8, 10, 12] },
+            "altered": { name: "Alterada", intervals: [0, 1, 3, 4, 6, 8, 10, 12] },
+            "bebop_dom": { name: "Bebop Dominante", intervals: [0, 2, 4, 5, 7, 9, 10, 11, 12] }
         };
 
         let currentRoot = 0;
@@ -291,6 +368,23 @@
         }
 
         init();
+
+        function openHelp() { 
+            document.getElementById('helpModal').style.display = 'flex'; 
+        }
+
+        function closeHelp() { 
+            document.getElementById('helpModal').style.display = 'none'; 
+        }
+
+        // Fecha o modal se o usuário clicar fora da caixa preta
+        window.onclick = function(event) {
+            const modal = document.getElementById('helpModal');
+            if (event.target == modal) {
+                closeHelp();
+            }
+        }
+
     </script>
 </body>
 </html>

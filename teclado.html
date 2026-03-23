@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-14023770857"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-14023770857');
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Doze Teclas | Teclado Virtual</title>
+    <style>
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --text-muted: #b0b3b8;
+            --kb-black: #121417;
+            --border-light: rgba(255,255,255,0.1);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 20px 10px;
+            display: flex; flex-direction: column; align-items: center;
+            touch-action: manipulation;
+        }
+
+        /* HEADER PADRÃO */
+        .header { 
+            width: 100%; 
+            /* Importante: deve ser a mesma largura máxima que definimos para o card no desktop */
+            max-width: 876px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+            /* Remove paddings laterais se houver para encostar nas extremidades */
+            padding: 0; 
+        }
+        .back-btn { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 14px; }
+        .header-title { font-weight: 800; font-size: 14px; letter-spacing: 1px; color: var(--text-white); }
+
+        /* Garante que o link e o título não tenham margens extras */
+        .back-btn { margin: 0; }
+        .header-title { margin: 0; }
+
+        .piano-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 360px; 
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; gap: 20px;
+            box-sizing: border-box;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* BOTÕES DE TOPO */
+        .top-btns { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; }
+        .icon-btn {
+            width: 20px; height: 20px;
+            background: rgba(255, 197, 2, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; cursor: pointer;
+            padding: 5px;
+            fill: var(--primary);
+        }
+
+        /* VIEWPORT E TECLADO */
+        .piano-viewport {
+            width: 100%;
+            overflow-x: auto;
+            background: #000;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: none;
+            cursor: grab;
+            
+            /* Aumente este valor para dar mais espaço aos botões superiores */
+            margin-top: 40px; 
+        }
+        .piano-viewport:active { cursor: grabbing; }
+        .piano-viewport::-webkit-scrollbar { display: none; }
+
+        .keyboard {
+            position: relative;
+            display: flex;
+            width: 840px; 
+            height: 150px;
+            user-select: none;
+            flex-shrink: 0; /* Impede que o flexbox esprema o teclado */
+        }
+
+        .nav-touchpad {
+            width: 840px; 
+            height: 20px; 
+            background: #121417;
+            border-top: 1px solid #333;
+            position: relative; /* Mantém o contexto */
+            touch-action: pan-x;
+            
+            /* Centraliza o conteúdo verticalmente */
+            display: flex;
+            align-items: center; 
+        }
+
+        /* Ajuste no Viewport para Desktop */
+        @media (min-width: 900px) {
+            .piano-card {
+                max-width: 880px; /* Ajustado para abraçar as 21 teclas + padding */
+            }
+            
+            .piano-viewport {
+                cursor: default;
+                overflow: hidden; /* Remove scroll desnecessário no desktop */
+                align-items: center; /* Centraliza o conteúdo se o card for maior */
+            }
+
+        }
+
+        .nav-touchpad::after {
+            content: "";
+            width: 40px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+            
+            /* Fixa a posição horizontal na tela do telemóvel */
+            position: sticky;
+            left: 20px; /* Ajuste este valor para mover para a esquerda ou direita */
+            
+            /* Remove o transform de -400%, não é mais necessário com left: 20px */
+            transform: none; 
+            
+            /* Garante que ele flutue sem ocupar espaço na largura do teclado */
+            display: block;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .key-w { min-width: 40px; max-width: 40px; background: white; border: 1px solid #bbb; border-radius: 0 0 4px 4px; z-index: 1; box-sizing: border-box; touch-action: none; }
+        .key-w.active { background: var(--primary) !important; }
+        .key-b { width: 26px; height: 85px; background: var(--kb-black); position: absolute; z-index: 2; border-radius: 0 0 3px 3px; box-sizing: border-box; touch-action: none; }
+        .key-b.active { background: #444 !important; border: 1px solid var(--primary); }
+
+        /* METRÔNOMO */
+        .metro-container { padding-top: 15px; border-top: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 12px; }
+        .metro-row { display: flex; justify-content: space-between; align-items: center; }
+        .metro-label { font-size: 0.85rem; color: var(--primary); font-weight: 800; text-transform: uppercase; }
+        .main-val { font-size: 1.8rem; font-weight: 800; }
+        .circle-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
+        
+        .vol-slider { width: 100%; accent-color: var(--primary); height: 15px; margin-top: 5px; cursor: pointer; }
+
+        .btn-play { background: white; color: black; border: none; padding: 12px 0; width: 100%; border-radius: 25px; font-weight: 800; cursor: pointer; }
+        .btn-play.playing { background: var(--primary); }
+
+        /* MODAIS */
+        .modal {
+            display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
+        }
+        .modal-content {
+            background: var(--card-bg); padding: 30px 25px; border-radius: 25px; border: 1px solid var(--primary);
+            width: 100%; max-width: 300px; position: relative; text-align: center;
+        }
+        .close-modal { position: absolute; top: 15px; right: 20px; color: white; font-size: 24px; cursor: pointer; }
+        .modal-content h3 { color: var(--primary); margin-top: 0; font-size: 1.2rem; text-transform: uppercase; }
+        .setting-row { margin: 20px 0; text-align: left; }
+        .setting-row label { display: block; font-size: 0.7rem; color: var(--primary); font-weight: 800; margin-bottom: 8px; }
+        select { width: 100%; background: #000; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← VOLTAR</a>
+        <span class="header-title">TECLADO VIRTUAL</span>
+    </div>
+
+    <div class="piano-card">
+        <div class="top-btns">
+            <div class="icon-btn" onclick="openModal('settingsModal')"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-1.03l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+            <div class="icon-btn" onclick="openModal('helpModal')">?</div>
+        </div>
+
+        <div class="piano-viewport" id="viewport">
+            <div class="keyboard" id="keyboard"></div>
+            <div class="nav-touchpad"></div>
+        </div>
+
+        <div class="metro-container">
+            <div class="metro-row">
+                <button class="circle-btn" onclick="changeBPM(-1)">−</button>
+                <div style="text-align:center">
+                    <div class="metro-label">BPM</div>
+                    <div id="bpmNum" class="main-val">120</div>
+                </div>
+                <button class="circle-btn" onclick="changeBPM(1)">+</button>
+            </div>
+
+            <div class="metro-row">
+                <button class="circle-btn" onclick="changeSig(-1)">−</button>
+                <div style="text-align:center">
+                    <div class="metro-label">BATIDAS</div>
+                    <div id="sigNum" style="font-size:1.3rem; font-weight:800">4</div>
+                </div>
+                <button class="circle-btn" onclick="changeSig(1)">+</button>
+            </div>
+
+            <div style="margin-top: 5px;">
+                <div class="metro-label" style="font-size: 0.85rem;">Volume Metrônomo</div>
+                <input type="range" class="vol-slider" id="metroVol" min="0" max="100" value="50">
+            </div>
+
+            <button id="metroPlay" class="btn-play" onclick="toggleMetro()">INICIAR</button>
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('helpModal')">&times;</span>
+            <h3>Como Usar</h3>
+            <p style="color: var(--text-muted); line-height: 1.6;">Toque nas teclas para produzir som. Arraste a barra inferior para navegar entre as oitavas. Use o metrônomo para praticar seu tempo.</p>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
+            <h3>Ajustes de Áudio</h3>
+            
+            <div class="setting-row">
+                <label>Timbre das Teclas</label>
+                <select id="timbreSelect" onchange="updateSettings()">
+                    <option value="triangle">Triangular (Suave)</option>
+                    <option value="sine">Senoide (Puro)</option>
+                    <option value="square">Quadrada (Vintage)</option>
+                    <option value="sawtooth">Dente de Serra (Brilhante)</option>
+                </select>
+            </div>
+
+            <div class="setting-row">
+                <label>Volume do Teclado</label>
+                <input type="range" class="vol-slider" id="pianoVol" min="0" max="100" value="90" onchange="updateSettings()">
+            </div>
+        </div>
+    </div>
+
+<script>
+    let isPointerDown = false;
+    let bpm = 120; let sig = 4; let beat = 0;
+    let playing = false; let timer;
+    
+    // Configurações atuais
+    let currentTimbre = 'triangle';
+    let pianoVolume = 0.9;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const pianoCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const activeNodes = {};
+
+    const frequencies = [
+        65.41, 69.30, 73.42, 77.78, 82.41, 87.31, 92.50, 98.00, 103.83, 110.00, 116.54, 123.47, // Oitava 2
+        130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 185.00, 196.00, 207.65, 220.00, 233.08, 246.94, // Oitava 3
+        261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88  // Oitava 4
+    ];
+
+    function playNote(index) {
+        if (pianoCtx.state === 'suspended') pianoCtx.resume();
+        stopNote(index);
+        const osc = pianoCtx.createOscillator();
+        const gain = pianoCtx.createGain();
+        osc.type = currentTimbre;
+        osc.frequency.value = frequencies[index] || 440;
+        gain.gain.setValueAtTime(pianoVolume, pianoCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, pianoCtx.currentTime + 1.2);
+        osc.connect(gain); gain.connect(pianoCtx.destination);
+        osc.start(); activeNodes[index] = { osc, gain };
+    }
+
+    function stopNote(index) {
+        if (activeNodes[index]) {
+            activeNodes[index].gain.gain.exponentialRampToValueAtTime(0.001, pianoCtx.currentTime + 0.1);
+            activeNodes[index].osc.stop(pianoCtx.currentTime + 0.1);
+            delete activeNodes[index];
+        }
+    }
+
+    function playClick(isFirst) {
+        const osc = audioCtx.createOscillator();
+        const envelope = audioCtx.createGain();
+        const vol = document.getElementById('metroVol').value / 100;
+        osc.type = 'sine';
+        osc.frequency.value = isFirst ? 1000 : 600;
+        envelope.gain.value = vol;
+        osc.connect(envelope); envelope.connect(audioCtx.destination);
+        osc.start();
+        envelope.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function initKeyboard() {
+        const k = document.getElementById('keyboard');
+        k.innerHTML = ''; // Limpa antes de gerar
+        const wWidth = 40;
+        const bWidth = 26;
+        const offset = bWidth / 2;
+
+        // Índices das 21 teclas brancas em 3 oitavas cromáticas
+        const whiteIndices = [
+            0, 2, 4, 5, 7, 9, 11,      // Oitava 2
+            12, 14, 16, 17, 19, 21, 23, // Oitava 3
+            24, 26, 28, 29, 31, 33, 35  // Oitava 4
+        ];
+
+        // Gerar 21 Brancas
+        for(let i=0; i < 21; i++) {
+            const div = document.createElement('div');
+            div.className = 'key-w';
+            addKeyEvents(div, whiteIndices[i]);
+            k.appendChild(div);
+        }
+
+        // Gerar Pretas (Posições baseadas nas fendas das 21 brancas)
+        // Padrão: fendas 1, 2, 4, 5, 6 em cada oitava (7 teclas)
+        const blackFendas = [
+            1, 2, 4, 5, 6,        // Oitava 2
+            8, 9, 11, 12, 13,     // Oitava 3
+            15, 16, 18, 19, 20    // Oitava 4
+        ];
+        
+        const blackIndices = [
+            1, 3, 6, 8, 10,       // Oitava 2
+            13, 15, 18, 20, 22,   // Oitava 3
+            25, 27, 30, 32, 34    // Oitava 4
+        ];
+
+        blackFendas.forEach((fenda, index) => {
+            const div = document.createElement('div');
+            div.className = 'key-b';
+            div.style.left = (fenda * wWidth) - offset + 'px';
+            addKeyEvents(div, blackIndices[index]);
+            k.appendChild(div);
+        });
+
+        setupScrollWithMouse();
+    }
+
+    function addKeyEvents(el, noteIndex) {
+        el.addEventListener('pointerdown', (e) => { isPointerDown = true; el.releasePointerCapture(e.pointerId); noteOn(el, noteIndex); });
+        el.addEventListener('pointerenter', (e) => { if (isPointerDown || e.buttons === 1) noteOn(el, noteIndex); });
+        el.addEventListener('pointerleave', () => noteOff(el, noteIndex));
+        el.addEventListener('pointerup', () => { isPointerDown = false; noteOff(el, noteIndex); });
+    }
+
+    function noteOn(el, index) { if (!el.classList.contains('active')) { el.classList.add('active'); playNote(index); } }
+    function noteOff(el, index) { el.classList.remove('active'); stopNote(index); }
+
+    function updateSettings() {
+        currentTimbre = document.getElementById('timbreSelect').value;
+        pianoVolume = document.getElementById('pianoVol').value / 100;
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // --- REUTILIZADOS DO CÓDIGO ANTERIOR ---
+    function setupScrollWithMouse() {
+        const slider = document.getElementById('viewport');
+        let isDown = false; let startX; let scrollLeft;
+        slider.addEventListener('mousedown', (e) => { if(e.target.closest('.key-w') || e.target.closest('.key-b')) return; isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+        slider.addEventListener('mouseleave', () => isDown = false);
+        slider.addEventListener('mouseup', () => isDown = false);
+        slider.addEventListener('mousemove', (e) => { if(!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk; });
+    }
+
+    function changeBPM(v) { bpm = Math.max(40, Math.min(240, bpm + v)); document.getElementById('bpmNum').innerText = bpm; if(playing) { stopTimer(); startTimer(); } }
+    function changeSig(v) { sig = Math.max(1, Math.min(20, sig + v)); document.getElementById('sigNum').innerText = sig; beat = 0; }
+    function toggleMetro() { if (audioCtx.state === 'suspended') audioCtx.resume(); playing = !playing; const btn = document.getElementById('metroPlay'); if(playing) { btn.innerText = 'PARAR'; btn.classList.add('playing'); startTimer(); } else { btn.innerText = 'INICIAR'; btn.classList.remove('playing'); stopTimer(); } }
+    function startTimer() { timer = setInterval(() => { const n = document.getElementById('bpmNum'); const isFirst = (beat === 0); playClick(isFirst); n.style.color = isFirst ? 'var(--primary)' : 'white'; beat = (beat + 1) % sig; }, (60/bpm)*1000); }
+    function stopTimer() { clearInterval(timer); beat = 0; }
+
+    window.onload = () => {
+        initKeyboard();
+        
+        // Faz o scroll automático para a 2ª oitava (C3)
+        // 7 teclas brancas * 40px = 280px
+        const viewport = document.getElementById('viewport');
+        viewport.scrollLeft = 280; 
+    };
+</script>
+</body>
+</html>

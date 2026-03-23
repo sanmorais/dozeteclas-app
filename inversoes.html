@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-14023770857"></script>
     <script>
-         window.dataLayer = window.dataLayer || [];
+        window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'G-14023770857');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,12 +35,54 @@
         .module-card {
             background-color: var(--card-bg);
             border-radius: 20px;
-            padding: 18px;
+            padding: 20px;
+            padding-top: 50px; /* Importante: abre espaço para o botão não cobrir as notas */
             width: 100%;
             max-width: 420px;
-            margin-bottom: 12px;
             box-sizing: border-box;
+            position: relative; /* ESTA LINHA CORRIGE O POSICIONAMENTO */
             border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Botão "?" posicionado no topo direito do card */
+        .help-btn {
+            position: absolute; /* Essencial para ele ignorar o fluxo dos outros itens */
+            top: 15px;          /* Distância do topo da borda do card */
+            right: 15px;        /* Distância da direita da borda do card */
+            width: 28px;
+            height: 28px;
+            background-color: rgba(255, 197, 2, 0.1); /* Amarelo bem sutil ao fundo */
+            border: 1px solid var(--primary);         /* Borda com a sua cor amarela padrão */
+            color: var(--primary);                    /* Cor do símbolo "?" */
+            border-radius: 50%;                       /* Deixa o botão redondo */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100; /* Garante que ele fique "na frente" do teclado ou labels */
+        }
+
+        .modal-help {
+            display: none; position: fixed; z-index: 9999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
+        }
+        .modal-content {
+            background-color: var(--card-bg); padding: 40px 25px; border-radius: 25px;
+            border: 1px solid var(--primary); position: relative; text-align: center;
+            width: 100%; max-width: 380px;
+        }
+        .close-modal { position: absolute; top: 15px; right: 20px; color: var(--text-white); font-size: 30px; cursor: pointer; }
+
+        /* Efeito visual ao passar o mouse */
+        .help-btn:hover {
+            background-color: var(--primary);
+            color: var(--bg-dark);
         }
 
         .label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; opacity: 0.8; }
@@ -111,6 +152,7 @@
     </div>
 
     <div class="module-card">
+        <div class="help-btn" onclick="openHelp()">?</div>
         <span class="label">Nota Fundamental</span>
         <div class="selector-grid" id="noteSelector" style="margin-bottom:15px;"></div>
         
@@ -120,7 +162,7 @@
             <button class="btn-sel" onclick="setMode('m', this)">MENOR</button>
         </div>
     </div>
-
+    <br>
     <div class="results-card">
         <div class="inv-row" id="row-0"></div>
         <div class="inv-row" id="row-1"></div>
@@ -257,6 +299,46 @@
         }
 
         init();
+
+        // 1. Abre o modal de ajuda
+        function openHelp() {
+            const modal = document.getElementById('helpModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // 2. Fecha o modal de ajuda
+        function closeHelp() {
+            const modal = document.getElementById('helpModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // 3. Fecha o modal automaticamente se o utilizador clicar na área escura (fora da caixa)
+        window.onclick = function(event) {
+            const modal = document.getElementById('helpModal');
+            if (event.target == modal) {
+                closeHelp();
+            }
+        }
+
     </script>
+
+    <div id="helpModal" class="modal-help">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeHelp()">&times;</span>
+        <h3 style="color: var(--primary); text-transform: uppercase; margin-bottom: 15px; text-align: center;">Entenda as Inversões</h3>
+        <p style="color: var(--text-muted); line-height: 1.6; font-size: 14px; text-align: justify;">
+            As inversões ocorrem quando alteramos a nota mais grave (o baixo) do acorde, reorganizando a sua estrutura vertical: <br><br>
+            <b>Estado Fundamental:</b><br> A Tónica é a nota mais grave (Ex: C-E-G).<br>
+            <br>
+            <b>1ª Inversão:</b><br> A Terça passa a ser a nota mais grave (Ex: E-G-C).<br>
+            <br>
+            <b>2ª Inversão:</b><br> A Quinta passa a ser a nota mais grave (Ex: G-C-E).
+        </p>
+    </div>
+</div>
 </body>
 </html>

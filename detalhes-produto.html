@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-14023770857"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-14023770857');
+    </script>
+    <title>Oferta | Doze Teclas</title>
+    <style>
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --text-muted: #b0b3b8;
+            --btn-buy: #28a745;
+            --accent-red: #ff4d4d;
+        }
+
+        * { box-sizing: border-box; }
+        html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Header Minimalista */
+        .header {
+            width: 100%; max-width: 600px;
+            padding: 20px;
+            display: flex; align-items: center;
+        }
+
+        .back-btn { 
+            text-decoration: none; color: var(--primary); 
+            font-weight: bold; font-size: 14px; 
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        /* Card Central de Detalhes */
+        .detail-card {
+            width: 92%; max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+            border: 1px solid #3d444d;
+        }
+
+        /* Área da Imagem */
+        .product-hero {
+            width: 100%;
+            background: #fff;
+            padding: 30px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .product-hero img { 
+            max-width: 100%; max-height: 300px; 
+            object-fit: contain; 
+        }
+
+        /* Informações da Oferta */
+        .product-info { padding: 25px; }
+
+        .brand-label { 
+            color: var(--primary); font-size: 12px; 
+            text-transform: uppercase; font-weight: 800; 
+            letter-spacing: 1px; margin-bottom: 8px; display: block;
+        }
+
+        .product-title { 
+            font-size: 24px; font-weight: 800; 
+            margin: 0 0 15px 0; line-height: 1.2; 
+        }
+
+        /* Preços estilo 'Boletando' */
+        .price-container { margin-bottom: 25px; }
+        
+        .old-price { 
+            text-decoration: line-through; color: var(--text-muted); 
+            font-size: 16px; display: block; margin-bottom: 5px;
+        }
+
+        .current-price { 
+            font-size: 36px; color: var(--primary); 
+            font-weight: 900; display: block; 
+        }
+
+        /* Cupom */
+        .coupon-box {
+            background: rgba(255, 197, 2, 0.1);
+            border: 1px dashed var(--primary);
+            padding: 12px; border-radius: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .coupon-text { font-size: 14px; color: var(--text-white); }
+        .coupon-code { font-weight: bold; color: var(--primary); font-size: 18px; }
+
+        /* Botão de Ação Principal */
+        .cta-button {
+            display: block; width: 100%;
+            background: var(--btn-buy);
+            color: #fff; text-align: center;
+            text-decoration: none; font-weight: 900;
+            padding: 18px; border-radius: 10px;
+            font-size: 18px; text-transform: uppercase;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .cta-button:active { transform: scale(0.98); }
+
+        /* Descrição Adicional */
+        .description-section {
+            padding: 0 25px 25px 25px;
+            border-top: 1px solid #3d444d;
+            margin-top: 10px;
+        }
+
+        .description-title { font-size: 16px; font-weight: bold; margin: 20px 0 10px 0; color: var(--primary); }
+        .description-text { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="equipamentos.html" class="back-btn">← VOLTAR PARA OFERTAS</a>
+    </div>
+
+    <div class="detail-card">
+        <div class="product-hero">
+            <img src="https://m.media-amazon.com/images/I/61NlUoQGZEL._AC_SL1500_.jpg" alt="KZ EDX Pro">
+        </div>
+
+        <div class="product-info">
+            <span class="brand-label">Destaque Doze Teclas</span>
+            <h1 class="product-title">Fone In-Ear KZ EDX Pro - Cristal Black</h1>
+            
+            <div class="price-container">
+                <span class="old-price">De R$ 120,00</span>
+                <span class="current-price">R$ 79,90</span>
+            </div>
+
+            <div class="coupon-box">
+                <span class="coupon-text">Cupom:</span>
+                <span class="coupon-code">MOZART10</span>
+            </div>
+
+            <a href="LINK_DE_AFILIADO_AQUI" target="_blank" class="cta-button">Ir para a Loja →</a>
+        </div>
+
+        <div class="description-section">
+            <h2 class="description-title">Por que recomendamos?</h2>
+            <p class="description-text">
+                O KZ EDX Pro é um marco no retorno de palco acessível. Com drivers dinâmicos aprimorados, ele entrega uma resposta de graves limpa e agudos definidos, ideal para tecladistas que precisam ouvir cada nuance do timbre de piano ou sintetizador. 
+                <br><br>
+                O cabo removível garante durabilidade extra, permitindo a troca apenas do fio caso ocorra algum desgaste com o uso pesado em eventos.
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>

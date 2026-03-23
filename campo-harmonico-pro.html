@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-14023770857"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-14023770857');
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas | Campo Harmônico Pro</title>
+    <style>
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --kb-black: #121417;
+            --line-thickness: 2px;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 20px 10px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .app-container { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 15px; }
+
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 0 5px; }
+        .back-btn { color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 800; }
+        .main-title { font-size: 16px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+
+        .main-card {
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column; gap: 25px;
+        }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .section-label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; opacity: 0.8; }
+
+        .btn-help {
+            width: 28px;
+            height: 28px;
+            background-color: rgba(255, 197, 2, 0.1); /* Amarelo bem sutil ao fundo */
+            border: 1px solid var(--primary);         /* Borda com a sua cor amarela padrão */
+            color: var(--primary);                    /* Cor do símbolo "?" */
+            border-radius: 50%;                       /* Deixa o botão redondo */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100; /* Garante que ele fique "na frente" do teclado ou labels */
+        }
+
+        .btn-help:hover {
+            background-color: var(--primary);
+            color: #000;
+        }
+
+        .tonality-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .btn-ton { 
+            background: var(--kb-black); border: 1px solid #444; color: white; 
+            padding: 12px 0; border-radius: 8px; cursor: pointer; 
+            font-size: 13px; font-weight: 800; 
+        }
+        .btn-ton.active { background: var(--primary); color: #1e2227; border-color: var(--primary); }
+
+        .degrees-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .degree-box { 
+            background: var(--kb-black); border: 1px solid #444; padding: 12px 2px; border-radius: 12px; 
+            text-align: center; cursor: pointer; position: relative; min-height: 60px;
+            display: flex; flex-direction: column; justify-content: center;
+            transition: all 0.1s ease;
+        }
+        .degree-box.playing { border-color: var(--primary); background: rgba(255, 197, 2, 0.25); transform: scale(1.02); }
+
+        .deg-tag { font-size: 12px; color: var(--primary); font-weight: 800; margin-bottom: 2px; }
+        .chord-display { font-size: 15px; font-weight: bold; }
+
+        .sub-menu {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--card-bg); border: 1px solid var(--primary);
+            border-radius: 10px; display: none; flex-direction: column; z-index: 10; overflow: hidden;
+        }
+        .sub-btn { flex: 1; background: none; border: none; color: white; font-size: 8px; font-weight: 800; border-bottom: 1px solid #444; cursor: pointer; text-transform: uppercase; }
+        .sub-btn:last-child { border: none; }
+        .sub-btn.selected { background: var(--primary); color: #000; }
+
+        .piano-box {
+            position: relative; width: 100%; height: 75px;
+            background-color: #000; padding: var(--line-thickness);
+            border-radius: 4px; display: flex; gap: var(--line-thickness); box-sizing: border-box;
+        }
+        .kw { flex: 1; background: white; height: 100%; border-radius: 0 0 2px 2px; z-index: 1; }
+        .kb { 
+            position: absolute; background: var(--kb-black); width: 4.2%; height: 55%; z-index: 2; border-radius: 0 0 3px 3px;
+            border-left: 0.5px solid #000; border-right: 0.5px solid #000;
+        }
+        .kw.active { background-color: var(--primary) !important; }
+        .kb.active { background-color: var(--primary); outline: var(--line-thickness) solid var(--kb-black); z-index: 10; }
+
+        .piano-labels { display: flex; width: 100%; justify-content: space-between; margin-top: 5px; }
+        .note-lbl { font-size: 8px; color: #888; font-weight: bold; text-transform: uppercase; width: 100%; text-align: center; }
+
+        .transport-row { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 10px; }
+        .btn-play-toggle { background: var(--primary); border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-play-toggle svg { fill: #1e2227; width: 22px; height: 22px; }
+
+        .bpm-selector { background: #121417; border: 1px solid #444; color: var(--primary); padding: 16px; border-radius: 10px; font-weight: bold; flex: 1; text-align: center; }
+        .btn-loop-toggle { background: #121417; border: 1px solid #444; color: #666; flex: 1; padding: 16px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+        .btn-loop-toggle.active { color: var(--primary); border-color: var(--primary); }
+
+        .modal-overlay { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); padding: 40px 25px; border-radius: 24px; width: 75%; max-width: 310px; border: 1px solid var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">
+            <a href="index.html" class="back-btn">← VOLTAR</a>
+            <h1 class="main-title">CAMPO HARMÔNICO PRO</h1>
+        </div>
+
+        <div class="main-card">
+            <section>
+                <div class="section-header">
+                    <span class="section-label">Tonalidade</span>
+                    <button class="btn-help" onclick="openHelp()">?</button>
+                </div>
+                <div class="tonality-grid" id="tonGrid"></div>
+            </section>
+
+            <section>
+                <span class="section-label" style="display:block; margin-bottom:12px;">Graus e Substituições</span>
+                <div class="degrees-grid" id="degGrid"></div>
+            </section>
+
+            <section>
+                <div class="piano-box" id="piano"></div>
+                <div class="piano-labels" id="pianoLabels"></div>
+
+                <div class="transport-row">
+                    <button class="btn-play-toggle" id="playBtn" onclick="togglePlay()">
+                        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <select class="bpm-selector">
+                        <option value="60">60 BPM</option>
+                        <option value="80">80 BPM</option>
+                        <option value="100" selected>100 BPM</option>
+                        <option value="120">120 BPM</option>
+                    </select>
+                    <button class="btn-loop-toggle" id="loopBtn" onclick="toggleLoop()">LOOP</button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal-overlay" onclick="closeHelp()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="section-label" style="font-size:20px; display:block; text-align:center;">Como Usar</span>
+            <p>O Campo Harmônico Pro é uma ferramenta avançada para estudo e transposição, que permite visualizar a estrutura harmônica de qualquer tom com recursos de substituição:</p>           
+            <ul style="font-size:14px; line-height:1.6; color:#bbb; margin: 15px 0;">
+                <li><strong>TONALIDADE:</strong> Define a nota fundamental do campo harmônico.</li>
+                <li><strong>GRAUS E SUBSTITUIÇÕES:</strong> Exibe os acordes de cada grau. Clique em um Grau para abrir o menu e testar substituições.</li>
+                <li><strong>O BPM:</strong> Ajusta a velocidade da progressão automática.</li>
+                <li><strong>PLAY/PAUSE:</strong> Inicia ou interrompe a execução da sequência.</li>
+                <li><strong>LOOP:</strong> Mantém a progressão em repetição contínua.</li>
+            </ul>
+            <p><i>Obs: Ao mudar o tom, todos os graus retornam automaticamente ao padrão.</i></p>
+            <button class="btn-ton active" style="width:100%" onclick="closeHelp()">ENTENDI</button>
+        </div>
+    </div>
+
+    <script>
+        const tones = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        const ptNotes = ["dó", "ré", "mi", "fá", "sol", "lá", "si", "dó", "ré", "mi", "fá", "sol", "lá", "si"];
+        const degrees = ["I", "II", "III", "IV", "V", "VI", "VII"];
+        let userChoices = { "I": -1, "II": -1, "III": -1, "IV": -1, "V": -1, "VI": -1, "VII": -1 };
+
+        const chordsData = {
+            "I": { original: { name: "7M", keys: [0, 4, 7, 11] }, subs: [{ label: "Relativo", name: "m7", keys: [9, 12, 16, 19] }, { label: "Anti-Rel", name: "m7", keys: [4, 7, 11, 14] }] },
+            "II": { original: { name: "m7", keys: [2, 5, 9, 12] }, subs: [{ label: "Vizinhança", name: "7M", keys: [5, 9, 12, 16] }, { label: "Emprést.", name: "m7b5", keys: [2, 5, 8, 12] }] },
+            "III": { original: { name: "m7", keys: [4, 7, 11, 14] }, subs: [{ label: "Relativo", name: "7M", keys: [0, 4, 7, 11] }, { label: "Vizinhança", name: "m7", keys: [9, 12, 16, 19] }] },
+            "IV": { original: { name: "7M", keys: [5, 9, 12, 16] }, subs: [{ label: "Vizinhança", name: "m7", keys: [2, 5, 9, 12] }, { label: "Emprést.", name: "m6", keys: [5, 8, 12, 14] }] },
+            "V": { original: { name: "7", keys: [7, 11, 14, 17] }, subs: [{ label: "SubV7", name: "7", keys: [1, 5, 8, 11] }, { label: "Diminuto", name: "º", keys: [11, 14, 17, 20] }] },
+            "VI": { original: { name: "m7", keys: [9, 12, 16, 19] }, subs: [{ label: "Relativo", name: "7M", keys: [0, 4, 7, 11] }, { label: "Anti-Rel", name: "7M", keys: [5, 9, 12, 16] }] },
+            "VII": { original: { name: "m7b5", keys: [11, 14, 17, 21] }, subs: [{ label: "Dominante", name: "7", keys: [7, 11, 14, 17] }, { label: "SubV", name: "7", keys: [0, 4, 7, 10] }] }
+        };
+
+        let currentRootIndex = 0, isPlaying = false, isLooping = false, playInterval, currentStep = 0;
+        let audioCtx;
+
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playTone(freq) {
+            const ctx = getAudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.6);
+        }
+
+        function playChord(notes) {
+            notes.forEach((n, i) => setTimeout(() => playTone(130.81 * Math.pow(2, n / 12)), i * 30));
+        }
+
+        function init() {
+            const tg = document.getElementById('tonGrid');
+            tones.forEach((t, i) => {
+                const b = document.createElement('button');
+                b.className = 'btn-ton' + (i === 0 ? " active" : "");
+                b.innerText = t;
+                b.onclick = () => {
+                    document.querySelectorAll('.btn-ton').forEach(btn => btn.classList.remove('active'));
+                    b.classList.add('active');
+                    currentRootIndex = i;
+                    
+                    // RESET DE GRAUS: Volta tudo para original ao trocar tom
+                    degrees.forEach(d => userChoices[d] = -1);
+                    
+                    updateChordDisplays();
+                    drawPiano([]);
+                };
+                tg.appendChild(b);
+            });
+            buildDegreeGrid();
+            drawPiano([]);
+        }
+
+        function buildDegreeGrid() {
+            const dg = document.getElementById('degGrid');
+            dg.innerHTML = '';
+            degrees.forEach((d) => {
+                const box = document.createElement('div');
+                box.className = 'degree-box';
+                box.id = `box-${d}`;
+                box.innerHTML = `
+                    <span class="deg-tag">${d}</span>
+                    <span class="chord-display" id="chord-${d}">---</span>
+                    <div class="sub-menu" id="menu-${d}">
+                        <button class="sub-btn" id="sub-${d}-orig" onclick="apply('${d}', -1)">Original</button>
+                        <button class="sub-btn" id="sub-${d}-0" onclick="apply('${d}', 0)">${chordsData[d].subs[0].label}</button>
+                        <button class="sub-btn" id="sub-${d}-1" onclick="apply('${d}', 1)">${chordsData[d].subs[1].label}</button>
+                    </div>`;
+                box.onclick = (e) => {
+                    if(e.target.tagName !== 'BUTTON') {
+                        document.querySelectorAll('.sub-menu').forEach(m => m.style.display = 'none');
+                        document.getElementById(`menu-${d}`).style.display = 'flex';
+                    }
+                };
+                dg.appendChild(box);
+            });
+            updateChordDisplays();
+        }
+
+        function updateChordDisplays() {
+            degrees.forEach(d => {
+                const disp = document.getElementById(`chord-${d}`);
+                const optIdx = userChoices[d];
+                const info = (optIdx === -1) ? chordsData[d].original : chordsData[d].subs[optIdx];
+                disp.innerText = tones[(currentRootIndex + info.keys[0]) % 12] + info.name;
+
+                // Atualiza destaque no menu de substituição
+                document.querySelectorAll(`#menu-${d} .sub-btn`).forEach(b => b.classList.remove('selected'));
+                if(optIdx === -1) document.getElementById(`sub-${d}-orig`).classList.add('selected');
+                else document.getElementById(`sub-${d}-${optIdx}`).classList.add('selected');
+            });
+        }
+
+        function getProcessedKeys(keys) {
+            let tempKeys = keys.map(k => k + currentRootIndex);
+            let root = tempKeys[0];
+            let max = Math.max(...tempKeys);
+            let shift = (root > 12 || max > 23) ? -12 : 0;
+            return tempKeys.map(k => k + shift);
+        }
+
+        function apply(d, optIdx) {
+            userChoices[d] = optIdx;
+            updateChordDisplays();
+            const keys = (optIdx === -1) ? chordsData[d].original.keys : chordsData[d].subs[optIdx].keys;
+            const finalKeys = getProcessedKeys(keys);
+            drawPiano(finalKeys);
+            playChord(finalKeys);
+            document.getElementById(`menu-${d}`).style.display = 'none';
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const icon = document.getElementById('playIcon');
+            if (isPlaying) {
+                icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                const runStep = () => {
+                    if (!isPlaying) return;
+                    document.querySelectorAll('.degree-box').forEach(b => b.classList.remove('playing'));
+                    const d = degrees[currentStep];
+                    document.getElementById(`box-${d}`).classList.add('playing');
+
+                    const optIdx = userChoices[d];
+                    const keys = (optIdx === -1) ? chordsData[d].original.keys : chordsData[d].subs[optIdx].keys;
+                    const finalKeys = getProcessedKeys(keys);
+
+                    playChord(finalKeys);
+                    drawPiano(finalKeys);
+
+                    currentStep = (currentStep + 1) % degrees.length;
+                    if (currentStep === 0 && !isLooping) {
+                        setTimeout(() => { if(isPlaying) togglePlay(); }, (60 / document.querySelector('.bpm-selector').value) * 1000);
+                    }
+                };
+                runStep();
+                playInterval = setInterval(runStep, (60 / document.querySelector('.bpm-selector').value) * 1000);
+            } else {
+                icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+                clearInterval(playInterval);
+                currentStep = 0;
+                document.querySelectorAll('.degree-box').forEach(b => b.classList.remove('playing'));
+                drawPiano([]);
+            }
+        }
+
+        function toggleLoop() { isLooping = !isLooping; document.getElementById('loopBtn').classList.toggle('active'); }
+
+        function drawPiano(act = []) {
+            const p = document.getElementById('piano');
+            const l = document.getElementById('pianoLabels');
+            p.innerHTML = ''; l.innerHTML = '';
+            const whites = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
+            whites.forEach((n, i) => {
+                const k = document.createElement('div');
+                k.className = 'kw' + (act.includes(n) ? ' active' : '');
+                p.appendChild(k);
+                const lbl = document.createElement('div');
+                lbl.className = 'note-lbl';
+                lbl.innerText = ptNotes[i] || "";
+                l.appendChild(lbl);
+            });
+            const blacks = [{n:1,x:4.8},{n:3,x:12},{n:6,x:26.2},{n:8,x:33.4},{n:10,x:40.5},{n:13,x:54.8},{n:15,x:62},{n:18,x:76.2},{n:20,x:83.4},{n:22,x:90.5}];
+            blacks.forEach(b => {
+                const k = document.createElement('div');
+                k.className = 'kb' + (act.includes(b.n) ? ' active' : '');
+                k.style.left = b.x + '%';
+                p.appendChild(k);
+            });
+        }
+
+        function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
+        function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-14023770857"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-14023770857');
+    </script>
+    <title>Doze Teclas | Equipamentos</title>
+    <style>
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --text-muted: #b0b3b8;
+            --btn-buy: #28a745;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* Header fixo estilo App */
+        .header {
+            width: 100%; max-width: 800px;
+            padding: 15px;
+            display: flex; align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+            background: var(--bg-dark);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: bold; font-size: 14px; }
+
+        /* Container Principal Grid */
+        .offers-container {
+            width: 100%; max-width: 900px;
+            padding: 20px 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); /* Celular: 1 por linha */
+            gap: 20px;
+        }
+
+        /* Card Estilo Boletando */
+        .offer-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column; /* Padrão Mobile */
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid #3d444d;
+        }
+
+        /* Imagem do Produto */
+        .offer-image {
+            width: 100%; height: 220px;
+            background: #fff; /* Fundo branco para fotos de produto */
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative;
+        }
+
+        .offer-image img { max-width: 90%; max-height: 90%; object-fit: contain; }
+
+        /* Conteúdo do Card */
+        .offer-content { padding: 15px; display: flex; flex-direction: column; flex: 1; }
+
+        .offer-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: var(--text-white); line-height: 1.2; }
+        .offer-price { font-size: 22px; color: var(--primary); font-weight: 800; margin-bottom: 10px; }
+        .offer-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; flex-grow: 1; }
+
+        /* Botões */
+        .offer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .btn {
+            text-align: center; text-decoration: none; font-weight: bold;
+            padding: 12px 5px; border-radius: 6px; font-size: 13px;
+            text-transform: uppercase; transition: opacity 0.2s;
+        }
+
+        .btn-info { background: #444; color: #fff; }
+        .btn-buy { background: var(--btn-buy); color: #fff; }
+        .btn:hover { opacity: 0.8; }
+
+        /* --- DESKTOP VIEW --- */
+        @media (min-width: 768px) {
+            .offer-card {
+                flex-direction: row; /* Fica horizontal no PC */
+                height: 200px;
+            }
+            .offer-image { width: 200px; height: 200px; flex-shrink: 0; }
+            .offer-content { padding: 20px; }
+            .offer-actions { width: 280px; align-self: center; margin-left: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Equipamentos</span>
+    </div>
+
+    <div class="offers-container">
+
+        <div class="offer-card">
+            <div class="offer-image" onclick="window.location.href='review-kz.html'">
+                <img src="https://m.media-amazon.com/images/I/61NlUoQGZEL._AC_SL1500_.jpg" alt="Fone KZ EDX Pro">
+            </div>
+            <div class="offer-content">
+                <div class="offer-title">Fone In-Ear KZ EDX Pro</div>
+                <div class="offer-price">R$ 79,90</div>
+                <div class="offer-desc">O melhor custo-benefício para retorno de palco. Drivers dinâmicos de alta fidelidade para músicos.</div>
+                <div class="offer-actions">
+                    <a href="detalhes-produto.html" class="btn btn-info">Ver Análise</a>
+                    <a href="#" target="_blank" class="btn btn-buy">Ir para Loja</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="offer-card">
+            <div class="offer-image" onclick="window.location.href='review-teclado.html'">
+                <img src="https://m.media-amazon.com/images/I/61p-k8ZJtLL._AC_SL1500_.jpg" alt="Controlador MIDI">
+            </div>
+            <div class="offer-content">
+                <div class="offer-title">Controlador MIDI Worlde Panda</div>
+                <div class="offer-price">R$ 450,00</div>
+                <div class="offer-desc">Compacto e versátil. Ideal para controlar VSTs e Ableton Live no seu setup de palco.</div>
+                <div class="offer-actions">
+                    <a href="review-teclado.html" class="btn btn-info">Ver Análise</a>
+                    <a href="#" target="_blank" class="btn btn-buy">Ir para Loja</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
