@@ -8,10 +8,8 @@
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'G-08QR6T5GD9');
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doze Teclas | Sobre</title>
     <style>
         :root {
@@ -19,25 +17,26 @@
             --bg-dark: #1E2227;
             --card-bg: #2a2f36;
             --text-white: #ffffff;
+            --text-muted: #ccc;
             --kb-black: #121417;
         }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-white);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             margin: 0; 
-            padding: 20px 15px; /* Padding lateral para o card não tocar a borda da tela */
+            padding: 40px 15px;
             display: flex; 
             flex-direction: column; 
             align-items: center;
             min-height: 100vh;
         }
 
-        /* CABEÇALHO PADRONIZADO */
+        /* CABEÇALHO */
         .header { 
             width: 100%; 
-            max-width: 400px; 
+            max-width: 700px; /* Aumentado para acompanhar o card */
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
@@ -49,129 +48,110 @@
             text-decoration: none; 
             font-weight: bold; 
             font-size: 14px; 
+            transition: opacity 0.3s;
         }
+        .back-btn:hover { opacity: 0.7; }
 
-        /* CARD ELEGANTE (Mesmo estilo dos módulos) */
+        /* CARD RESPONSIVO */
         .about-card {
             background-color: var(--card-bg);
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 24px;
+            padding: 40px;
             width: 100%;
-            max-width: 400px; /* Largura controlada */
+            max-width: 700px; /* Melhor largura para desktop */
             box-sizing: border-box;
             border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            text-align: center;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.5);
         }
 
-        .label { 
-            font-size: 10px; 
-            color: var(--primary); 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            margin-bottom: 15px; 
-            display: block; 
-            opacity: 0.8; 
-            letter-spacing: 1px;
-        }
-
-        h2 { 
-            color: #FFF; 
-            text-transform: uppercase; 
-            font-weight: 800;
-            letter-spacing: 1px; 
-            margin: 0 0 15px 0; 
-            font-size: 20px; 
-        }
-
-        p { 
-            line-height: 1.6; 
-            color: #ccc; 
-            font-size: 15px; 
-            margin-bottom: 25px; 
-            text-align: center; /* Centralizado combina melhor com card pequeno */
-        }
-
-        /* SEÇÃO DE CONTATOS */
-        .contact-section {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .contact-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            color: var(--text-white);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            background: var(--kb-black);
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #444;
-            transition: all 0.3s ease;
-        }
-
-        .contact-link:active {
-            transform: scale(0.98);
-            background: #222;
-        }
-
-        .icon { 
-            width: 18px; 
-            height: 18px;
-            fill: var(--primary); 
-        }
-
-        /* Estilo do Header Interno do Card */
+        /* LOGO E TÍTULO */
         .brand-header-card {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
-        /* Tamanho do ícone */
         .brand-icon {
-            width: 50px;
-            height: 50px;
-            color: var(--primary);
+            width: 80px;
+            height: 80px;
         }
 
         .brand-name {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 900;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             color: var(--primary);
             text-transform: uppercase;
+            text-align: center;
         }
 
-        /* Ajuste sutil no label para não brigar com o nome da marca */
-        .about-card .label {
-            margin-bottom: 10px;
-            letter-spacing: 2px;
+        /* CONTEÚDO TEXTUAL */
+        .h3 {
+            color: var(--primary);
+            margin: 40px 0 15px 0;
+            text-transform: uppercase;
+            text-align: left;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        /* .h3::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 197, 2, 0.2);
+        } */
+
+        .texto-corrido {
+            line-height: 1.8;
+            color: var(--text-muted);
+            font-size: 16px;
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+
+        .destaque {
+            color: #FFF;
+            font-weight: 600;
+        }
+
+        /* FOOTER DO CARD */
+        .footer-quote {
+            font-style: italic; 
+            color: var(--primary); 
+            font-size: 14px; 
+            text-align: center; 
+            margin-top: 50px; 
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            opacity: 0.8;
+        }
+
+        /* AJUSTES MOBILE */
+        @media (max-width: 600px) {
+            .about-card { padding: 25px; }
+            .brand-name { font-size: 20px; }
+            .texto-corrido { text-align: left; font-size: 15px; }
+            body { padding: 20px 15px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <a href="index.html" class="back-btn">← VOLTAR</a>
-        <span style="font-weight: 800; font-size: 14px; text-transform: uppercase;">SOBRE</span>
+        <span style="font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6;">SOBRE O PROJETO</span>
     </div>
 
-<div class="about-card">
-    <div class="brand-header-card">
-        <div class="brand-icon">
+    <div class="about-card">
+        <div class="brand-header-card">
+                    <div class="brand-icon">
         <svg version="1.1" id="Camada_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
             viewBox="0 0 800 800" style="enable-background:new 0 0 800 800;" xml:space="preserve">
         <style type="text/css">
@@ -205,38 +185,38 @@
         </g>
         </svg>
         </div>
-        <span class="brand-name">DOZE TECLAS</span>
-    </div>
-        
-    <p style="line-height: 1.8; color: var(--text-muted); font-size: 15px; text-align:justify">
-        Meu nome é Sandro, sou católico, músico, publicitário e entusiasta de tecnologia, programação (embora não seja programador) e inteligência artificial.
-    </p>
-
-    <p style="line-height: 1.8; color: var(--text-muted); font-size: 15px; text-align:justify">
-        No <b>Doze Teclas</b>, aplico os princípios de design para desenvolver interfaces interativas. Meu objetivo é criar ferramentas, que simplificam o estudo e aprendizado musical.
-    </p>
-    <h3 style="color: var(--primary); margin-bottom: 20px; text-transform: uppercase; text-align: center;">Por quê Doze Teclas?</h3>
-    <p style="line-height: 1.8; color: var(--text-muted); font-size: 15px; text-align:justify">
-        Certa vez, o produtor Quincy Jones disse que, independentemente do estilo, toda a música ocidental se resume a apenas 12 notas. Inspirado por essa síntese, criei o Doze Teclas para ser o ponto de encontro entre a tecnologia e o teclado, provando que o domínio da música começa na compreensão profunda desses doze tons fundamentais.
-    </p>
-
-        <div class="contact-section">
-            <span class="label">CONTATO</span>
-            
-            <a href="https://instagram.com/dozeteclas" target="_blank" class="contact-link">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849s-.011 3.584-.069 4.849c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.849-.07c-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849s.012-3.584.07-4.849c.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.058-1.689-.072-4.948-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                instagram
-            </a>
-            
-            <a href="mailto:dozeteclas@gmail.com" class="contact-link">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm21.518 2l-9.518 7.713-9.518-7.713h19.036zm-19.518 14v-11.817l10 8.104 10-8.104v11.817h-20z"/></svg>
-                e-mail
-            </a>
+            <!-- <span class="brand-name">Doze Teclas</span> -->
         </div>
 
-        <p style="font-style: italic; color: var(--primary); font-size: 12px; text-align: center; margin: 20px 0; line-height: 1.2;">
-        "Mais tempo criando música que emociona."
+        <div class="h3">O abismo entre<br>o papel e a tecla</div>
+        <p class="texto-corrido">
+            Para quem vive da música — seja em cerimônias de casamento, missas, cultos ou palcos de eventos — o tempo é um luxo. Muitas vezes, nos vemos presos a cifras estáticas ou tabelas de intervalos que parecem fazer sentido no papel, mas travam a nossa fluidez no momento da execução. Eu mesmo já senti a necessidade de algo que não fosse apenas uma consulta, mas um suporte visual imediato.
+            <br><br>
+            A música não deveria ser sobre <span class="destaque">"fazer conta"</span> enquanto se toca; deveria ser sobre entender o caminho e percorrê-lo com naturalidade.
         </p>
+
+        <div class="h3">O Laboratório<br>de Bolso</div>
+        <p class="texto-corrido">
+            O Doze Teclas nasceu dessa necessidade de aproximar a teoria da prática de forma visual e interativa. Ele é um laboratório projetado para o músico que busca entender a harmonia de forma orgânica.
+            <br><br>
+            Aqui, o Ciclo de Quartas não é um desenho parado na parede — é uma ferramenta de exploração. O Campo Harmônico e o Teclado Virtual são guias para que seu ouvido e seus dedos falem a mesma língua. O objetivo é dar ao músico a <span class="destaque">autonomia</span> para identificar um quarto grau, montar uma abertura quartal ou transpor uma tonalidade sem precisar parar para pensar.
+        </p>
+
+        <div class="h3">Por que<br>Doze Teclas?</div>
+        <p class="texto-corrido">
+            O nome carrega uma curiosidade sobre a essência do nosso sistema musical. Embora o teclado do piano pareça vasto, toda a harmonia ocidental que conhecemos — do Barroco ao Jazz — é construída sobre apenas <span class="destaque">doze notas únicas</span>.
+            <br><br>
+            São doze teclas que se repetem, criando infinitas possibilidades. O projeto foca no domínio dessas doze fundações. Se você entende o que acontece dentro desse ciclo, você domina o instrumento por completo.
+        </p>
+
+        <div class="h3">Quem constrói<br>o Doze Teclas</div>
+        <p class="texto-corrido">
+            Meu nome é Sandro, sou músico profissional há mais de 3 anos no mercado de eventos e publicitário por formação, sou católico e também toco em missas e encontros na Igreja. O Doze Teclas é a união da minha paixão pela música com a busca constante por ferramentas que facilitem o estudo técnico e a performance ao vivo. Este é um ambiente feito de músico para músico, onde a teoria serve à arte.
+        </p>
+
+        <div class="footer-quote">
+            "Mais tempo criando música que emociona."
+        </div>
     </div>
 
 </body>
