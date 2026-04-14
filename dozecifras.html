@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Doze Cifras | Performance</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --primary: #FFC502; --bg: #121417; --panel: #1E2227; --text: #e0e0e0; --accent: #777; }
+        * { box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
+
+        .header-main { position: fixed; top: 0; width: 100%; background: var(--panel); z-index: 1000; border-bottom: 1px solid #333; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
+        .brand { color: var(--primary); font-weight: bold; font-size: 16px; letter-spacing: 1px; }
+        .header-tools { background: #16191d; border-top: 1px solid #222; padding: 8px 15px; overflow-x: auto; }
+        .tools-wrapper { display: flex; gap: 8px; max-width: 1200px; margin: 0 auto; }
+        .btn-tool { background: #2c313a; border: 1px solid #444; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; flex-shrink: 0; }
+
+        .main-content { margin-top: 130px; padding: 15px; max-width: 850px; margin-left: auto; margin-right: auto; min-height: 100vh; }
+        #view-title { margin: 0; font-family: 'JetBrains Mono'; font-size: 26px; color: var(--primary); }
+        .artist-link { color: var(--accent); text-decoration: underline; cursor: pointer; font-size: 14px; font-weight: bold; display: inline-block; margin: 5px 0; }
+        
+        #preview-container { display: none; margin: 15px 0; background: #000; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--primary); position: relative; }
+        .yt-fallback { position: absolute; bottom: 10px; right: 10px; z-index: 5; background: rgba(0,0,0,0.8); padding: 5px 10px; border-radius: 4px; font-size: 10px; color: white; text-decoration: none; border: 1px solid #444; }
+
+        .current-tone-badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: inline-block; margin-top: 10px; }
+        #tone-popup {
+            display: none; position: absolute; background: var(--panel); border: 2px solid var(--primary);
+            border-radius: 12px; padding: 12px; z-index: 2000; grid-template-columns: repeat(4, 1fr); gap: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 5px;
+        }
+        .tone-btn { background: #2c313a; color: white; padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .tone-btn.active { background: var(--primary); color: #000; }
+
+        #cifra-render { font-family: 'JetBrains Mono', monospace; white-space: pre; line-height: 1.1; font-size: 16px; margin-top: 25px; }
+        .c-line { min-height: 1em; }
+        .c-chord { color: var(--primary); font-weight: bold; }
+        .section-label { color: #000; background: var(--primary); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; margin: 15px 0 5px 0; font-family: sans-serif; }
+        .c-comment { color: var(--accent); font-style: italic; font-size: 0.95em; }
+    </style>
+</head>
+<body>
+
+    <div class="header-main">
+        <div class="header-top">
+            <div class="brand">DOZE CIFRAS</div>
+            <div class="nav-group">
+                <button class="nav-arrow">◀</button>
+                <button class="nav-arrow">▶</button>
+                <div class="menu-sanduiche" style="color:var(--primary); cursor:pointer;">☰</div>
+            </div>
+        </div>
+        <div class="header-tools">
+            <div class="tools-wrapper">
+                <button class="btn-tool" onclick="changeZoom(-1)">A-</button>
+                <button class="btn-tool" onclick="resetZoom()">100%</button>
+                <button class="btn-tool" onclick="changeZoom(1)">A+</button>
+                <button class="btn-tool" onclick="toggleTxt()">TXT</button>
+                <button class="btn-tool" id="btn-preview" onclick="togglePreview()">📺 Play</button>
+                <button class="btn-tool" id="btn-acc" onclick="toggleAccidental()">#</button>
+                <button class="btn-tool" onclick="window.print()">🖨️</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1 id="view-title">...</h1>
+        <div class="artist-link" id="view-artist"></div>
+        <div id="view-meta" style="font-size: 11px; color: #555; font-weight: bold;"></div>
+        
+        <div id="preview-container">
+            <div id="yt-player"></div>
+            <a id="yt-external" href="#" target="_blank" class="yt-fallback">ABRIR NO YT ↗</a>
+        </div>
+
+        <div style="position: relative;">
+            <div class="current-tone-badge" id="tone-display" onclick="toggleTonePopup()">--</div>
+            <div id="tone-popup"></div>
+        </div>
+
+        <div id="cifra-render"></div>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        const SUPABASE_URL = "https://bzkqetttagpvfcayhovp.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6a3FldHR0YWdwdmZjYXlob3ZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMzE4NzIsImV4cCI6MjA5MTcwNzg3Mn0.WA15riHx0dE-KvxrrXwQhQfO7a-WXrPI7TwS9X6nNKk";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let musicaBase = null;
+        let tomAtualIdx = 0;
+        let useSharps = true;
+        let hideChords = false;
+        let player = null;
+        const escala = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+
+        // REGEX CORRIGIDA: Prioriza capturar tensões como (9), (b5) etc como parte do acorde
+        const chordRegex = /([A-G][b#]?(?:m|maj|M|dim|aug|sus|add|7|9|11|13|2|4|6|º|\([#b]?\d+\)|[#b]\d+)*(\/[A-G][b#]?)?)/g;
+
+        async function init() {
+            const id = new URLSearchParams(window.location.search).get('id');
+            if(!id) return;
+            const { data } = await _supabase.from('musicas').select('*').eq('id', id).single();
+            if(data) {
+                musicaBase = data;
+                const tomDb = data.tom.replace('#','s').replace('s','b').replace('C#','Db').replace('D#','Eb').replace('F#','Gb').replace('G#','Ab').replace('A#','Bb');
+                tomAtualIdx = escala.indexOf(tomDb);
+                setupTonePopup();
+                render();
+            }
+        }
+
+        function render() {
+            document.getElementById('view-title').innerText = musicaBase.titulo;
+            document.getElementById('view-artist').innerText = musicaBase.artista;
+            document.getElementById('view-meta').innerText = `BPM ${musicaBase.bpm || '--'} | TIMBRE: ${musicaBase.timbre || '--'}`;
+            document.getElementById('tone-display').innerText = formatNote(escala[tomAtualIdx]);
+            
+            const tomOrigStr = musicaBase.tom.replace('C#','Db').replace('D#','Eb').replace('F#','Gb').replace('G#','Ab').replace('A#','Bb');
+            const diff = (tomAtualIdx - escala.indexOf(tomOrigStr) + 12) % 12;
+            
+            const lines = musicaBase.corpo_cifra.split('\n');
+            let html = "";
+
+            lines.forEach(line => {
+                let processed = line.replace(/\{.*?\}/g, '');
+                let trimmed = processed.trim();
+
+                if(trimmed.endsWith(':') && trimmed.length < 25) {
+                    html += `<div class="section-label">${trimmed.toUpperCase()}</div>\n`;
+                } 
+                else if(isChordLine(processed)) {
+                    if(hideChords) return;
+                    let trans = processed.replace(chordRegex, m => `<span class="c-chord">${transpose(m, diff)}</span>`);
+                    html += `<div class="c-line">${trans}</div>`;
+                }
+                else if(trimmed.startsWith('(') && trimmed.endsWith(')')) {
+                    html += `<div class="c-line c-comment">${processed}</div>`;
+                }
+                else {
+                    html += `<div class="c-line">${processed}</div>`;
+                }
+            });
+            document.getElementById('cifra-render').innerHTML = html;
+        }
+
+        function togglePreview() {
+            const container = document.getElementById('preview-container');
+            const btn = document.getElementById('btn-preview');
+            const url = musicaBase.link_referencia;
+            if (!url) return alert("Sem link cadastrado.");
+
+            const isVisible = container.style.display === 'block';
+            if (!isVisible) {
+                container.style.display = 'block';
+                btn.style.background = 'var(--primary)';
+                btn.style.color = '#000';
+                
+                const vId = extractId(url);
+                document.getElementById('yt-external').href = `https://youtube.com/watch?v=${vId}`;
+
+                if (player) {
+                    player.loadVideoById(vId);
+                } else {
+                    player = new YT.Player('yt-player', {
+                        videoId: vId,
+                        playerVars: { 'playsinline': 1, 'origin': window.location.origin }
+                    });
+                }
+            } else {
+                container.style.display = 'none';
+                if (player) player.stopVideo();
+                btn.style.background = '#2c313a';
+                btn.style.color = 'white';
+            }
+        }
+
+        function extractId(url) {
+            let id = "";
+            if (url.includes('v=')) id = url.split('v=')[1].split('&')[0];
+            else if (url.includes('youtu.be/')) id = url.split('youtu.be/')[1].split('?')[0];
+            else if (url.includes('shorts/')) id = url.split('shorts/')[1].split('?')[0];
+            return id;
+        }
+
+        function isChordLine(line) {
+            const tokens = line.trim().split(/\s+/).filter(t => t.length > 0);
+            if(!tokens.length) return false;
+            const matches = tokens.filter(t => /^[A-G]/.test(t) || ['|','%','-','/','º'].includes(t[0]));
+            return (matches.length / tokens.length) > 0.35;
+        }
+
+        function transpose(chord, semitones) {
+            return chord.replace(/[A-G][b#]?/g, n => {
+                let note = n.replace('C#','Db').replace('D#','Eb').replace('F#','Gb').replace('G#','Ab').replace('A#','Bb');
+                let idx = (escala.indexOf(note) + semitones) % 12;
+                return formatNote(escala[idx]);
+            });
+        }
+
+        function formatNote(n) {
+            if(!useSharps) return n;
+            const map = {"Db":"C#","Eb":"D#","Gb":"F#","Ab":"G#","Bb":"A#"};
+            return map[n] || n;
+        }
+
+        function setupTonePopup() {
+            const container = document.getElementById('tone-popup');
+            container.innerHTML = "";
+            escala.forEach((t, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'tone-btn' + (i === tomAtualIdx ? ' active' : '');
+                btn.innerText = formatNote(t);
+                btn.onclick = () => { tomAtualIdx = i; render(); toggleTonePopup(); };
+                container.appendChild(btn);
+            });
+        }
+
+        function toggleTonePopup() { const p = document.getElementById('tone-popup'); p.style.display = p.style.display === 'grid' ? 'none' : 'grid'; }
+        function changeZoom(v) { 
+            const el = document.getElementById('cifra-render');
+            const cur = parseInt(window.getComputedStyle(el).fontSize);
+            el.style.fontSize = (cur + v) + "px";
+        }
+        function resetZoom() { document.getElementById('cifra-render').style.fontSize = "16px"; }
+        function toggleTxt() { hideChords = !hideChords; render(); }
+        function toggleAccidental() { 
+            useSharps = !useSharps; 
+            document.getElementById('btn-acc').innerText = useSharps ? '#' : 'b';
+            render(); 
+        }
+
+        init();
+    </script>
+</body>
+</html>
