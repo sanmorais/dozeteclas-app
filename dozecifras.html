@@ -104,17 +104,50 @@
         // Regex que preserva tensões em parênteses como parte do acorde
         const chordRegex = /([A-G][b#]?(?:m|maj|M|dim|aug|sus|add|7|9|11|13|2|4|6|º|\([#b]?\d+\)|[#b]\d+)*(\/[A-G][b#]?)?)/g;
 
+        // Garante que o Supabase só seja chamado quando a lib estiver carregada
+        window.onload = () => {
+            init();
+        };
+
         async function init() {
-            const id = new URLSearchParams(window.location.search).get('id');
-            if(!id) return;
-            const { data, error } = await _supabase.from('musicas').select('*').eq('id', id).single();
-            if(data) {
-                musicaBase = data;
-                const tomDb = data.tom.replace('#','s').replace('s','b').replace('C#','Db').replace('D#','Eb').replace('F#','Gb').replace('G#','Ab').replace('A#','Bb');
-                tomAtualIdx = escala.indexOf(tomDb);
-                if(tomAtualIdx === -1) tomAtualIdx = 0;
-                setupTonePopup();
-                render();
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const id = urlParams.get('id');
+                
+                console.log("Tentando carregar ID:", id);
+                
+                if(!id) {
+                    document.getElementById('view-title').innerText = "ID ausente na URL";
+                    return;
+                }
+
+                // Forçamos o header de schema para evitar o erro 406 em alguns ambientes de hospedagem
+                const { data, error } = await _supabase
+                    .from('musicas')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+                
+                if (error) {
+                    console.error("Erro Supabase Detalhado:", error);
+                    document.getElementById('view-title').innerText = "Erro: " + error.message;
+                    return;
+                }
+
+                if(data) {
+                    musicaBase = data;
+                    // Lógica de Tom
+                    const tomDb = data.tom.replace('#','s').replace('s','b').replace('C#','Db').replace('D#','Eb').replace('F#','Gb').replace('G#','Ab').replace('A#','Bb');
+                    tomAtualIdx = escala.indexOf(tomDb);
+                    if(tomAtualIdx === -1) tomAtualIdx = 0;
+                    
+                    setupTonePopup();
+                    render();
+                    console.log("Cifra renderizada com sucesso.");
+                }
+            } catch (err) {
+                console.error("Erro inesperado:", err);
+                document.getElementById('view-title').innerText = "Falha na conexão.";
             }
         }
 
