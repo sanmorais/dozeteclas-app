@@ -7,13 +7,16 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #FFC502; --bg: #121417; --panel: #1E2227; --text: #e0e0e0; --accent: #777; }
+        :root { --primary: #FFC502; --bg: #121417; --panel: #1E2227; --text: #e0e0e0; --accent: #777; --kb-black: #121417; }
         * { box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
 
         .header-main { position: fixed; top: 0; width: 100%; background: var(--panel); z-index: 1000; border-bottom: 1px solid #333; }
         .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
-        .brand { color: var(--primary); font-weight: bold; font-size: 16px; letter-spacing: 1px; }
+        .brand { color: var(--primary); font-weight: bold; font-size: 16px; }
+        .nav-group { display: flex; align-items: center; gap: 15px; }
+        .nav-arrow { color: var(--primary); background: none; border: none; cursor: pointer; font-size: 16px; }
+
         .header-tools { background: #16191d; border-top: 1px solid #222; padding: 8px 15px; overflow-x: auto; }
         .tools-wrapper { display: flex; gap: 8px; max-width: 1200px; margin: 0 auto; }
         .btn-tool { background: #2c313a; border: 1px solid #444; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; flex-shrink: 0; }
@@ -21,24 +24,25 @@
         .main-content { margin-top: 130px; padding: 15px; max-width: 850px; margin-left: auto; margin-right: auto; min-height: 100vh; }
         #view-title { margin: 0; font-family: 'JetBrains Mono'; font-size: 26px; color: var(--primary); }
         .artist-link { color: var(--accent); text-decoration: underline; cursor: pointer; font-size: 14px; font-weight: bold; display: inline-block; margin: 5px 0; }
+        .meta-line { font-size: 11px; color: #555; text-transform: uppercase; font-weight: bold; }
         
+        /* YT PLAYER */
         #preview-container { display: none; margin: 15px 0; background: #000; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--primary); position: relative; }
-        .yt-fallback { position: absolute; bottom: 10px; right: 10px; z-index: 5; background: rgba(0,0,0,0.8); padding: 5px 10px; border-radius: 4px; font-size: 10px; color: white; text-decoration: none; border: 1px solid #444; }
 
-        .current-tone-badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: inline-block; margin-top: 10px; }
+        .current-tone-badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: inline-block; }
         #tone-popup {
-            display: none; position: absolute; background: var(--panel); border: 2px solid var(--primary);
+            display: none; position: absolute; background: var(--panel); border: 1px solid var(--primary);
             border-radius: 12px; padding: 12px; z-index: 2000; grid-template-columns: repeat(4, 1fr); gap: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 5px;
         }
         .tone-btn { background: #2c313a; color: white; padding: 10px; text-align: center; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .tone-btn.active { background: var(--primary); color: #000; }
 
-        #cifra-render { font-family: 'JetBrains Mono', monospace; white-space: pre; line-height: 1.1; font-size: 16px; margin-top: 25px; }
-        .c-line { min-height: 1em; }
+        #cifra-render { font-family: 'JetBrains Mono', monospace; white-space: pre; line-height: 1.2; font-size: 16px; margin-top: 25px; }
+        .c-line { min-height: 1.2em; }
         .c-chord { color: var(--primary); font-weight: bold; }
-        .section-label { color: #000; background: var(--primary); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; margin: 15px 0 5px 0; font-family: sans-serif; }
         .c-comment { color: var(--accent); font-style: italic; font-size: 0.95em; }
+        .section-label { color: #000; background: var(--primary); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; margin: 15px 0 5px 0; font-family: sans-serif; }
     </style>
 </head>
 <body>
@@ -66,17 +70,17 @@
     </div>
 
     <div class="main-content">
-        <h1 id="view-title">...</h1>
+        <h1 id="view-title">Carregando...</h1>
         <div class="artist-link" id="view-artist"></div>
-        <div id="view-meta" style="font-size: 11px; color: #555; font-weight: bold;"></div>
+        <div id="view-meta" class="meta-line"></div>
         
         <div id="preview-container">
             <div id="yt-player"></div>
-            <a id="yt-external" href="#" target="_blank" class="yt-fallback">ABRIR NO YT ↗</a>
         </div>
 
-        <div style="position: relative;">
-            <div class="current-tone-badge" id="tone-display" onclick="toggleTonePopup()">--</div>
+        <div style="margin-top: 15px; position: relative;">
+            <span style="color:var(--accent); font-weight: bold; font-size: 12px;">TOM:</span> 
+            <div class="current-tone-badge" id="current-tone-display" onclick="toggleTonePopup()">--</div>
             <div id="tone-popup"></div>
         </div>
 
@@ -93,31 +97,33 @@
         let musicaBase = null;
         let tomAtualIdx = 0;
         let useSharps = true;
-        let hideChords = false;
+        let onlyText = false;
         let player = null;
         const escala = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
-        // REGEX CORRIGIDA: Prioriza capturar tensões como (9), (b5) etc como parte do acorde
+        // Regex que preserva tensões em parênteses como parte do acorde
         const chordRegex = /([A-G][b#]?(?:m|maj|M|dim|aug|sus|add|7|9|11|13|2|4|6|º|\([#b]?\d+\)|[#b]\d+)*(\/[A-G][b#]?)?)/g;
 
         async function init() {
             const id = new URLSearchParams(window.location.search).get('id');
             if(!id) return;
-            const { data } = await _supabase.from('musicas').select('*').eq('id', id).single();
+            const { data, error } = await _supabase.from('musicas').select('*').eq('id', id).single();
             if(data) {
                 musicaBase = data;
                 const tomDb = data.tom.replace('#','s').replace('s','b').replace('C#','Db').replace('D#','Eb').replace('F#','Gb').replace('G#','Ab').replace('A#','Bb');
                 tomAtualIdx = escala.indexOf(tomDb);
+                if(tomAtualIdx === -1) tomAtualIdx = 0;
                 setupTonePopup();
                 render();
             }
         }
 
         function render() {
+            if(!musicaBase) return;
             document.getElementById('view-title').innerText = musicaBase.titulo;
             document.getElementById('view-artist').innerText = musicaBase.artista;
             document.getElementById('view-meta').innerText = `BPM ${musicaBase.bpm || '--'} | TIMBRE: ${musicaBase.timbre || '--'}`;
-            document.getElementById('tone-display').innerText = formatNote(escala[tomAtualIdx]);
+            document.getElementById('current-tone-display').innerText = formatNote(escala[tomAtualIdx]);
             
             const tomOrigStr = musicaBase.tom.replace('C#','Db').replace('D#','Eb').replace('F#','Gb').replace('G#','Ab').replace('A#','Bb');
             const diff = (tomAtualIdx - escala.indexOf(tomOrigStr) + 12) % 12;
@@ -133,7 +139,7 @@
                     html += `<div class="section-label">${trimmed.toUpperCase()}</div>\n`;
                 } 
                 else if(isChordLine(processed)) {
-                    if(hideChords) return;
+                    if(onlyText) return;
                     let trans = processed.replace(chordRegex, m => `<span class="c-chord">${transpose(m, diff)}</span>`);
                     html += `<div class="c-line">${trans}</div>`;
                 }
@@ -144,24 +150,24 @@
                     html += `<div class="c-line">${processed}</div>`;
                 }
             });
+
             document.getElementById('cifra-render').innerHTML = html;
         }
+
+        // --- YOUTUBE API ---
+        function onYouTubeIframeAPIReady() { console.log("YT API Ready"); }
 
         function togglePreview() {
             const container = document.getElementById('preview-container');
             const btn = document.getElementById('btn-preview');
-            const url = musicaBase.link_referencia;
-            if (!url) return alert("Sem link cadastrado.");
+            if (!musicaBase || !musicaBase.link_referencia) return alert("Sem link.");
 
             const isVisible = container.style.display === 'block';
             if (!isVisible) {
                 container.style.display = 'block';
                 btn.style.background = 'var(--primary)';
                 btn.style.color = '#000';
-                
-                const vId = extractId(url);
-                document.getElementById('yt-external').href = `https://youtube.com/watch?v=${vId}`;
-
+                const vId = extractId(musicaBase.link_referencia);
                 if (player) {
                     player.loadVideoById(vId);
                 } else {
@@ -186,6 +192,7 @@
             return id;
         }
 
+        // --- UTILITÁRIOS ---
         function isChordLine(line) {
             const tokens = line.trim().split(/\s+/).filter(t => t.length > 0);
             if(!tokens.length) return false;
@@ -219,14 +226,19 @@
             });
         }
 
-        function toggleTonePopup() { const p = document.getElementById('tone-popup'); p.style.display = p.style.display === 'grid' ? 'none' : 'grid'; }
-        function changeZoom(v) { 
+        function toggleTonePopup() { 
+            const p = document.getElementById('tone-popup');
+            p.style.display = p.style.display === 'grid' ? 'none' : 'grid'; 
+        }
+
+        function changeZoom(v) {
             const el = document.getElementById('cifra-render');
             const cur = parseInt(window.getComputedStyle(el).fontSize);
             el.style.fontSize = (cur + v) + "px";
         }
+
         function resetZoom() { document.getElementById('cifra-render').style.fontSize = "16px"; }
-        function toggleTxt() { hideChords = !hideChords; render(); }
+        function toggleTxt() { onlyText = !onlyText; render(); }
         function toggleAccidental() { 
             useSharps = !useSharps; 
             document.getElementById('btn-acc').innerText = useSharps ? '#' : 'b';
