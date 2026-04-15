@@ -7,16 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #FFC502; --bg: #121417; --panel: #1E2227; --text: #e0e0e0; --accent: #777; --kb-black: #121417; }
+        :root { --primary: #FFC502; --bg: #121417; --panel: #1E2227; --text: #e0e0e0; --accent: #777; }
         * { box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
 
         .header-main { position: fixed; top: 0; width: 100%; background: var(--panel); z-index: 1000; border-bottom: 1px solid #333; }
         .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
         .brand { color: var(--primary); font-weight: bold; font-size: 16px; }
-        .nav-group { display: flex; align-items: center; gap: 15px; }
-        .nav-arrow { color: var(--primary); background: none; border: none; cursor: pointer; font-size: 16px; }
-
         .header-tools { background: #16191d; border-top: 1px solid #222; padding: 8px 15px; overflow-x: auto; }
         .tools-wrapper { display: flex; gap: 8px; max-width: 1200px; margin: 0 auto; }
         .btn-tool { background: #2c313a; border: 1px solid #444; color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; flex-shrink: 0; }
@@ -24,10 +21,28 @@
         .main-content { margin-top: 130px; padding: 15px; max-width: 850px; margin-left: auto; margin-right: auto; min-height: 100vh; }
         #view-title { margin: 0; font-family: 'JetBrains Mono'; font-size: 26px; color: var(--primary); }
         .artist-link { color: var(--accent); text-decoration: underline; cursor: pointer; font-size: 14px; font-weight: bold; display: inline-block; margin: 5px 0; }
-        .meta-line { font-size: 11px; color: #555; text-transform: uppercase; font-weight: bold; }
         
-        /* YT PLAYER */
-        #preview-container { display: none; margin: 15px 0; background: #000; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; border: 1px solid var(--primary); position: relative; }
+        /* PLAYER CORRIGIDO */
+        #preview-container { 
+            display: none; 
+            margin: 15px 0; 
+            background: #000; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            aspect-ratio: 16/9; 
+            border: 1px solid var(--primary); 
+            position: relative; 
+            width: 100%;
+        }
+        /* Força o conteúdo da API a preencher o container */
+        #preview-container iframe, #yt-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            border: 0;
+        }
 
         .current-tone-badge { background: var(--primary); color: #000; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: inline-block; }
         #tone-popup {
@@ -39,10 +54,9 @@
         .tone-btn.active { background: var(--primary); color: #000; }
 
         #cifra-render { font-family: 'JetBrains Mono', monospace; white-space: pre; line-height: 1.2; font-size: 16px; margin-top: 25px; }
-        .c-line { min-height: 1.2em; }
         .c-chord { color: var(--primary); font-weight: bold; }
+        .section-label { color: #000; background: var(--primary); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; margin: 15px 0 5px 0; }
         .c-comment { color: var(--accent); font-style: italic; font-size: 0.95em; }
-        .section-label { color: #000; background: var(--primary); padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; margin: 15px 0 5px 0; font-family: sans-serif; }
     </style>
 </head>
 <body>
@@ -50,11 +64,7 @@
     <div class="header-main">
         <div class="header-top">
             <div class="brand">DOZE CIFRAS</div>
-            <div class="nav-group">
-                <button class="nav-arrow">◀</button>
-                <button class="nav-arrow">▶</button>
-                <div class="menu-sanduiche" style="color:var(--primary); cursor:pointer;">☰</div>
-            </div>
+            <div class="nav-group"><button class="btn-tool" onclick="window.history.back()">Voltar</button></div>
         </div>
         <div class="header-tools">
             <div class="tools-wrapper">
@@ -64,7 +74,6 @@
                 <button class="btn-tool" onclick="toggleTxt()">TXT</button>
                 <button class="btn-tool" id="btn-preview" onclick="togglePreview()">📺 Play</button>
                 <button class="btn-tool" id="btn-acc" onclick="toggleAccidental()">#</button>
-                <button class="btn-tool" onclick="window.print()">🖨️</button>
             </div>
         </div>
     </div>
@@ -72,14 +81,13 @@
     <div class="main-content">
         <h1 id="view-title">Carregando...</h1>
         <div class="artist-link" id="view-artist"></div>
-        <div id="view-meta" class="meta-line"></div>
+        <div id="view-meta" style="font-size: 11px; color: #555; font-weight: bold; text-transform: uppercase;"></div>
         
         <div id="preview-container">
             <div id="yt-player"></div>
         </div>
 
         <div style="margin-top: 15px; position: relative;">
-            <span style="color:var(--accent); font-weight: bold; font-size: 12px;">TOM:</span> 
             <div class="current-tone-badge" id="current-tone-display" onclick="toggleTonePopup()">--</div>
             <div id="tone-popup"></div>
         </div>
@@ -101,53 +109,30 @@
         let player = null;
         const escala = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
-        // Regex que preserva tensões em parênteses como parte do acorde
         const chordRegex = /([A-G][b#]?(?:m|maj|M|dim|aug|sus|add|7|9|11|13|2|4|6|º|\([#b]?\d+\)|[#b]\d+)*(\/[A-G][b#]?)?)/g;
-
-        // Garante que o Supabase só seja chamado quando a lib estiver carregada
-        window.onload = () => {
-            init();
-        };
 
         async function init() {
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const id = urlParams.get('id');
-                
-                console.log("Tentando carregar ID:", id);
-                
-                if(!id) {
-                    document.getElementById('view-title').innerText = "ID ausente na URL";
-                    return;
-                }
+                const id = new URLSearchParams(window.location.search).get('id');
+                if(!id) return document.getElementById('view-title').innerText = "ID não encontrado";
 
-                // Forçamos o header de schema para evitar o erro 406 em alguns ambientes de hospedagem
-                const { data, error } = await _supabase
-                    .from('musicas')
-                    .select('*')
-                    .eq('id', id)
-                    .single();
+                // Consulta resiliente sem .single() para evitar erro 406 em falhas de RLS
+                const { data, error } = await _supabase.from('musicas').select('*').eq('id', id);
                 
-                if (error) {
-                    console.error("Erro Supabase Detalhado:", error);
-                    document.getElementById('view-title').innerText = "Erro: " + error.message;
-                    return;
-                }
+                if (error) throw error;
 
-                if(data) {
-                    musicaBase = data;
-                    // Lógica de Tom
-                    const tomDb = data.tom.replace('#','s').replace('s','b').replace('C#','Db').replace('D#','Eb').replace('F#','Gb').replace('G#','Ab').replace('A#','Bb');
+                if(data && data.length > 0) {
+                    musicaBase = data[0];
+                    const tomDb = musicaBase.tom.replace('#','s').replace('s','b').replace('C#','Db').replace('D#','Eb').replace('F#','Gb').replace('G#','Ab').replace('A#','Bb');
                     tomAtualIdx = escala.indexOf(tomDb);
-                    if(tomAtualIdx === -1) tomAtualIdx = 0;
-                    
                     setupTonePopup();
                     render();
-                    console.log("Cifra renderizada com sucesso.");
+                } else {
+                    document.getElementById('view-title').innerText = "Cifra não encontrada.";
                 }
             } catch (err) {
-                console.error("Erro inesperado:", err);
-                document.getElementById('view-title').innerText = "Falha na conexão.";
+                console.error("Erro no carregamento:", err);
+                document.getElementById('view-title').innerText = "Erro na conexão.";
             }
         }
 
@@ -183,35 +168,39 @@
                     html += `<div class="c-line">${processed}</div>`;
                 }
             });
-
             document.getElementById('cifra-render').innerHTML = html;
         }
 
-        // --- YOUTUBE API ---
-        function onYouTubeIframeAPIReady() { console.log("YT API Ready"); }
+        function onYouTubeIframeAPIReady() { console.log("YT API Carregada"); }
 
         function togglePreview() {
             const container = document.getElementById('preview-container');
             const btn = document.getElementById('btn-preview');
-            if (!musicaBase || !musicaBase.link_referencia) return alert("Sem link.");
+            const url = musicaBase?.link_referencia;
+            if (!url) return alert("Sem link.");
 
             const isVisible = container.style.display === 'block';
             if (!isVisible) {
                 container.style.display = 'block';
                 btn.style.background = 'var(--primary)';
                 btn.style.color = '#000';
-                const vId = extractId(musicaBase.link_referencia);
-                if (player) {
+                const vId = extractId(url);
+                
+                if (player && typeof player.loadVideoById === 'function') {
                     player.loadVideoById(vId);
                 } else {
                     player = new YT.Player('yt-player', {
                         videoId: vId,
-                        playerVars: { 'playsinline': 1, 'origin': window.location.origin }
+                        playerVars: { 
+                            'playsinline': 1, 
+                            'origin': window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : window.location.origin,
+                            'rel': 0 
+                        }
                     });
                 }
             } else {
                 container.style.display = 'none';
-                if (player) player.stopVideo();
+                if (player && player.pauseVideo) player.pauseVideo();
                 btn.style.background = '#2c313a';
                 btn.style.color = 'white';
             }
@@ -225,7 +214,6 @@
             return id;
         }
 
-        // --- UTILITÁRIOS ---
         function isChordLine(line) {
             const tokens = line.trim().split(/\s+/).filter(t => t.length > 0);
             if(!tokens.length) return false;
@@ -269,7 +257,6 @@
             const cur = parseInt(window.getComputedStyle(el).fontSize);
             el.style.fontSize = (cur + v) + "px";
         }
-
         function resetZoom() { document.getElementById('cifra-render').style.fontSize = "16px"; }
         function toggleTxt() { onlyText = !onlyText; render(); }
         function toggleAccidental() { 
