@@ -1,0 +1,129 @@
+/* Estilos para a página de categorias por Artista */
+.portal-artista-page {
+    background-color: #121416; /* Fundo escuro premium */
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.artista-header-block {
+    text-align: center;
+    padding: 40px 20px 20px 20px;
+}
+
+.subtitle-label {
+    color: #ffd700; /* O dourado do Doze Teclas para destacar */
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+#nome-artista-titulo {
+    font-size: 2.5rem;
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.divider-line {
+    width: 60px;
+    height: 4px;
+    background-color: #ffd700;
+    margin: 15px auto 0 auto;
+    border-radius: 2px;
+}
+
+.grid-musicas-artista {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaçamento entre os cards */
+}
+
+/* Card de cada música do repertório */
+.card-musica-item {
+    background-color: #1a1d20;
+    border: 1px solid #2d3238;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between; /* Empurra um para cada lado */
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    gap: 15px; /* Garante que o título nunca encoste no botão */
+}
+
+.card-musica-item:hover {
+    background-color: #24292e;
+    border-color: #ffd700;
+    transform: translateY(-2px); /* Efeito sutil de flutuação */
+}
+
+.card-info {
+    flex: 1; /* Ocupa o máximo de espaço possível na esquerda */
+    min-width: 0; /* Evita que o flexbox estoure a largura da tela */
+}
+
+.card-action {
+    flex-shrink: 0; /* Impede que o botão seja esmagado por títulos grandes */
+    white-space: nowrap; /* Impede que o "VER CIFRA" vire duas linhas */
+    text-align: right;
+}
+
+.card-song-title {
+    margin: 0 0 5px 0;
+    font-size: 1.25rem;
+    color: #ffffff;
+    word-wrap: break-word; /* Permite a quebra de palavra se necessário */
+    white-space: normal;   /* Força o texto a quebrar linha em vez de empurrar o botão */
+}
+
+.card-song-meta {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #8b949e;
+}
+
+.card-song-meta span {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.btn-acessar-cifra {
+    color: #ffd700;
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+/* Placeholders e Mensagens */
+.loading-placeholder, .no-songs-box, .error-msg {
+    text-align: center;
+    padding: 40px;
+    color: #8b949e;
+    background-color: #1a1d20;
+    border-radius: 8px;
+    border: 1px dashed #2d3238;
+}
+
+/* Força o link de voltar a ignorar o roxo padrão do navegador */
+.btn-voltar, 
+.btn-voltar:visited {
+    color: #ffd700 !important; /* Mantém o dourado sempre */
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Efeito sutil quando o usuário passar o mouse por cima no computador */
+.btn-voltar:hover {
+    opacity: 0.8;
+    text-decoration: none;
+}

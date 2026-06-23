@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scripts/analytics.js"></script>
+    <title>Doze Teclas | Dicionário de Acordes</title>
+    <link rel="stylesheet" href="css/dicionario.css">
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; letter-spacing: 1px;">DICIONÁRIO</span>
+    </div>
+
+    <div class="module-card">
+        <div class="help-btn" id="btnHelp">?</div>
+
+        <span class="label">Nota Fundamental</span>
+        <div class="selector-grid" id="noteSelector" style="margin-bottom:15px;"></div>
+        
+        <span class="label">Tipo de Acorde</span>
+        <select id="chordType" class="chord-select">
+            <optgroup label="Tríades">
+                <option value="maj">Maior</option>
+                <option value="min">Menor</option>
+                <option value="sus2">Sus2</option>
+                <option value="sus4">Sus4</option>
+                <option value="dim">Diminuto</option>
+                <option value="aug">Aumentado</option>
+            </optgroup>
+            <optgroup label="Tétrades (7ª)">
+                <option value="maj7">Maj7</option>
+                <option value="7">Dominante (7)</option>
+                <option value="m7">m7</option>
+                <option value="m7b5">m7(b5)</option>
+                <option value="dim7">Diminuto (7dim)</option>
+            </optgroup>
+            <optgroup label="Variações e Adições">
+                <option value="maj6">Maior com 6ª</option>
+                <option value="min6">Menor com 6ª</option>
+                <option value="add9">add9</option>
+                <option value="madd9">m(add9)</option>
+            </optgroup>
+        </select>
+        <br>
+        <center>
+            <div class="chord-display-name" id="chordNameDisplay">C</div>
+            <div class="piano-container" id="pianoMain"></div>
+            <div class="chord-display-notes" id="chordNotesDisplay">C – E – G</div>
+        </center>
+    </div>
+
+    <div id="helpModal" class="modal-help">
+        <div class="modal-content">
+            <span class="close-modal" id="btnCloseHelp">&times;</span>
+            <h3>Como usar</h3>
+            <p>Dicionário de Acordes é o seu guia rápido para consulta de acordes e estudo.</p>
+            <ul>
+                <li>Escolha uma <b>nota fundamental</b> (a base do acorde).</li>
+                <li>Selecione o <b>tipo de acorde</b> (maior, menor, com sétima, etc.).</li>
+            </ul>
+        </div>
+    </div>
+    <div class="tip-card">
+        <span class="tip-title">DICAS</span>
+        <p class="tip-text">
+            Sabia que acordes surgem de 'pulos' na escala? Ao agrupar notas em intervalos de terça (como C-E-G), você cria a harmonia. A variação desses espaços define se o acorde soará alegre (Maior) ou melancólico (Menor).
+        </p>
+    </div>
+
+    <script type="module" src="scripts/dicionario.js"></script>
+</body>
+</html>

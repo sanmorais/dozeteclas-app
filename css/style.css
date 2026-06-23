@@ -1,0 +1,992 @@
+/* ==========================================================
+   style.css - Versão Unificada (Doze Teclas)
+   ========================================================== */
+
+/* 1. Estrutura Base e Reset */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+}
+
+:root { 
+    --primary: #FFC502; 
+    --bg: #121417; 
+    --panel: #1E2227; 
+    --text: #e0e0e0; 
+    --accent: #777; 
+}
+
+* { 
+    box-sizing: border-box; 
+}
+
+body { 
+    background: var(--bg); 
+    color: var(--text); 
+    font-family: 'Segoe UI', sans-serif; 
+    margin: 0; 
+    overflow-x: hidden; 
+}
+
+/* 2. Layout do Header Superior */
+.header-main { 
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    background: var(--panel); 
+    z-index: 1000; 
+    border-bottom: 1px solid #333; 
+}
+
+.header-top { 
+    padding: 10px 15px; 
+    display: flex; 
+    align-items: center; 
+}
+
+.brand-text {
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: -0.5px;
+    color: var(--primary);
+    text-transform: uppercase;
+}
+
+.logo-container { 
+    width: 30px; 
+    height: 30px; 
+}
+
+.logo-container svg { 
+    width: 100%; 
+    height: 100%; 
+}
+
+/* 3. Área de Conteúdo Principal */
+.content { 
+    margin-top: 70px; 
+    margin-bottom: 70px; 
+    padding: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.song-header {
+    margin-bottom: 25px;
+    border-left: 4px solid var(--primary);
+    padding-left: 15px;
+}
+
+.song-header h1 { 
+    margin: 0; 
+    font-size: 1.8rem; 
+    color: #fff; 
+}
+
+#view-artist { 
+    font-size: 1.1rem; 
+    color: var(--primary); 
+    margin-bottom: 10px; 
+}
+
+#view-meta {
+    color: #666; 
+    font-size: 0.8rem; 
+    font-weight: 400;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+
+/* 4. Controle de Tom e Popups */
+.tone-control-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+.tone-control-wrapper .label {
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.current-tone-badge {
+    background: #2c313a;
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    border: 1px solid #444;
+}
+
+#tone-popup {
+    display: none;
+    position: absolute;
+    top: 35px;
+    left: 0;
+    background: var(--panel);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid #444;
+    z-index: 2000;
+}
+
+.tone-btn {
+    background: #2c313a; 
+    color: white; 
+    padding: 8px; 
+    text-align: center; 
+    border-radius: 4px; 
+    cursor: pointer;
+}
+
+.tone-btn.active { 
+    background: var(--primary); 
+    color: #000; 
+}
+
+.btn-reset-tone { 
+    grid-column: span 4; 
+    border: 1px solid var(--primary); 
+    background: transparent; 
+    color: var(--primary); 
+    margin-top: 5px; 
+    padding: 5px; 
+    border-radius: 4px; 
+    cursor: pointer;
+}
+
+/* 5. Mecanismo de Renderização da Cifra */
+#cifra-render {
+    /* white-space: pre-wrap;  */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+/* Rótulos das Seções (Intro, Solo, Refrão) - UNIFICADO */
+.section-label {
+    display: inline-block;
+    background-color: var(--primary);
+    color: #000;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px !important;
+    padding: 2px 8px;
+    break-after: avoid;
+    break-after: avoid-column;
+    -webkit-column-break-after: avoid;
+}
+
+/* Linha de Cifra Base - UNIFICADO */
+#cifra-render .c-line {
+    font-family: 'JetBrains Mono', monospace !important;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    white-space: pre !important; 
+    display: block;
+    width: 100%;
+    letter-spacing: 0 !important;
+    font-variant-ligatures: none;
+    text-rendering: optimizeSpeed;
+    margin: 0 !important;
+    padding: 0 !important;
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
+    min-height: 1.2em; 
+}
+
+/* Acordes e Comentários */
+.c-chord { 
+    color: var(--primary); 
+    font-weight: bold; 
+    font-family: inherit !important; 
+    letter-spacing: 0;
+}
+
+.c-comment { 
+    color: var(--accent); 
+    font-style: italic; 
+    display: inline-block;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+}
+
+/* 6. Modos de Exibição de Cifra (Colunas e Texto Puro) */
+.two-columns {
+    display: block !important;
+    width: 100% !important;
+    column-count: 2 !important; 
+    column-gap: 40px;
+    column-rule: 1px solid #333;
+    column-fill: balance;
+    height: auto !important;
+    max-height: none !important;
+}
+
+/* --- AJUSTE CIRÚRGICO MODO TXT --- */
+
+/* 1. Esconde os acordes */
+.only-text-mode .c-chord {
+    display: none !important;
+}
+
+/* 2. Se a linha contiver acordes, mas NÃO contiver letras normais ou comentários, 
+      nós sumimos com ela por completo e removemos sua altura mínima */
+.only-text-mode .c-line:has(.c-chord):not(:has(.c-comment)) {
+    height: 0px !important;
+    min-height: 0px !important;
+    line-height: 0 !important;
+    font-size: 0px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* 3. Se a linha sobrou apenas com grades comuns de compasso (ex: | | |), colapsa também */
+.only-text-mode .c-line:empty {
+    display: none !important;
+    height: 0px !important;
+    min-height: 0px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 4. 💥 NOVO: Remove a linha em branco residual que fica grudada 
+      imediatamente após o rótulo de uma seção (Intro, Refrão, etc) */
+.only-text-mode .section-label + .c-line {
+    display: none !important;
+    height: 0px !important;
+    min-height: 0px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 0 !important;
+}
+
+/* Alinhamento de segurança para o print.css refletir o mesmo comportamento se impresso em TXT */
+@media print {
+    .only-text-mode .c-chord {
+        display: none !important;
+    }
+    .only-text-mode .c-line:has(.c-chord):not(:has(.c-comment)) {
+        display: none !important;
+        height: 0 !important;
+        min-height: 0 !important;
+    }
+}
+
+/* 7. Barra de Ferramentas / Rodapé Fixo */
+.header-tools { 
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #16191d; 
+    border-top: 1px solid #333; 
+    padding: 12px; 
+    z-index: 1000;
+}
+
+.tools-wrapper { 
+    display: flex; 
+    gap: 6px; 
+    justify-content: center; 
+}
+
+.btn-tool {
+    background: #2c313a;
+    border: 1px solid #444;
+    color: var(--text);
+    padding: 10px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.btn-tool:active {
+    transform: scale(0.92); 
+    background-color: #333; 
+    transition: transform 0.1s ease;
+}
+
+.btn-tool.active,
+#btn-columns.active,
+#btn-preview.active {
+    background-color: var(--primary) !important;
+    color: #000 !important;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(255, 197, 2, 0.4);
+}
+
+.original-btn {
+    background-color: #333 !important;
+    color: #ffc107 !important; 
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    border: 1px solid #444;
+}
+
+.original-btn:active {
+    background-color: #444 !important;
+}
+
+/* Responsive Hover */
+@media (hover: hover) {
+    .btn-tool:hover {
+        background-color: #2a2d31;
+    }
+}
+
+@media (max-width: 600px) {
+    .two-columns {
+        column-count: 1 !important;
+        column-rule: none !important;
+    }
+}
+
+/* 8. Componente de Player de Vídeo */
+#preview-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #333; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); 
+}
+
+#yt-player {
+    width: 100%;
+    height: 100%;
+}
+
+/* ==========================================
+   🔍 ESTILOS DA BUSCA DO PORTAL (DOZE TECLAS)
+   ========================================== */
+.portal-search-container {
+    margin-left: 5px;
+    position: relative;
+    width: 280px;
+}
+
+#input-busca-portal {
+    width: 100%;
+    padding: 7px 12px;
+    background: #1c1f24;
+    border: 1px solid #2a2d34;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+#input-busca-portal:focus {
+    border-color: #ffc502;
+    background: #22262c;
+}
+
+/* Painel Dropdown Flutuante de Resultados */
+#dropdown-busca-portal {
+    position: absolute;
+    top: 36px;
+    left: 0;
+    width: 100%;
+    background: #1c1f24;
+    border: 1px solid #2a2d34;
+    border-radius: 4px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.search-dropdown-hide {
+    display: none !important;
+}
+
+/* Itens individuais de resultado */
+.search-portal-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #2a2d34;
+    transition: background 0.15s ease;
+}
+
+.search-portal-item:last-child {
+    border-bottom: none;
+}
+
+.search-portal-item:hover {
+    background: #ffc502;
+}
+
+.search-portal-item:hover .spi-title {
+    color: #121417;
+}
+
+.search-portal-item:hover .spi-artist {
+    color: #333333;
+}
+
+.spi-title {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.spi-artist {
+    color: #8c8c8c;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.spi-no-results {
+    padding: 10px;
+    color: #8c8c8c;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* ==========================================
+   🏠 LANDING PAGE DE BOAS-VINDAS (CIFRA.HTML)
+   ========================================== */
+
+/* Estado de Vitrine: Quando ativado, esconde as partes vazias da cifra */
+.portal-vitrine-active .song-header,
+.portal-vitrine-active .tone-control-wrapper,
+.portal-vitrine-active .header-tools,
+.portal-vitrine-active #preview-container,
+.portal-vitrine-active .floating-actions {
+    display: none !important;
+}
+
+/* 🎯 O PULO DO GATO INVERSO:
+   Se a vitrine NÃO está ativa (ou seja, o usuário abriu uma cifra), esconde o footer! */
+body:not(.portal-vitrine-active) footer {
+    display: none !important;
+}
+
+/* Container Principal da Vitrine */
+.vitrine-wrapper {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 30px 15px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #ffffff;
+}
+
+/* Bloco de Cabeçalho / Mensagem Inicial */
+.vitrine-hero {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 35px;
+}
+
+.vitrine-hero .hero-emoji {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.vitrine-hero h2 {
+    color: #ffc502;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.5px;
+}
+
+.vitrine-hero p {
+    color: #a0a5b0;
+    font-size: 14.5px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0 10px;
+}
+
+/* Banner de Destaque (Card com Gradiente) */
+.vitrine-banner-destaque {
+    background: linear-gradient(135deg, #2a2d34 0%, #1c1f24 100%);
+    border-left: 4px solid #ffc502;
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 35px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.vitrine-banner-destaque .badge-tag {
+    font-size: 10px;
+    color: #ffc502;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.vitrine-banner-destaque .destaque-titulo {
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #ffffff;
+}
+
+.vitrine-banner-destaque .btn-destaque {
+    display: inline-block;
+    padding: 9px 20px;
+    background: #ffc502;
+    color: #121417;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.vitrine-banner-destaque .btn-destaque:hover {
+    background: #ffd233;
+    transform: translateY(-1px);
+}
+
+/* Seção de Categorias e Lista de Sugestões */
+.vitrine-secao-titulo {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.vitrine-grid-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+/* Card Padrão de Link/Categoria */
+.card-sugestao {
+    background: #1c1f24;
+    border: 1px solid #2a2d34;
+    border-radius: 6px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.card-sugestao:hover {
+    border-color: #404652;
+    background: #22262c;
+}
+
+.card-sugestao .cs-info .cs-titulo {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    transition: color 0.2s;
+}
+
+.card-sugestao:hover .cs-info .cs-titulo {
+    color: #ffc502;
+}
+
+.card-sugestao .cs-info .cs-desc {
+    font-size: 12px;
+    color: #6c727f;
+    margin-top: 3px;
+}
+
+.card-sugestao .cs-seta {
+    color: #ffc502;
+    font-size: 16px;
+    padding-left: 10px;
+}
+
+/* Card Desabilitado (Bloqueado) */
+.card-sugestao.disabled {
+    opacity: 0.5;
+    pointer-events: none; /* Impede o clique */
+}
+
+.badge-breve {
+    font-size: 11px;
+    background: #2a2d34;
+    color: #a0a5b0;
+    padding: 3px 7px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/* Container de Rodapé da Vitrine */
+.vitrine-footer {
+    text-align: center;
+    border-top: 1px solid #2a2d34; /* Sua linha divisória atual */
+    padding-top: 30px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Espaço perfeito entre o texto e o botão */
+}
+
+/* Texto de Chamada */
+.footer-prompt {
+    color: #a0a5b0 !important; /* Tom cinza claro mais visível */
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Botão de Pedidos Destacado */
+.btn-fazer-pedido {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 280px; /* Tamanho idêntico à sua barra de buscas para manter simetria */
+    padding: 12px 20px;
+    background: transparent;
+    color: var(--primary); /* Seu amarelo padrão */
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+/* Interação sutil de destaque */
+.btn-fazer-pedido:hover,
+.btn-fazer-pedido:active {
+    background: var(--primary);
+    color: #121417; /* Inverte a cor para o fundo escuro do app */
+    box-shadow: 0 4px 15px rgba(255, 197, 2, 0.2);
+    transform: translateY(-1px);
+}
+
+.links {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9.rem;
+    letter-spacing: 0.5px;
+}
+
+.links:hover {
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.links:active {
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.prova-social-contador {
+    color: #8b949e; /* Cinza elegante de suporte */
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 10px; /* Ajuste para colar no título de cima */
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+#total-cifras-contador {
+    color: #ffd700; /* Destaque em Dourado para o número */
+    font-weight: bold;
+}
+
+/* Cabeçalho da Cifra para alinhar os elementos */
+.cifra-header {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 15px auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 5px;
+    box-sizing: border-box;
+}
+
+/* Estilização do Botão Voltar */
+.btn-voltar {
+    color: var(--primary); /* Seu amarelo padrão */
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    padding-left: 10px;
+    border-radius: 6px;
+    background: rgba(255, 197, 2, 0.03); /* Fundo amarelo quase invisível */
+    border: 1px solid rgba(255, 197, 2, 0.15);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* Efeito sutil ao passar o mouse ou tocar */
+.btn-voltar:hover,
+.btn-voltar:active {
+    background: rgba(255, 197, 2, 0.1);
+    border-color: var(--primary);
+    transform: translateX(-2px); /* Dá um leve impulso visual para a esquerda */
+}
+
+/* Botão Voltar Ultra Discreto e Compacto */
+.btn-voltar-minimal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    min-width: 32px; /* Garante que a barra de busca não esmague o círculo */
+    text-decoration: none;
+    color: #6e7681; /* Tom cinza discreto padrão */
+    font-size: 20px; /* Destaca o tamanho da seta literal */
+    font-weight: bold;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* Interação suave quando o usuário passa o mouse ou toca */
+.btn-voltar-minimal:hover,
+.btn-voltar-minimal:active {
+    color: var(--primary); /* Acende em amarelo do Doze Teclas */
+    background: rgba(255, 197, 2, 0.08); /* Cria um leve fundo de foco circular */
+    transform: translateX(-2px); /* Mantém o recuo intuitivo para a esquerda */
+}
+
+/* Card Base (Já existente no seu projeto, com comportamento Flex) */
+.card-sugestao {
+    background: #1c1f24;
+    border: 1px solid #2a2d34;
+    border-radius: 6px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+/* 🛠️ O Pulo do Gato: Força o ícone e os textos a ficarem lado a lado */
+.card-sugestao .cs-info {
+    display: flex;
+    align-items: center; /* Centraliza verticalmente o ícone e a caixa de texto */
+    gap: 15px;           /* Distância perfeita entre o ícone e o texto */
+    flex: 1;
+    min-width: 0;
+}
+
+/* Envelopador do Ícone para isolar o comportamento de tamanho */
+.cs-icone-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Impede o navegador de esmagar o SVG */
+}
+
+/* Garante o tamanho correto da imagem SVG */
+.icone-estilo {
+    width: 50px;
+    height: 50px;
+    display: block;
+}
+
+/* Protege os textos para continuarem quebrando em duas linhas verticais */
+.cs-textos-bloco {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+/* Classes de texto originais que você já usa na sua folha de estilos */
+.card-sugestao .cs-info .cs-titulo {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    margin: 0;
+}
+
+.card-sugestao .cs-info .cs-desc {
+    font-size: 12px;
+    color: #6c727f;
+    margin: 0;
+}
+
+.card-sugestao .cs-seta {
+    color: #ffc502;
+    font-size: 16px;
+    padding-left: 10px;
+    flex-shrink: 0;
+}
+
+.card-sugestao:hover .icone-estilo,
+.card-sugestao:active .icone-estilo {
+    /* Parâmetros: deslocamento X (0), deslocamento Y (0), raio do borrão (8px) e a cor do brilho */
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+    transform: scale(1.05); /* Um leve aumento sutil no ícone */
+    transition: all 0.2s ease-in-out;
+}
+
+/* ==========================================================================
+   🏠 EXTENSÃO LANDING VITRINE V5 - CIFRAS DE ELITE
+   ========================================================================== */
+
+.vitrine-wrapper {
+    max-width: 800px; /* Expandido de 500px para dar a imponência de Landing Page */
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #ffffff;
+}
+
+/* Hero Section Interna */
+.vitrine-hero-block {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 35px;
+}
+
+.vitrine-tagline {
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.vitrine-hero-block h2 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.2;
+    color: #fff;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.vitrine-hero-block h2 span {
+    color: var(--primary);
+}
+
+.vitrine-pitch-text {
+    color: #a0a5b0;
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 620px;
+    margin: 20px auto 0 auto;
+}
+
+/* Banner de Destaque no Padrão de Contraste da Cifra */
+.vitrine-banner-destaque {
+    background: linear-gradient(135deg, #1C1F24 0%, #16191D 100%);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary);
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 45px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.destaque-desc {
+    color: #8c8c8c;
+    font-size: 13px;
+    margin-top: 4px;
+    margin-bottom: 16px;
+}
+
+/* ─── GRID DE EXPLICAÇÃO DOS RECURSOS (SHOWCASE) ─── */
+.vitrine-showcase-tools {
+    margin-bottom: 45px;
+    background-color: #16191D;
+    border: 1px solid #22262C;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.tools-explanation-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Mobile: Uma coluna */
+    gap: 16px;
+    margin-top: 15px;
+}
+
+.tool-explain-card {
+    background: #1C1F24;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.tool-explain-card .card-icon {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--primary);
+    background: rgba(255, 197, 2, 0.08);
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+.tool-explain-card h5 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+.tool-explain-card p {
+    color: #8c8c8c;
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Responsividade Avançada do Showcase e Filtros */
+@media (min-width: 768px) {
+    .tools-explanation-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 Colunas no Tablet */
+    }
+    .vitrine-grid-links {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Navegação por artistas/playlists lado a lado */
+        gap: 16px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .tools-explanation-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 Colunas limpas no Desktop */
+    }
+}

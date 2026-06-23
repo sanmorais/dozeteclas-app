@@ -1,0 +1,67 @@
+:root {
+    --primary: #FFC502;
+    --bg-dark: #1E2227;
+    --card-bg: #2a2f36;
+    --text-white: #ffffff;
+    --kb-black: #121417;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; padding: 20px 10px;
+    display: flex; flex-direction: column; align-items: center;
+}
+
+.header { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.back-btn { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 14px; }
+
+/* CONTAINER DOS CARDS */
+.products-list {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espaço entre os cursos */
+}
+
+.course-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.course-icon {
+    background: var(--kb-black);
+    width: 60px; height: 60px;
+    border-radius: 15px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 15px;
+    border: 1px solid var(--primary);
+}
+
+.course-icon svg { width: 30px; fill: var(--primary); }
+
+.course-title { font-size: 18px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; color: #FFF; }
+.course-desc { font-size: 14px; color: #aaa; margin-bottom: 20px; line-height: 1.4; }
+
+.cta-btn {
+    background-color: var(--primary);
+    color: var(--kb-black);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    padding: 12px 30px;
+    border-radius: 10px;
+    transition: transform 0.2s;
+    width: 80%;
+}
+
+.cta-btn:active { transform: scale(0.95); }

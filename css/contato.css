@@ -1,0 +1,161 @@
+:root {
+    --primary: #FFC502;
+    --bg-dark: #1E2227;
+    --card-bg: #2a2f36;
+    --text-white: #ffffff;
+    --kb-black: #121417;
+    --input-bg: #1a1e23;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; 
+    padding: 20px 15px;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* CABEÇALHO PADRONIZADO */
+.header { 
+    width: 100%; 
+    max-width: 500px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+}
+
+.back-btn { 
+    color: var(--primary); 
+    text-decoration: none; 
+    font-weight: bold; 
+    font-size: 14px; 
+}
+
+/* CARD DE CONTATO */
+.contact-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 500px; 
+    box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+h2 { 
+    color: var(--primary); 
+    text-transform: uppercase; 
+    font-weight: 800;
+    letter-spacing: 2px; 
+    margin: 0 0 10px 0; 
+    font-size: 22px;
+    text-align: center;
+}
+
+p.subtitle {
+    text-align: center;
+    color: #ccc;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* FORMULÁRIO */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-size: 12px;
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+input, textarea {
+    background-color: var(--input-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px 15px;
+    color: white;
+    font-size: 16px;
+    font-family: inherit;
+    transition: border-color 0.3s ease;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* BOTÃO PADRÃO DOZE TECLAS */
+.btn-submit {
+    background-color: var(--primary);
+    color: var(--kb-black);
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-submit:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}
+
+/* SEÇÃO DE LINKS SOCIAIS (Removida do Sobre) */
+.social-links {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--kb-black);
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #444;
+    transition: 0.3s;
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+    fill: var(--primary);
+}
+
+@media (max-width: 400px) {
+    .social-links {
+        grid-template-columns: 1fr;
+    }
+}

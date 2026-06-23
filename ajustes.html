@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scripts/analytics.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas | Configurações</title>
+    <link rel="stylesheet" href="css/ajustes.css"> <!-- Reutilize o seu CSS padrão -->
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; letter-spacing: 1px;">AJUSTES</span>
+    </div>
+
+    <div class="settings-container">
+        
+        <div>
+            <span class="section-label">Timbre</span>
+            <div class="settings-card">
+                <div class="help-btn" onclick="openHelp()">?</div>
+                <p></p>
+
+                <div class="timbre-grid">
+                    <button class="opt-btn" onclick="setTimbre('triangle', this)" id="btn-triangle">PIANO ELÉTRICO</button>
+                    <button class="opt-btn" onclick="setTimbre('sine', this)" id="btn-sine">PURO</button>
+                    <button class="opt-btn" onclick="setTimbre('square', this)" id="btn-square">RETRÔ</button>
+                    <button class="opt-btn" onclick="setTimbre('sawtooth', this)" id="btn-sawtooth">BRILHANTE</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <span class="section-label">Volume</span>
+            <div class="settings-card" style="padding-top: 20px;"> <div class="volume-control">
+                    <svg width="20" height="20" viewBox="0 0 24 24" style="fill: var(--primary); vertical-align: middle; margin-right: 8px;">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="15" oninput="setVolume(this.value)">
+                    <span class="val-display" id="volValue">15%</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <span class="section-label">Duração da Nota</span>
+            <div class="settings-card" style="padding-top: 20px;">
+                <div class="volume-control">
+                    <svg width="20" height="20" viewBox="0 0 24 24" style="fill: var(--primary); vertical-align: middle; margin-right: 8px;">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                    <input type="range" id="sustainSlider" min="2" max="20" value="6" oninput="setSustain(this.value)">
+                    <span class="val-display" id="susValue">0.6s</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-info">
+        DOZE TECLAS v1.0<br>
+        Toque nos timbres para ouvir o preview.
+    </div>
+
+    <div id="helpModal" class="modal-help">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeHelp()">&times;</span>
+            <h3 style="color: var(--primary); text-transform: uppercase; margin-bottom: 15px;">Guia de Ajustes</h3>
+            <p style="color: var(--text-muted); line-height: 1.6; font-size: 14px; text-align: left;">
+                • <b>Timbre:</b> Altera a forma da onda sonora.<br><br>
+                • <b>Volume:</b> Ajusta a intensidade de saída.<br><br>
+                • <b>Duração:</b> Controla o tempo de sustentação da nota.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        let config = {
+            timbre: localStorage.getItem('dt_timbre') || 'triangle',
+            volume: localStorage.getItem('dt_volume') || 15,
+            sustain: localStorage.getItem('dt_sustain') || 0.6
+        };
+
+        function playPreview(type) {
+            if (!audioCtx) audioCtx = new AudioCtx();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = "lowpass";
+            filter.frequency.setValueAtTime(1500, audioCtx.currentTime); 
+            osc.type = type;
+            osc.frequency.setValueAtTime(261.63, audioCtx.currentTime);
+            const vol = document.getElementById('volumeSlider').value / 100;
+            const sus = parseFloat(document.getElementById('sustainSlider').value / 10);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + sus);
+            osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + sus);
+        }
+
+        function init() {
+            document.getElementById('btn-' + config.timbre).classList.add('active');
+            document.getElementById('volumeSlider').value = config.volume;
+            document.getElementById('volValue').innerText = config.volume + '%';
+            document.getElementById('sustainSlider').value = config.sustain * 10;
+            document.getElementById('susValue').innerText = config.sustain + 's';
+        }
+
+        function setTimbre(type, btn) {
+            document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            localStorage.setItem('dt_timbre', type);
+            playPreview(type);
+        }
+
+        function setVolume(val) { document.getElementById('volValue').innerText = val + '%'; localStorage.setItem('dt_volume', val); }
+        function setSustain(val) { let seconds = (val / 10).toFixed(1); document.getElementById('susValue').innerText = seconds + 's'; localStorage.setItem('dt_sustain', seconds); }
+        function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
+        function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
+        window.onclick = function(event) { if (event.target == document.getElementById('helpModal')) closeHelp(); }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+:root {
+    --primary: #FFC502;
+    --bg-dark: #1E2227;
+    --card-bg: #2a2f36;
+    --text-white: #ffffff;
+    --kb-black: #121417;
+    --line-thickness: 2px;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; padding: 20px 10px;
+    display: flex; flex-direction: column; align-items: center;
+}
+
+.header { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.back-btn { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 14px; }
+
+.module-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 20px;
+    padding-top: 50px; /* Importante: abre espaço para o botão não cobrir as notas */
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    position: relative; /* ESTA LINHA CORRIGE O POSICIONAMENTO */
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Botão "?" posicionado no topo direito do card */
+.help-btn {
+    position: absolute; /* Essencial para ele ignorar o fluxo dos outros itens */
+    top: 15px;          /* Distância do topo da borda do card */
+    right: 15px;        /* Distância da direita da borda do card */
+    width: 28px;
+    height: 28px;
+    background-color: rgba(255, 197, 2, 0.1); /* Amarelo bem sutil ao fundo */
+    border: 1px solid var(--primary);         /* Borda com a sua cor amarela padrão */
+    color: var(--primary);                    /* Cor do símbolo "?" */
+    border-radius: 50%;                       /* Deixa o botão redondo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 100; /* Garante que ele fique "na frente" do teclado ou labels */
+}
+
+.modal-help {
+    display: none; position: fixed; z-index: 9999;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+    padding: 20px; box-sizing: border-box;
+}
+.modal-content {
+    background-color: var(--card-bg); padding: 40px 25px; border-radius: 25px;
+    border: 1px solid var(--primary); position: relative; text-align: center;
+    width: 100%; max-width: 380px;
+}
+.close-modal { position: absolute; top: 15px; right: 20px; color: var(--text-white); font-size: 30px; cursor: pointer; }
+
+/* Efeito visual ao passar o mouse */
+.help-btn:hover {
+    background-color: var(--primary);
+    color: var(--bg-dark);
+}
+
+.label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; opacity: 0.8; }
+
+.selector-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.btn-sel { 
+    background: var(--kb-black); border: 1px solid #444; color: white; 
+    padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
+}
+.btn-sel.active { background: var(--primary); color: #1e2227; border-color: var(--primary); }
+
+.results-card {
+    background-color: var(--card-bg);
+    border-radius: 24px;
+    padding: 20px 15px;
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.inv-row { display: flex; flex-direction: column; gap: 8px; }
+.inv-header { display: flex; justify-content: space-between; align-items: center; }
+.inv-name { font-size: 13px; font-weight: 700; color: var(--text-white); }
+.inv-notes { font-size: 12px; color: var(--primary); font-weight: 800; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px; }
+
+.piano-mini {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    background-color: #000;
+    padding: var(--line-thickness);
+    border-radius: 4px;
+    display: flex;
+    gap: var(--line-thickness);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.key-w { flex: 1; background: white; height: 100%; border-radius: 0 0 1px 1px; z-index: 1; }
+.key-b {
+    position: absolute; background: var(--kb-black); width: 4.2%; height: 55%; z-index: 2; border-radius: 0 0 2px 2px;
+    border-left: 0.5px solid #000; border-right: 0.5px solid #000;
+}
+
+        .key-w.active { background-color: var(--primary) !important; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1); }
+
+.key-b.active {
+    background-color: var(--primary); /* O amarelo de destaque */
+    
+    /* O Outline: bem marcado e para fora */
+    outline: var(--line-thickness) solid var(--kb-black); 
+    
+    /* Garante que o contorno fique visível sobre as teclas brancas */
+    outline-offset: 0px; 
+    z-index: 10;
+}

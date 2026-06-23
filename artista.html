@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas | Artista</title>
+    <link rel="stylesheet" href="css/artista.css"> <meta property="og:type" content="website">
+    <meta id="og-title" property="og:title" content="Doze Teclas | Acervo por Artista">
+    <meta id="og-desc" property="og:description" content="Confira as cifras revisadas e com qualidade para teclado.">
+    <meta property="og:image" content="https://dozeteclas.com.br/assets/banner-padrao.jpg">
+</head>
+<body class="portal-artista-page">
+
+    <header class="main-header" style="padding: 20px; background-color: #121416;">
+        <div class="header-container" style="max-width: 800px; margin: 0 auto; display: flex; justify-content: flex-start;">
+            <a href="cifra.html" style="color: #ffd700 !important; text-decoration: none; font-size: 0.9rem; font-weight: bold; letter-spacing: 0.5px;">
+                ← Voltar ao Acervo
+            </a>
+        </div>
+    </header>
+
+    <main class="container-artista">
+        <div class="artista-header-block">
+            <p class="subtitle-label">– ACERVO –</p>
+            <h1 id="nome-artista-titulo">Carregando artista...</h1>
+            <div class="divider-line"></div>
+        </div>
+
+        <div id="lista-musicas-container" class="grid-musicas-artista">
+            <div class="loading-placeholder">Buscando repertório no acervo...</div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/analytics.js" defer></script>
+    <script src="scripts/supabase-db.js" defer></script> 
+    <script type="module" src="scripts/artista.js"></script>
+</body>
+</html>

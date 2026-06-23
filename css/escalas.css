@@ -1,0 +1,151 @@
+:root {
+    --primary: #FFC502;
+    --bg-dark: #1E2227;
+    --card-bg: #2a2f36;
+    --text-white: #ffffff;
+    --kb-black: #121417;
+    --line-thickness: 2px; /* Padronizado conforme seu teste */
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; padding: 20px 10px;
+    display: flex; flex-direction: column; align-items: center;
+}
+
+.header { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.back-btn { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 14px; cursor: pointer; }
+
+.module-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 20px;
+    /* Aumentamos o padding superior para 45px para dar espaço ao botão */
+    padding-top: 40px; 
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    position: relative; 
+}
+
+.label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; opacity: 0.8; }
+
+.selector-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.btn-sel { 
+    background: var(--kb-black); border: 1px solid #444; color: white; 
+    padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
+}
+.btn-sel.active { background: var(--primary); color: #1e2227; border-color: var(--primary); }
+
+.scale-select {
+    width: 100%; background: var(--kb-black); color: white; border: 1px solid #444;
+    padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; margin-top: 5px; outline: none;
+}
+
+.results-card {
+    background-color: var(--card-bg);
+    border-radius: 24px;
+    padding: 25px 15px;
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.scale-display-name { font-size: 20px; font-weight: 800; margin-top: 20px; margin-bottom: 20px; text-transform: uppercase; color: #FFF; }
+
+/* TECLADO COM FIOS PADRONIZADOS */
+.piano-container {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    background-color: #000;
+    padding: var(--line-thickness);
+    border-radius: 6px;
+    display: flex;
+    gap: var(--line-thickness);
+    box-sizing: border-box;
+}
+
+.key-w { 
+    flex: 1; background: white; height: 100%; border-radius: 0 0 3px 3px; z-index: 1; 
+    transition: background-color 0.1s, transform 0.05s;
+}
+
+.key-b {
+    position: absolute; background: var(--kb-black); width: 4.2%; height: 55%; z-index: 2; border-radius: 0 0 3px 3px;
+    border-left: 0.5px solid #000; border-right: 0.5px solid #000;
+    transition: background-color 0.1s, transform 0.05s;
+}
+
+/* ESTADOS ATIVOS (CORES PADRÃO) */
+.key-w.active { background-color: var(--primary) !important; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.1); }
+.key-b.active {
+    background-color: var(--primary) !important;
+    outline: var(--line-thickness) solid var(--kb-black);
+    outline-offset: 0px;
+    z-index: 10;
+}
+
+/* EFEITO DE PRESSÃO (MAIS ESCURO AO TOCAR) */
+.key-w.playing { background-color: #d4a502 !important; transform: translateY(2px); }
+.key-b.playing { background-color: #d4a502 !important; transform: translateY(1px); z-index: 11; }
+
+.scale-display-notes { 
+    margin-top: 20px; font-size: 14px; color: var(--primary); 
+    font-weight: 700; letter-spacing: 1px; line-height: 1.5; text-align: center;
+}
+
+.help-btn {
+    position: absolute;
+    top: 15px;      /* Mantém a distância do topo do card */
+    right: 15px;    /* Mantém a distância da direita */
+    width: 28px;
+    height: 28px;
+    background-color: rgba(255, 197, 2, 0.1);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 20;
+}
+
+/* Card de Dica no Rodapé */
+.tip-card {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 15px; padding: 15px;
+    width: 100%; max-width: 420px;
+    margin-top: 15px; box-sizing: border-box;
+    border: 1px dashed rgba(255, 197, 2, 0.2);
+}
+.tip-title { color: var(--primary); font-size: 10px; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 5px; display: block; }
+.tip-text { color: var(--text-muted); font-size: 13px; line-height: 1.4; margin: 0; text-align: justify;}
+
+/* Estrutura do Modal de Ajuda */
+.modal-help {
+    display: none; position: fixed; z-index: 9999;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+    padding: 20px; box-sizing: border-box;
+}
+.modal-content {
+    background-color: var(--card-bg); padding: 40px 25px; border-radius: 25px;
+    border: 1px solid var(--primary); position: relative; text-align: center;
+    width: 100%; max-width: 380px;
+}
+.close-modal { position: absolute; top: 15px; right: 20px; color: var(--text-white); font-size: 30px; cursor: pointer; }

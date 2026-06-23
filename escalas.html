@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scripts/analytics.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas | Escalas e Modos</title>
+    <link rel="stylesheet" href="css/escalas.css">
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; text-transform: uppercase;">Escalas e Modos</span>
+    </div>
+    
+    <div class="module-card">
+        <div class="help-btn" onclick="openHelp()">?</div>
+        <span class="label">Tônica</span>
+        <div class="selector-grid" id="noteSelector" style="margin-bottom:15px;"></div>
+        
+        <span class="label">Escala / Modo</span>
+        <select id="scaleType" class="scale-select">
+            <optgroup label="Básicas">
+                <option value="major">Maior (Jônio)</option>
+                <option value="minor">Menor Natural (Eólio)</option>
+                <option value="m_harmonic">Menor Harmônica</option>
+                <option value="m_melodic">Menor Melódica</option>
+            </optgroup>
+            <optgroup label="Modos Gregos">
+                <option value="dorian">Dórico</option>
+                <option value="phrygian">Frígio</option>
+                <option value="lydian">Lídio</option>
+                <option value="mixolydian">Mixolídio</option>
+                <option value="locrian">Lócrio</option>
+            </optgroup>
+            <optgroup label="Pentatônicas">
+                <option value="penta_maj">Pentatônica Maior</option>
+                <option value="penta_min">Pentatônica Menor</option>
+                <option value="penta_blues">Penta Blues (Menor)</option> </optgroup>
+            <optgroup label="Sintéticas e Jazz">
+                <option value="whole_tone">Tons Inteiros (Hexafônica)</option>
+                <option value="altered">Alterada</option>
+                <option value="bebop_dom">Bebop Dominante</option>
+            </optgroup>
+        </select>
+
+        <div class="scale-display-name" id="scaleNameDisplay">C MAIOR</div>
+        <div class="piano-container" id="pianoScale"></div>
+        <div class="scale-display-notes" id="scaleNotesDisplay">C – D – E – F – G – A – B – C</div>
+    </div>
+
+    <div class="tip-card">
+    <span class="tip-title">DICA</span>
+    <p class="tip-text">
+        Não tente apenas decorar as notas, mas sim o intervalo entre elas. Entender a distância de tons e semitons que forma cada escala permite que você transponha qualquer melodia para os 12 tons. Comece praticando as escalas devagar e tente cantar as notas junto com o áudio.
+    </p>
+</div>
+
+<div id="helpModal" class="modal-help">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeHelp()">&times;</span>
+        <h3 style="color: var(--primary); text-transform: uppercase; margin-bottom: 15px; text-align: center;">Como Praticar</h3>
+        <p style="color: var(--text-muted); line-height: 1.6; font-size: 14px; text-align: justify;">
+            O módulo de Escalas permite visualizar o <b>"caminho"</b> das notas por todo o teclado: <br><br>
+            Selecione a <b>tonalidade</b> desejada.<br>
+            <br>
+            Escolha o <b>tipo de Escala</b> (Maior, Menor Natural, Pentatônica, etc.).<br>
+            <p style="color: var(--text-muted); line-height: 1.6; font-size: 14px; text-align: justify;">
+            O sistema exibirá as notas no teclado e tocará a sequência automaticamente. Use este recurso para memorizar os intervalos (tons e semitons) e para treinar a sua percepção auditiva.</p>
+        </p>
+    </div>
+
+    <script type="module" src="scripts/escalas.js"></script>
+
+</body>
+</html>

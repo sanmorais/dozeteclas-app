@@ -1,0 +1,65 @@
+/* Estilos específicos para garantir a legibilidade do texto institucional */
+.termos-page {
+    background-color: var(--bg-primary, #121416);
+    color: var(--text-primary, #ffffff);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+}
+.termos-container {
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 0 24px;
+}
+.termos-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.termos-header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-primary, #ffffff);
+    margin-bottom: 10px;
+}
+.termos-subtitle {
+    color: var(--accent-gold, #ffd700);
+    font-size: 0.85rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.termos-divider {
+    width: 50px;
+    height: 3px;
+    background-color: var(--accent-gold, #ffd700);
+    margin: 20px auto;
+    border-radius: 2px;
+}
+.termos-content section {
+    margin-bottom: 35px;
+}
+.termos-content h2 {
+    font-size: 1.3rem;
+    color: var(--accent-gold, #ffd700);
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+.termos-content p, .termos-content li {
+    color: #b3b9c1;
+    font-size: 1rem;
+    margin-bottom: 12px;
+}
+.termos-content ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+.email-contato {
+    background-color: #1a1d20;
+    border: 1px solid #2d3238;
+    padding: 12px 20px;
+    border-radius: 6px;
+    display: inline-block;
+    color: #ffffff !important;
+    font-family: monospace;
+    font-size: 1rem;
+    margin-top: 10px;
+}

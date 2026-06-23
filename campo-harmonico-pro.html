@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scripts/analytics.js"></script>
+    <title>Doze Teclas | Campo Harmônico Pro</title>
+    <link rel="stylesheet" href="css/campoharmonico.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">
+            <a href="index.html" class="back-btn">← VOLTAR</a>
+            <h1 class="main-title">CAMPO HARMÔNICO PRO</h1>
+        </div>
+
+        <div class="main-card">
+            <section>
+                <div class="section-header">
+                    <span class="section-label">Tonalidade</span>
+                    <button class="btn-help">?</button>
+                </div>
+                <div class="tonality-grid" id="tonGrid"></div>
+            </section>
+
+            <section>
+                <span class="section-label" style="display:block; margin-bottom:12px;">Graus e Substituições</span>
+                <div class="degrees-grid" id="degGrid"></div>
+            </section>
+
+            <section>
+                <div class="piano-box" id="piano"></div>
+                <div class="piano-labels" id="pianoLabels"></div>
+
+                <div class="transport-row">
+                    <button class="btn-play-toggle" id="playBtn">
+                        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <select class="bpm-selector">
+                        <option value="60">60 BPM</option>
+                        <option value="80">80 BPM</option>
+                        <option value="100" selected>100 BPM</option>
+                        <option value="120">120 BPM</option>
+                    </select>
+                    <button class="btn-loop-toggle" id="loopBtn">LOOP</button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="section-label" style="font-size:20px; display:block; text-align:center;">Como Usar</span>
+            <p>O Campo Harmônico Pro é uma ferramenta avançada para estudo e transposição, que permite visualizar a estrutura harmônica de qualquer tom com recursos de substituição:</p>           
+            <ul style="font-size:14px; line-height:1.6; color:#bbb; margin: 15px 0;">
+                <li><strong>TONALIDADE:</strong> Define a nota fundamental do campo harmônico.</li>
+                <li><strong>GRAUS E SUBSTITUIÇÕES:</strong> Exibe os acordes de cada grau. Clique em um Grau para abrir o menu e testar substituições.</li>
+                <li><strong>O BPM:</strong> Ajusta a velocidade da progressão automática.</li>
+                <li><strong>PLAY/PAUSE:</strong> Inicia ou interrompe a execução da sequência.</li>
+                <li><strong>LOOP:</strong> Mantém a progressão em repetição contínua.</li>
+            </ul>
+            <p><i>Obs: Ao mudar o tom, todos os graus retornam automaticamente ao padrão.</i></p>
+            <button class="btn-ton active" style="width:100%">ENTENDI</button>
+        </div>
+    </div>
+
+    <script type="module" src="scripts/campo-harmonico-pro.js"></script>
+</body>
+</html>

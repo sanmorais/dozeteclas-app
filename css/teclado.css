@@ -1,0 +1,169 @@
+:root {
+    --primary: #FFC502;
+    --bg-dark: #1E2227;
+    --card-bg: #2a2f36;
+    --text-white: #ffffff;
+    --text-muted: #b0b3b8;
+    --kb-black: #121417;
+    --border-light: rgba(255,255,255,0.1);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; padding: 20px 10px;
+    display: flex; flex-direction: column; align-items: center;
+    touch-action: manipulation;
+}
+
+/* HEADER PADRÃO */
+.header { 
+    width: 100%; 
+    /* Importante: deve ser a mesma largura máxima que definimos para o card no desktop */
+    max-width: 876px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+    /* Remove paddings laterais se houver para encostar nas extremidades */
+    padding: 0; 
+}
+.back-btn { color: var(--primary); text-decoration: none; font-weight: bold; font-size: 14px; }
+.header-title { font-weight: 800; font-size: 14px; letter-spacing: 1px; color: var(--text-white); }
+
+/* Garante que o link e o título não tenham margens extras */
+.back-btn { margin: 0; }
+.header-title { margin: 0; }
+
+.piano-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 360px; 
+    padding: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: flex; flex-direction: column; gap: 20px;
+    box-sizing: border-box;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* BOTÕES DE TOPO */
+.top-btns { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; }
+.icon-btn {
+    width: 20px; height: 20px;
+    background: rgba(255, 197, 2, 0.1);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; cursor: pointer;
+    padding: 5px;
+    fill: var(--primary);
+}
+
+/* VIEWPORT E TECLADO */
+.piano-viewport {
+    width: 100%;
+    overflow-x: auto;
+    background: #000;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: none;
+    cursor: grab;
+    
+    /* Aumente este valor para dar mais espaço aos botões superiores */
+    margin-top: 40px; 
+}
+.piano-viewport:active { cursor: grabbing; }
+.piano-viewport::-webkit-scrollbar { display: none; }
+
+.keyboard {
+    position: relative;
+    display: flex;
+    width: 840px; 
+    height: 150px;
+    user-select: none;
+    flex-shrink: 0; /* Impede que o flexbox esprema o teclado */
+}
+
+.nav-touchpad {
+    width: 840px; 
+    height: 20px; 
+    background: #121417;
+    border-top: 1px solid #333;
+    position: relative; /* Mantém o contexto */
+    touch-action: pan-x;
+    
+    /* Centraliza o conteúdo verticalmente */
+    display: flex;
+    align-items: center; 
+}
+
+/* Ajuste no Viewport para Desktop */
+@media (min-width: 900px) {
+    .piano-card {
+        max-width: 880px; /* Ajustado para abraçar as 21 teclas + padding */
+    }
+    
+    .piano-viewport {
+        cursor: default;
+        overflow: hidden; /* Remove scroll desnecessário no desktop */
+        align-items: center; /* Centraliza o conteúdo se o card for maior */
+    }
+
+}
+
+.nav-touchpad::after {
+    content: "";
+    width: 40px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    
+    /* Fixa a posição horizontal na tela do telemóvel */
+    position: sticky;
+    left: 20px; /* Ajuste este valor para mover para a esquerda ou direita */
+    
+    /* Remove o transform de -400%, não é mais necessário com left: 20px */
+    transform: none; 
+    
+    /* Garante que ele flutue sem ocupar espaço na largura do teclado */
+    display: block;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.key-w { min-width: 40px; max-width: 40px; background: white; border: 1px solid #bbb; border-radius: 0 0 4px 4px; z-index: 1; box-sizing: border-box; touch-action: none; }
+.key-w.active { background: var(--primary) !important; }
+.key-b { width: 26px; height: 85px; background: var(--kb-black); position: absolute; z-index: 2; border-radius: 0 0 3px 3px; box-sizing: border-box; touch-action: none; }
+.key-b.active { background: #444 !important; border: 1px solid var(--primary); }
+
+/* METRÔNOMO */
+.metro-container { padding-top: 15px; border-top: 1px solid var(--border-light); display: flex; flex-direction: column; gap: 12px; }
+.metro-row { display: flex; justify-content: space-between; align-items: center; }
+.metro-label { font-size: 0.85rem; color: var(--primary); font-weight: 800; text-transform: uppercase; }
+.main-val { font-size: 1.8rem; font-weight: 800; }
+.circle-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: white; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
+
+.vol-slider { width: 100%; accent-color: var(--primary); height: 15px; margin-top: 5px; cursor: pointer; }
+
+.btn-play { background: white; color: black; border: none; padding: 12px 0; width: 100%; border-radius: 25px; font-weight: 800; cursor: pointer; }
+.btn-play.playing { background: var(--primary); }
+
+/* MODAIS */
+.modal {
+    display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
+}
+.modal-content {
+    background: var(--card-bg); padding: 30px 25px; border-radius: 25px; border: 1px solid var(--primary);
+    width: 100%; max-width: 300px; position: relative; text-align: center;
+}
+.close-modal { position: absolute; top: 15px; right: 20px; color: white; font-size: 24px; cursor: pointer; }
+.modal-content h3 { color: var(--primary); margin-top: 0; font-size: 1.2rem; text-transform: uppercase; }
+.setting-row { margin: 20px 0; text-align: left; }
+.setting-row label { display: block; font-size: 0.7rem; color: var(--primary); font-weight: 800; margin-bottom: 8px; }
+select { width: 100%; background: #000; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; }

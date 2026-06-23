@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scripts/analytics.js"></script>
+    <title>Doze Teclas | Mapa de Inversões Otimizado</title>
+    <link rel="stylesheet" href="css/inversoes.css">
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; letter-spacing: 1px;">INVERSÕES</span>
+    </div>
+
+    <div class="module-card">
+        <div class="help-btn" id="btnHelp">?</div>
+        <span class="label">Nota Fundamental</span>
+        <div class="selector-grid" id="noteSelector" style="margin-bottom:15px;"></div>
+        
+        <span class="label">Tipo de Tríade</span>
+        <div class="selector-grid mode-selector" style="grid-template-columns: 1fr 1fr;">
+            <button class="btn-sel active">MAIOR</button>
+            <button class="btn-sel">MENOR</button>
+        </div>
+    </div>
+    <br>
+    <div class="results-card">
+        <div class="inv-row" id="row-0"></div>
+        <div class="inv-row" id="row-1"></div>
+        <div class="inv-row" id="row-2"></div>
+    </div>
+
+    <div id="helpModal" class="modal-help">
+        <div class="modal-content">
+            <span class="close-modal" id="btnCloseHelp">&times;</span>
+            <h3 style="color: var(--primary); text-transform: uppercase; margin-bottom: 15px; text-align: center;">Entenda as Inversões</h3>
+            <p style="color: var(--text-muted); line-height: 1.6; font-size: 14px; text-align: justify;">
+                As inversões ocorrem quando alteramos a nota mais grave (o baixo) do acorde, reorganizando a sua estrutura vertical: <br><br>
+                <b>Estado Fundamental:</b><br> A Tónica é a nota mais grave (Ex: C-E-G).<br>
+                <br>
+                <b>1ª Inversão:</b><br> A Terça passa a ser a nota mais grave (Ex: E-G-C).<br>
+                <br>
+                <b>2ª Inversão:</b><br> A Quinta passa a ser a nota mais grave (Ex: G-C-E).
+            </p>
+        </div>
+    </div>
+
+    <script type="module" src="scripts/inversoes.js"></script>
+</body>
+</html>

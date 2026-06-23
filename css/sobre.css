@@ -1,0 +1,128 @@
+:root {
+    --primary: #FFC502;
+    --bg-dark: #1E2227;
+    --card-bg: #2a2f36;
+    --text-white: #ffffff;
+    --text-muted: #ccc;
+    --kb-black: #121417;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    margin: 0; 
+    padding: 40px 15px;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* CABEÇALHO */
+.header { 
+    width: 100%; 
+    max-width: 700px; /* Aumentado para acompanhar o card */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+}
+
+.back-btn { 
+    color: var(--primary); 
+    text-decoration: none; 
+    font-weight: bold; 
+    font-size: 14px; 
+    transition: opacity 0.3s;
+}
+.back-btn:hover { opacity: 0.7; }
+
+/* CARD RESPONSIVO */
+.about-card {
+    background-color: var(--card-bg);
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    max-width: 700px; /* Melhor largura para desktop */
+    box-sizing: border-box;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.5);
+}
+
+/* LOGO E TÍTULO */
+.brand-header-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.brand-icon {
+    width: 80px;
+    height: 80px;
+}
+
+.brand-name {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--primary);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* CONTEÚDO TEXTUAL */
+.h3 {
+    color: var(--primary);
+    margin: 40px 0 15px 0;
+    text-transform: uppercase;
+    text-align: left;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* .h3::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 197, 2, 0.2);
+} */
+
+.texto-corrido {
+    line-height: 1.8;
+    color: var(--text-muted);
+    font-size: 16px;
+    text-align: justify;
+    margin-bottom: 20px;
+}
+
+.destaque {
+    color: #FFF;
+    font-weight: 600;
+}
+
+/* FOOTER DO CARD */
+.footer-quote {
+    font-style: italic; 
+    color: var(--primary); 
+    font-size: 14px; 
+    text-align: center; 
+    margin-top: 50px; 
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    opacity: 0.8;
+}
+
+/* AJUSTES MOBILE */
+@media (max-width: 600px) {
+    .about-card { padding: 25px; }
+    .brand-name { font-size: 20px; }
+    .texto-corrido { text-align: left; font-size: 15px; }
+    body { padding: 20px 15px; }
+}

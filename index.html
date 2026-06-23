@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Teclas</title>
+    <meta name="description" content="Domine harmonia, ciclos e escalas com ferramentas interativas de visualização. O portal definitivo para o tecladista de alta performance.">
+
+    <script src="scripts/analytics.js"></script>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="stylesheet" href="css/home.css">
+</head>
+<body class="portal-responsive-v5">
+
+<!-- ─── NAVBAR FIXA PREMIUM ALINHADA ─── -->
+    <header class="nav-header">
+        <div class="nav-container">
+
+            <a href="index.html" class="logo">
+                            <div class="logo-container">
+                <svg version="1.1" viewBox="0 0 800 800" xml:space="preserve"><style type="text/css">.st0{fill:#FFFFFF;} .st1{fill:#121417;}</style><path class="st0" d="M398.8,696.4l-0.6,0c-4.9-0.3-9.5-1.5-13.8-3.7l-74.1-36.8L82.9,542.2c-11-5.5-17.8-16.6-17.7-28.9l2.5-377.1 c0.1-12.2,6.9-23.1,17.8-28.5c5.5-2.7,11.6-4.2,17.7-4.2c6.1,0,12.2,1.4,17.7,4.1L400,246.1l279.1-138.4 c5.5-2.7,11.6-4.1,17.7-4.1c6.1,0,12.2,1.4,17.7,4.1c11,5.4,17.8,16.4,17.8,28.6l2.5,377.1c0.1,12.3-6.7,23.4-17.7,28.9 L488.7,656.5l-73,36.2c-4.3,2.1-8.9,3.4-13.8,3.7l-0.6,0l-1.1,0L398.8,696.4z"/><path class="st1" d="M710.5,136.4c0-3.9-2.2-7.4-5.7-9.1c-5-2.5-11-2.5-16,0L404.3,268.3c-1.2,0.6-2.5,1-3.9,1c-0.1,0-0.3,0-0.4,0 c-0.1,0-0.3,0-0.4,0c-1.4-0.1-2.7-0.4-3.9-1L111.2,127.3c-5-2.5-10.9-2.5-16,0c-3.4,1.7-5.7,5.2-5.7,9.1L87,513.5 c0,3.9,2.2,7.5,5.7,9.2l227.2,113.6l74.2,36.8c1.7,0.9,3.6,1.3,5.4,1.4c0.2,0,0.4,0,0.5,0c0.2,0,0.4,0,0.5,0 c1.9-0.1,3.7-0.6,5.4-1.4l73-36.2l228.4-114.2c3.5-1.8,5.7-5.3,5.7-9.2L710.5,136.4z M168.9,530.6c0,2-2.1,3.2-3.8,2.3L112,506.4 c-0.9-0.4-1.5-1.4-1.5-2.4V160c0-2,2.1-3.2,3.8-2.4l38.4,19.2c0.9,0.4,1.4,1.4,1.4,2.4V389c0,1,0.6,1.9,1.5,2.4l11.9,5.9 c0.9,0.5,1.4,1.4,1.4,2.4V530.6z M244.7,568.5c0,2-2.1,3.2-3.8,2.3l-61.5-30.7c-0.9-0.4-1.5-1.3-1.5-2.3v-131c0-2,2.1-3.2,3.8-2.4 l7.1,3.6c1.8,0.9,3.8-0.4,3.8-2.4V201c0-2,2.1-3.2,3.8-2.4l32,16c0.9,0.4,1.4,1.4,1.4,2.4v209.2c0,1,0.6,1.9,1.5,2.4l11.9,5.9 c0.9,0.5,1.4,1.4,1.4,2.4L244.7,568.5L244.7,568.5z M320.4,606.3c0,2-2,3.2-3.8,2.3L255.1,578c-0.9-0.4-1.5-1.3-1.5-2.3V444 c0-2,2.1-3.2,3.8-2.4l7.1,3.6c1.8,0.9,3.8-0.4,3.8-2.4V238.9c0-2,2.1-3.2,3.8-2.4l32,16c0.9,0.4,1.5,1.4,1.5,2.4v209.8 c0,1,0.6,1.9,1.5,2.4l11.9,5.9c0.9,0.5,1.5,1.4,1.5,2.4L320.4,606.3L320.4,606.3z M387.8,640c0,2-2,3.2-3.8,2.3l-53.1-26.6 c-0.9-0.4-1.5-1.3-1.5-2.3v-131c0-2,2.1-3.2,3.8-2.4l7.1,3.6c1.8,0.9,3.8-0.4,3.8-2.4V276.8c0-2,2.1-3.2,3.8-2.4l38.4,19.2c0.9,0.5,1.5,1.4,1.5,2.4V640z M498.1,599.7c0,1-0.6,1.9-1.5,2.3L416,642.4c-1.8,0.9-3.8-0.4-3.8-2.3V296c0-1,0.6-1.9,1.5-2.4 l65.9-32.9c1.8-0.9,3.8,0.4,3.8,2.4v204.4c0,2,2.1,3.2,3.8,2.4l7.1-3.6c1.8-0.9,3.8,0.4,3.8,2.4L498.1,599.7L498.1,599.7z M594.6,551.5c0,1-0.6,1.9-1.5,2.3L510.9,595c-1.8,0.9-3.8-0.4-3.8-2.3V461.5c0-1,0.6-1.9,1.5-2.4l11.8-5.9 c0.9-0.4,1.5-1.4,1.5-2.4V241.1c0-1,0.6-1.9,1.5-2.4l52.8-26.4c1.8-0.9,3.8,0.4,3.8,2.4v205.1c0,2,2.1,3.2,3.8,2.4l7.2-3.6 c1.8-0.9,3.8,0.4,3.8,2.4V551.5z M689.5,504c0,1-0.6,1.9-1.5,2.4l-80.6,40.3c-1.8,0.9-3.8-0.4-3.8-2.3V413.9c0-1,0.6-1.9,1.5-2.4 l11.8-5.9c0.9-0.4,1.5-1.4,1.5-2.4V192.9c0-1,0.6-1.9,1.5-2.4l65.8-32.9c1.8-0.9,3.8,0.4,3.8,2.4L689.5,504L689.5,504z"/></svg>
+            </div>
+                <span class="logo-gold">DOZE</span>TECLAS
+            </a>
+            <!-- O ícone do menu agora fica perfeitamente ao lado da logo no Desktop/Mobile -->
+            <div class="menu-icon" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div></header></div>
+    </header>
+
+    <!-- Menu Lateral Fluido -->
+    <div id="sideMenu" class="side-menu">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">&times;</a>
+        <div class="menu-content">
+            <a href="sobre.html">SOBRE</a>
+            <a href="contato.html">CONTATO</a>
+            <a href="teclado.html">TECLADO VIRTUAL</a>
+            <a href="equipamentos.html" class="highlight-menu">EQUIPAMENTOS RECOMENDADOS</a>
+        </div>
+    </div>
+
+    <!-- ─── HERO SECTION (Estilo V3: Título Imponente, Pitch e Identidade de Landing Page) ─── -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <p class="hero-tagline">// PORTAL & LABORATÓRIO MUSICAL</p>
+                <h1 class="hero-title">
+                    Pare de decorar acordes.<br>Comece a <span class="highlight">entender</span> música.
+                </h1>
+                <p class="hero-subtitle">
+                    Conheça as ferramentas de estudo e o acervo do Doze Teclas para transpor tons em tempo real, analisar campos harmônicos e dominar o teclado de forma visual e prática.
+                </p>
+                <div class="hero-actions">
+                    <a href="cifra.html" class="btn btn-primary">Ver Acervo de Cifras (FREE) →</a>
+                    <a href="#modulos" class="btn btn-secondary">Explorar Módulos</a>
+                </div>
+            </div>
+            
+            <!-- Elemento de Identidade: O Logotipo em SVG grande e centralizado na direita -->
+            <div class="hero-brand-visual">
+                <div class="visual-logo-wrapper">
+                    <svg version="1.1" id="LogoGrande" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+                        <style type="text/css">.st0{fill:#FFFFFF;}.st1{fill:#121417;}</style>
+                        <g>
+                            <path class="st0" d="M398.8,696.4l-0.6,0c-4.9-0.3-9.5-1.5-13.8-3.7l-74.1-36.8L82.9,542.2c-11-5.5-17.8-16.6-17.7-28.9l2.5-377.1c0.1-12.2,6.9-23.1,17.8-28.5c5.5-2.7,11.6-4.2,17.7-4.2c6.1,0,12.2,1.4,17.7,4.1L400,246.1l279.1-138.4c5.5-2.7,11.6-4.1,17.7-4.1c6.1,0,12.2,1.4,17.7,4.1c11,5.4,17.8,16.4,17.8,28.6l2.5,377.1c0.1,12.3-6.7,23.4-17.7,28.9L488.7,656.5l-73,36.2c-4.3,2.1-8.9,3.4-13.8,3.7l-0.6,0l-1.1,0L398.8,696.4z"/>
+                            <path class="st1" d="M710.5,136.4c0-3.9-2.2-7.4-5.7-9.1c-5-2.5-11-2.5-16,0L404.3,268.3c-1.2,0.6-2.5,1-3.9,1c-0.1,0-0.3,0-0.4,0c-0.1,0-0.3,0-0.4,0c-1.4-0.1-2.7-0.4-3.9-1L111.2,127.3c-5-2.5-10.9-2.5-16,0c-3.4,1.7-5.7,5.2-5.7,9.1L87,513.5c0,3.9,2.2,7.5,5.7,9.2l227.2,113.6l74.2,36.8c1.7,0.9,3.6,1.3,5.4,1.4c0.2,0,0.4,0,0.5,0c0.2,0,0.4,0,0.5,0c1.9-0.1,3.7-0.6,5.4-1.4l73-36.2l228.4-114.2c3.5-1.8,5.7-5.3,5.7-9.2L710.5,136.4z M168.9,530.6c0,2-2.1,3.2-3.8,2.3L112,506.4c-0.9-0.4-1.5-1.4-1.5-2.4V160c0-2,2.1-3.2,3.8-2.4l38.4,19.2c0.9,0.4,1.4,1.4,1.4,2.4V389c0,1,0.6,1.9,1.5,2.4l11.9,5.9c0.9,0.5,1.4,1.4,1.4,2.4V530.6z M244.7,568.5c0,2-2.1,3.2-3.8,2.3l-61.5-30.7c-0.9-0.4-1.5-1.3-1.5-2.3v-131c0-2,2.1-3.2,3.8-2.4l7.1,3.6c1.8,0.9,3.8-0.4,3.8-2.4V201c0-2,2.1-3.2,3.8-2.4l32,16c0.9,0.4,1.4,1.4,1.4,2.4v209.2c0,1,0.6,1.9,1.5,2.4l11.9,5.9c0.9,0.5,1.4,1.4,1.4,2.4L244.7,568.5L244.7,568.5z M320.4,606.3c0,2-2,3.2-3.8,2.3L255.1,578c-0.9-0.4-1.5-1.3-1.5-2.3V444c0-2,2.1-3.2,3.8-2.4l7.1,3.6c1.8,0.9,3.8-0.4,3.8-2.4V238.9c0-2,2.1-3.2,3.8-2.4l32,16c0.9,0.4,1.5,1.4,1.5,2.4v209.8c0,1,0.6,1.9,1.5,2.4l11.9,5.9c0.9,0.5,1.5,1.4,1.5,2.4L320.4,606.3L320.4,606.3z M387.8,640c0,2-2,3.2-3.8,2.3l-53.1-26.6c-0.9-0.4-1.5-1.3-1.5-2.3v-131c0-2,2.1-3.2,3.8-2.4l7.1,3.6c1.8,0.9,3.8-0.4,3.8-2.4V276.8c0-2,2.1-3.2,3.8-2.4l38.4,19.2c0.9,0.5,1.5,1.4,1.5,2.4V640z M498.1,599.7c0,1-0.6,1.9-1.5,2.3L416,642.4c-1.8,0.9-3.8-0.4-3.8-2.3V296c0-1,0.6-1.9,1.5-2.4l65.9-32.9c1.8-0.9,3.8,0.4,3.8,2.4v204.4c0,2,2.1,3.2,3.8,2.4l7.1-3.6c1.8-0.9,3.8,0.4,3.8,2.4L498.1,599.7L498.1,599.7z M594.6,551.5c0,1-0.6,1.9-1.5,2.3L510.9,595c-1.8,0.9-3.8-0.4-3.8-2.3V461.5c0-1,0.6-1.9,1.5-2.4l11.8-5.9c0.9-0.4,1.5-1.4,1.5-2.4V241.1c0-1,0.6-1.9,1.5-2.4l52.8-26.4c1.8-0.9,3.8,0.4,3.8,2.4v205.1c0,2,2.1,3.2,3.8,2.4l7.2-3.6c1.8-0.9,3.8,0.4,3.8,2.4V551.5z M689.5,504c0,1-0.6,1.9-1.5,2.4l-80.6,40.3c-1.8,0.9-3.8-0.4-3.8-2.3V413.9c0-1,0.6-1.9,1.5-2.4l11.8-5.9c0.9-0.4,1.5-1.4,1.5-2.4V192.9c0-1,0.6-1.9,1.5-2.4l65.8-32.9c1.8-0.9,3.8,0.4,3.8,2.4L689.5,504L689.5,504z"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── SEÇÃO DE MÓDULOS (Estilo V3 com os botões imponentes e descrições da V4) ─── -->
+    <section id="modulos" class="grid-section">
+        <div class="section-header">
+            <span class="section-tag">// LABORATÓRIO INTERATIVO</span>
+            <h2>Aplicações nativas para o seu fluxo de ensaio</h2>
+        </div>
+
+        <nav class="menu-grid">
+            
+            <!-- O MÓDULO DE CIFRAS (Com a badge de destaque inteligente) -->
+            <a href="cifra.html" class="menu-item principal-cifras">
+                <div class="badge-feature">REPERTÓRIO</div>
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                </div>
+                <span class="menu-label">Portal de Cifras</span>
+                <p class="menu-desc">Cifras revisadas com transposição dinâmica de tom e sem simplificação.</p>
+            </a>
+
+            <a href="campo-harmonico-pro.html" class="menu-item">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>
+                </div>
+                <span class="menu-label">Campo Harmônico Pro</span>
+                <p class="menu-desc">Descubra as progressões e os acordes que combinam em qualquer tom.</p>
+            </a>
+
+            <a href="dicionario.html" class="menu-item">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 4h2v5l-1-.75L9 9V4z"/></svg>
+                </div>
+                <span class="menu-label">Dicionário de Acordes</span>
+                <p class="menu-desc">Formações e aberturas de acordes pensadas para teclado e piano.</p>
+            </a>
+
+            <a href="ciclos.html" class="menu-item">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+                </div>
+                <span class="menu-label">Ciclos de Notas</span>
+                <p class="menu-desc">Visualize relações tonais através do círculo de quartas, quintas e relativas.</p>
+            </a>
+
+            <a href="escalas.html" class="menu-item">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/><path d="M7 14h3v3H7zM10 11h3v3h-3zM13 8h3v3h-3z"/></svg>
+                </div>
+                <span class="menu-label">Estudo de Escalas</span>
+                <p class="menu-desc">Digitações, shapes e modos gregos no teclado virtual.</p>
+            </a>
+
+            <a href="inversoes.html" class="menu-item">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/></svg>
+                </div>
+                <span class="menu-label">Inversões de Acordes</span>
+                <p class="menu-desc">Domine a condução de vozes e mude a sonoridade da sua música.</p>
+            </a>
+        </nav>
+    </section>
+
+    <!-- Botão de Configurações Discreto -->
+    <a href="ajustes.html" class="btn-config-discreto" title="Configurações">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-1.03l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.21.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    </a>
+
+    <!-- ─── FOOTER CORPORATIVO (Layout V3) ─── -->
+    <footer class="main-footer">
+        <p>Doze Teclas &copy; 2026 <br> 
+            <a href="termos.html">Termos de Uso e Direitos Autorais</a>
+        </p>
+    </footer>
+
+    <script>
+    function toggleMenu() {
+        const menu = document.getElementById("sideMenu");
+        if (menu.style.width === "250px") {
+            menu.style.width = "0";
+        } else {
+            menu.style.width = "250px";
+        }
+    }    
+    </script>
+</body>
+</html>

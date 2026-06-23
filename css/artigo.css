@@ -1,0 +1,116 @@
+:root {
+    --primary: #FFC502;
+    --bg-dark: #1E2227;
+    --text-white: #ffffff;
+    --text-muted: #b0b3b8;
+}
+
+/* 1. RESET E TRAVA DE LARGURA */
+* { 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body { 
+    overflow-x: hidden; 
+    width: 100%; 
+    margin: 0; padding: 0; 
+    background-color: var(--bg-dark);
+}
+
+body {
+    color: var(--text-white);
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    line-height: 1.8;
+    display: flex; flex-direction: column; align-items: center;
+}
+
+/* 2. CONTAINER RESPONSIVO */
+.container {
+    width: 100%; 
+    max-width: 800px;
+    padding: 15px 20px; /* Margem de segurança lateral */
+    margin: 0 auto;
+}
+
+.back-nav { padding: 20px 0; }
+.back-link, .back-link:visited { 
+    text-decoration: none; 
+    color: var(--primary) !important; 
+    font-weight: bold; 
+    font-size: 14px; 
+}
+
+/* 3. TIPOGRAFIA E ELEMENTOS VISUAIS */
+h1 {
+    font-size: clamp(32px, 8vw, 48px);
+    font-weight: 900; 
+    line-height: 1.1;
+    margin: 40px 0 20px 0;
+    color: var(--text-white);
+    word-wrap: break-word; 
+    hyphens: auto;
+}
+
+.intro-text {
+    font-size: 20px; 
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    font-style: italic; 
+    border-left: 4px solid var(--primary);
+    padding-left: 20px;
+}
+
+.featured-image {
+    width: 100%; 
+    border-radius: 12px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: block;
+}
+
+h2 { color: var(--primary); margin-top: 50px; font-size: 26px; }
+p { margin-bottom: 25px; font-size: 17px; }
+strong { color: var(--primary); }
+
+/* 4. CONTROLE DE LINKS NO TEXTO (TRAVA DE COR) */
+article a, .content-link, .content-link:visited { 
+    color: var(--primary) !important; 
+    text-decoration: underline; 
+    font-weight: 600;
+}
+
+article a:hover { opacity: 0.8; }
+
+/* 5. BOTÕES DE RODAPÉ (TRAVA DE COR VISITED) */
+.footer-btns {
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px;
+    margin: 60px 0; 
+    padding-top: 20px;
+    border-top: 1px solid #333;
+    width: 100%;
+}
+
+.btn-footer, .btn-footer:visited {
+    background: #333; 
+    color: #ffffff !important; 
+    text-decoration: none;
+    padding: 15px 20px; 
+    border-radius: 8px; 
+    font-weight: bold;
+    text-align: center;
+}
+
+.btn-top, .btn-top:visited { 
+    background: var(--primary) !important; 
+    color: #000000 !important; 
+}
+
+/* AJUSTES DESKTOP */
+@media (min-width: 768px) {
+    .container { padding: 20px 25px; }
+    .footer-btns { flex-direction: row; justify-content: space-between; }
+    .btn-footer { width: auto; min-width: 160px; }
+}

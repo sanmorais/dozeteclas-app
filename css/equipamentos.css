@@ -1,0 +1,147 @@
+        :root {
+            --primary: #FFC502;
+            --bg-dark: #1E2227;
+            --card-bg: #2a2f36;
+            --text-white: #ffffff;
+            --text-muted: #b0b3b8;
+            --btn-buy: #28a745;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; 
+            padding: 0;
+            display: block; /* Alterado de flex para block para estabilizar o sticky */
+        }
+
+        /* Header fixo estilo App - Ajustado para largura total */
+        .header {
+            width: 100%; 
+            padding: 15px 20px;
+            box-sizing: border-box;
+            display: flex; 
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+            background: var(--bg-dark);
+            position: sticky; 
+            top: 0; 
+            left: 0; /* Garante o alinhamento horizontal */
+            z-index: 1000; /* Aumentado para garantir que fique sobre tudo */
+        }
+
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: bold; font-size: 14px; }
+
+        /* Container Principal Grid */
+        .offers-container {
+            margin: 0 auto;
+            margin-top: 25px; /* Adiciona o respiro vertical no topo */
+            width: 100%; 
+            max-width: 900px;
+            /* padding: 20px 10px; <-- Linha que você comentou */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+            gap: 20px;
+            justify-items: center;
+        }
+
+        /* Card */
+        .offer-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid #3d444d;
+            width: 100%;
+        }
+
+        /* Imagem do Produto */
+        .offer-image {
+            width: 100%; height: 220px;
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative;
+        }
+
+        .offer-image img { max-width: 90%; max-height: 90%; object-fit: contain; }
+
+        /* Conteúdo do Card */
+        .offer-content { padding: 15px; display: flex; flex-direction: column; flex: 1; }
+
+        .offer-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: var(--text-white); line-height: 1.2; }
+        .offer-price { font-size: 22px; color: var(--primary); font-weight: 800; margin-bottom: 10px; }
+        .offer-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; flex-grow: 1; }
+
+        /* Botões */
+        .offer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .btn {
+            text-align: center; text-decoration: none; font-weight: bold;
+            padding: 12px 5px; border-radius: 6px; font-size: 13px;
+            text-transform: uppercase; transition: opacity 0.2s;
+        }
+
+        .btn-info { background: #444; color: #fff; }
+        .btn-buy { background: var(--btn-buy); color: #fff; }
+        .btn:hover { opacity: 0.8; }
+
+        /* --- MOBILE VIEW ADJUSTMENTS --- */
+        @media (max-width: 768px) {
+            .offer-card {
+                width: 92%; /* Ajustado para criar a moldura nas laterais */
+            }
+        }
+
+        /* --- DESKTOP VIEW --- */
+        @media (min-width: 768px) {
+            .offer-card {
+                flex-direction: row;
+                height: 200px;
+                width: 100%;
+            }
+            .offer-image { width: 200px; height: 200px; flex-shrink: 0; }
+            .offer-content { padding: 20px; }
+            .offer-actions { width: 280px; align-self: center; margin-left: auto; }
+        }
+
+        .nota { font-size: 12px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; flex-grow: 1; text-align: center; color: #606060;}
+
+        /* Banner de Transparência e Apoio */
+.banner-apoio {
+    background: var(--card-bg);
+    border: 1px solid #3d444d;
+    border-left: 4px solid var(--primary); /* Barra amarela lateral para chamar atenção */
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px auto 0 auto;
+    max-width: 900px;
+    box-sizing: border-box;
+}
+
+.banner-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--primary);
+    margin: 0 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.banner-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Ajuste sutil para o mobile não colar nas bordas */
+@media (max-width: 768px) {
+    .banner-apoio {
+        width: 92%;
+    }
+}

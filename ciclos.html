@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scripts/analytics.js"></script>
+    <title>Doze Teclas | Ciclos</title>
+    <link rel="stylesheet" href="css/ciclos.css">
+</head>
+<body>  
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← VOLTAR</a>
+        <span style="font-weight: 800; font-size: 14px; text-transform: uppercase;">Ciclos</span>
+    </div>
+
+    <div class="chord-card">
+        <div class="help-btn" id="btnHelp">?</div>
+
+        <span class="label">Tipo de ciclo</span>
+        <div class="controls-row">
+            <select class="cycle-selector" id="cycleMode">
+                <option value="4ths">Ciclo de quartas</option>
+                <option value="5ths">Ciclo de quintas</option>
+                <option value="relMinor">Relativa menor</option>
+                <option value="relMajor">Relativa maior</option>
+            </select>
+            <button class="play-pause-btn" id="btnPlay">
+                <svg width="24" height="24" viewBox="0 0 24 24" style="pointer-events:none">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="var(--primary)"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="cycle-container" id="mainContainer">
+            <div class="wheel" id="wheel"></div>
+            <div class="center-display" id="targetDisplay">C</div>
+        </div>
+    </div>
+
+    <div class="tip-card">
+        <span class="tip-title">DICA</span>
+        <p class="tip-text">
+            Dominar o Ciclo de 4ª e 5ª é o atalho para entender progressões, campos harmônicos e tons vizinhos. Praticar a antecipação dessas notas automatiza o seu ouvido e a sua improvisação, permitindo que você encontre os intervalos mais importantes da música de forma instantânea.
+        </p>
+    </div>
+
+    <div id="helpModal" class="modal-help">
+        <div class="modal-content">
+            <span class="close-modal" id="btnCloseHelp">&times;</span>
+            <h3 style="color: var(--primary); margin-bottom: 20px; text-transform: uppercase; text-align: center;">Como Praticar</h3>
+            <p style="line-height: 1.8; color: var(--text-muted); font-size: 15px; text-align:justify">
+                O círculo segue a lógica dos <strong>Ciclos de Quartas ou Quintas</strong>. Observe a nota central e identifique a sua 4ª ou 5ª nota de distância no anel externo.</p>
+                <p><strong>Quarta (4ª) Sentido anti-horário</strong><br>4ª nota da escala (ex: C → F).</p>
+                <p><strong>Quinta (5ª) Sentido horário</strong><br>5ª nota da escala (ex: C → G).</p>
+            <p style="line-height: 1.8; color: var(--text-muted); font-size: 15px; text-align:justify">
+                Use o botão PLAY/PAUSE para movimentar o ciclo e treinar sua velocidade de reconhecimento. No modo RELATIVOS, o anel exibe os acordes relativos (maiores e menores) de cada tom, facilitando a memorização das paridades harmônicas.</p>
+        </div>
+    </div>
+
+    <script type="module" src="scripts/ciclos.js"></script>
+</body>
+</html>
