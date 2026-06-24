@@ -432,6 +432,7 @@ window.toggleTxt = toggleTxt;
 window.toggleAccidental = toggleAccidental;
 window.toggleColumns = toggleColumns;
 window.triggerPrintLayout = triggerPrintLayout;
+window.toggleTonePopup = toggleTonePopup; // 👈 Adicione esta linha aqui!
 
 // =========================================================================
 // 🎯 AMARRAÇÃO DE EVENTOS DESACOPLADOS DO PAINEL DE VISUALIZAÇÃO (Cifra.html)
