@@ -425,6 +425,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // ... suas outras funções da home ...
 });
 
+// 🌐 EXPONDO AS FUNÇÕES PARA O ESCOPO GLOBAL (Resolve o travamento dos botões)
+window.changeZoom = changeZoom;
+window.resetZoom = resetZoom;
+window.toggleTxt = toggleTxt;
+window.toggleAccidental = toggleAccidental;
+window.toggleColumns = toggleColumns;
+window.triggerPrintLayout = triggerPrintLayout;
+
 // =========================================================================
 // 🎯 AMARRAÇÃO DE EVENTOS DESACOPLADOS DO PAINEL DE VISUALIZAÇÃO (Cifra.html)
 // =========================================================================
