@@ -2,3 +2,4 @@ cifra-editor.html
 scripts/editor-controls.js
 scripts/chordpro-parser.js
 scripts/editor-parser.js
+css/editor.css
