@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scripts/analytics.js"></script>
+    <title>Doze Teclas | Progressões Pro</title>
+    <link rel="stylesheet" href="css/progressoes.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- CABEÇALHO PADRÃO DOZE TECLAS (SEM EMOJIS) -->
+        <div class="header">
+            <a href="index.html" class="back-btn">← VOLTAR</a>
+            <h1 class="main-title">Progressões Pro</h1>
+        </div>
+
+        <div class="main-card">
+            <!-- 1. BLOCO DE DESTAQUE DO TOM BASE -->
+            <section class="highlight-section">
+                <div class="chord-spotlight-row">
+                    <button class="btn-semitone" id="btn-tone-down">-</button>
+                    <div class="current-chord-badge" id="chordFocus">C</div>
+                    <button class="btn-semitone" id="btn-tone-up">+</button>
+                </div>
+            </section>
+
+            <!-- 2. SELETOR DE PROGRESSÃO ATIVA EM DESTAQUE (DOURADO COM ÍCONE DE TROCA) -->
+            <section>
+                <div class="progression-selector-box">
+                    <button class="btn-toggle-progression" id="progressionToggleBtn">
+                        <span class="progression-text">I - IV - V (Balada Pop)</span>
+                        <div class="btn-recycle-icon">
+                            <!-- Ícone minimalista de reciclagem/looping -->
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                            </svg>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 3. RETÂNGULOS DA PROGRESSÃO & GRAUS DO CAMPO HARMÔNICO -->
+            <section>
+                <span class="section-label" style="display:block; margin-bottom:12px;">Graus e Acordes da Sequência</span>
+                <div class="progression-cards-grid">
+                    <!-- Card 1 (Ativo com efeito Glow) -->
+                    <div class="prog-box active-glow">
+                        <span class="deg-tag">I7M</span>
+                        <span class="chord-display">C7M</span>
+                        <span class="deg-desc">1º maior</span>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="prog-box">
+                        <span class="deg-tag">IV7M</span>
+                        <span class="chord-display">F7M</span>
+                        <span class="deg-desc">4º maior</span>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="prog-box">
+                        <span class="deg-tag">V7</span>
+                        <span class="chord-display">G7</span>
+                        <span class="deg-desc">5º dominante</span>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="prog-box">
+                        <span class="deg-tag">VIm7</span>
+                        <span class="chord-display">Am7</span>
+                        <span class="deg-desc">6º menor</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. CONTROLES DE TRANSPORTE (PLAY, METRÔNOMO, LOOP) -->
+            <section>
+                <div class="transport-row">
+                    <button class="btn-play-toggle" id="playBtn">
+                        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <select class="bpm-selector">
+                        <option value="60">60 BPM</option>
+                        <option value="80">80 BPM</option>
+                        <option value="100" selected>100 BPM</option>
+                        <option value="120">120 BPM</option>
+                        <option value="140">140 BPM</option>
+                    </select>
+                    <button class="btn-loop-toggle active" id="loopBtn">LOOP</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- 5. PAINEL DE AJUDA E CONTEXTO (FORA DO CARD PRINCIPAL - NO RODAPÉ) -->
+        <footer class="footer-help-section">
+            <div class="help-box">
+                <span class="help-box-title">COMO USAR O MÓDULO</span>
+                <p>Use os botões de semitom para transpor toda a sequência harmonicamente. Clique no botão dourado de progressão ou no botão de reciclagem para alternar as cadências em tétrades. Ative o metrônomo para treinar a precisão das trocas diretamente no seu teclado.</p>
+            </div>
+            <div class="context-note">
+                Nota: O estudo de progressões clássicas em tétrades sedimenta a percepção de ouvido, permitindo identificar caminhos harmônicos comuns na música popular de forma quase instintiva.
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="scripts/progressoes-pro.js"></script>
+</body>
+</html>

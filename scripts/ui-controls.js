@@ -69,12 +69,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Atualiza também o título da aba do navegador do usuário
             document.title = `${musicaBase.titulo} - ${musicaBase.autor || 'Frei Gilson'} | Doze Teclas`;
 
-            // 📊 4. Envia os dados da cifra carregada para o Google Analytics 4
+            // 📊 4. Envia o Pageview Virtual para o Google Analytics 4
             if (typeof gtag === 'function') {
-                gtag('event', 'visualizacao_cifra', {
-                    'nome_musica': musicaBase.titulo,
-                    'autor_musica': musicaBase.autor || 'Artista Desconhecido',
-                    'slug_musica': musicaBase.slug || 'slug-indisponivel'
+                gtag('event', 'page_view', {
+                    'page_title': `${musicaBase.titulo} - ${musicaBase.autor || 'Artista Desconhecido'}`,
+                    'page_location': window.location.href,
+                    'page_path': `/cifra/${musicaBase.slug}` // Faz o GA4 entender como se fosse a página /cifra/nome-da-musica
                 });
             }
         }

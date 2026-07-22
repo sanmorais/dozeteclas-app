@@ -1,0 +1,252 @@
+:root {
+    --primary: #FFC502;
+    --bg-dark: #1E2227;
+    --card-bg: #2a2f36;
+    --text-white: #ffffff;
+    --kb-black: #121417;
+    --line-thickness: 2px;
+    --glow-shadow: 0 0 15px rgba(255, 197, 2, 0.6);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; padding: 20px 10px;
+    display: flex; flex-direction: column; align-items: center;
+}
+
+.app-container { 
+    width: 100%; 
+    max-width: 380px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+}
+
+/* CABEÇALHO */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 0 5px; }
+.back-btn { color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 800; }
+.main-title { font-size: 16px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+
+/* CARD PRINCIPAL */
+.main-card {
+    background-color: var(--card-bg);
+    border-radius: 24px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex; flex-direction: column; gap: 20px;
+}
+
+.section-label { font-size: 10px; color: var(--primary); font-weight: 800; text-transform: uppercase; opacity: 0.8; }
+
+/* SPOTLIGHT DO TOM BASE (SIMPLIFICADO DE ACORDO COM O FEEDBACK) */
+.chord-spotlight-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--kb-black);
+    padding: 12px 15px;
+    border-radius: 16px;
+    border: 1px solid #333;
+}
+
+.current-chord-badge {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--primary);
+    font-family: 'Roboto Mono', monospace;
+    text-shadow: 0 0 10px rgba(255, 197, 2, 0.3);
+}
+
+.btn-semitone {
+    background: var(--card-bg);
+    border: 1px solid #444;
+    color: var(--text-white);
+    font-size: 20px;
+    font-weight: bold;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease;
+}
+
+.btn-semitone:active {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+}
+
+/* NOVO SELETOR DE PROGRESSÃO ATIVA (DOURADO E PRETO / COM FOCO INSTINTIVO) */
+.btn-toggle-progression {
+    width: 100%;
+    background: var(--primary);
+    border: none;
+    color: #1e2227;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.1s ease, background-color 0.2s;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.btn-toggle-progression:hover {
+    background: #e5b102;
+}
+
+.btn-toggle-progression:active {
+    transform: scale(0.98);
+}
+
+.progression-text {
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.5px;
+}
+
+/* BOTÃO CIRCULAR DE RECICLAGEM EMBUTIDO */
+.btn-recycle-icon {
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e2227;
+    transition: transform 0.3s ease;
+}
+
+.btn-toggle-progression:hover .btn-recycle-icon {
+    transform: rotate(180deg);
+}
+
+/* GRID DE PROGRESSÕES (RETÂNGULOS) */
+.progression-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.prog-box {
+    background: var(--kb-black);
+    border: 1px solid #444;
+    padding: 14px 8px;
+    border-radius: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.deg-tag { font-size: 11px; color: var(--primary); font-weight: 800; }
+.chord-display { font-size: 18px; font-weight: bold; font-family: 'Roboto Mono', monospace; }
+.deg-desc { font-size: 9px; color: #888; font-weight: 600; text-transform: uppercase; }
+
+/* EFEITO GLOW AMARELO NO ACORDE ATIVO */
+.prog-box.active-glow {
+    border-color: var(--primary);
+    box-shadow: var(--glow-shadow);
+    background: rgba(255, 197, 2, 0.08);
+    transform: scale(1.03);
+}
+
+/* TRANSPORTE (PLAY, BPM, LOOP) */
+.transport-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+
+.btn-play-toggle { 
+    background: var(--primary); 
+    border: none; 
+    width: 48px; 
+    height: 48px; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+.btn-play-toggle svg { fill: #1e2227; width: 22px; height: 22px; }
+
+.bpm-selector { 
+    background: #121417; 
+    border: 1px solid #444; 
+    color: var(--primary); 
+    padding: 14px; 
+    border-radius: 12px; 
+    font-weight: bold; 
+    flex: 1; 
+    text-align: center; 
+    font-size: 13px;
+    outline: none;
+}
+
+.btn-loop-toggle { 
+    background: #121417; 
+    border: 1px solid #444; 
+    color: #666; 
+    flex: 1; 
+    padding: 14px; 
+    border-radius: 12px; 
+    font-weight: 800; 
+    cursor: pointer; 
+    font-size: 11px;
+    transition: all 0.2s;
+}
+.btn-loop-toggle.active { color: var(--primary); border-color: var(--primary); }
+
+/* SEÇÃO DE AJUDA FORA DO CARD PRINCIPAL (RODAPÉ EXTERNO) */
+.footer-help-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 5px;
+}
+
+.help-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.help-box-title {
+    font-size: 10px;
+    color: var(--primary);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.help-box p {
+    font-size: 12px;
+    color: #aaa;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.context-note {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.5;
+    font-style: italic;
+    border-left: 2px solid #444;
+    padding-left: 10px;
+}

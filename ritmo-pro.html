@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="scripts/analytics.js"></script>
+    <title>Doze Teclas | Treino Rítmico Pro</title>
+    <link rel="stylesheet" href="css/ritmo.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">
+            <a href="index.html" class="back-btn">← VOLTAR</a>
+            <h1 class="main-title">Treino Rítmico</h1>
+        </div>
+
+        <div class="main-card">
+            
+<   <section class="control-panel">
+                <div class="control-row-top" style="display: flex; gap: 10px; align-items: center; width: 100%;">
+                    <button class="btn-time-signature" id="timeSigBtn" style="flex: 1;">
+                        <span class="sig-text">Compasso: 4/4</span>
+                    </button>
+                    
+                    <button class="btn-semitone" id="btnRegenRhythm" title="Gerar Novo Exercício" style="background: var(--primary); border: none; flex-shrink: 0; width: 48px; height: 48px; border-radius: 14px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#1e2227" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px;">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="control-row-bottom">
+                    <button class="btn-play-toggle" id="playBtn">
+                        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <select class="bpm-selector">
+                        <option value="60">60 BPM</option>
+                        <option value="80">80 BPM</option>
+                        <option value="90" selected>90 BPM</option>
+                        <option value="100">100 BPM</option>
+                        <option value="120">120 BPM</option>
+                    </select>
+                    <button class="btn-loop-toggle active" id="loopBtn">LOOP</button>
+                </div>
+            </section>
+
+            <section>
+                <div class="rhythm-grid" id="rhythmGrid">
+                    
+                    <div class="rhythm-box active-glow" data-tempo="1">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="45" cy="70" r="12" fill="var(--primary)"/>
+                                <rect x="53" y="20" width="4" height="50" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="2">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="30" cy="70" r="10" fill="var(--primary)"/>
+                                <circle cx="70" cy="70" r="10" fill="var(--primary)"/>
+                                <rect x="36" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="76" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="36" y="21" width="44" height="8" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="3">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="45" cy="70" r="12" fill="var(--primary)"/>
+                                <rect x="53" y="20" width="4" height="50" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="4">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <path d="M45 25 c0 5, 10 10, 5 15 c-10 10, 15 15, 5 25 c-5 5, -5 10, 0 10" stroke="var(--primary)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="rhythm-box" data-tempo="5">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="30" cy="70" r="10" fill="var(--primary)"/>
+                                <circle cx="70" cy="70" r="10" fill="var(--primary)"/>
+                                <rect x="36" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="76" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="36" y="21" width="44" height="8" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="6">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <text x="50" y="22" fill="var(--primary)" font-size="16" font-weight="900" text-anchor="middle">3</text>
+                                <circle cx="25" cy="75" r="8" fill="var(--primary)"/>
+                                <circle cx="50" cy="75" r="8" fill="var(--primary)"/>
+                                <circle cx="75" cy="75" r="8" fill="var(--primary)"/>
+                                <rect x="30" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="55" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="80" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="30" y="27" width="53" height="6" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="7">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <path d="M45 25 c0 5, 10 10, 5 15 c-10 10, 15 15, 5 25 c-5 5, -5 10, 0 10" stroke="var(--primary)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="8">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="45" cy="70" r="12" fill="var(--primary)"/>
+                                <rect x="53" y="20" width="4" height="50" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="rhythm-box" data-tempo="9">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="45" cy="70" r="12" fill="var(--primary)"/>
+                                <rect x="53" y="20" width="4" height="50" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="10">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <path d="M45 25 c0 5, 10 10, 5 15 c-10 10, 15 15, 5 25 c-5 5, -5 10, 0 10" stroke="var(--primary)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="11">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <text x="50" y="22" fill="var(--primary)" font-size="16" font-weight="900" text-anchor="middle">3</text>
+                                <circle cx="25" cy="75" r="8" fill="var(--primary)"/>
+                                <circle cx="50" cy="75" r="8" fill="var(--primary)"/>
+                                <circle cx="75" cy="75" r="8" fill="var(--primary)"/>
+                                <rect x="30" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="55" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="80" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="30" y="27" width="53" height="6" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="12">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="30" cy="70" r="10" fill="var(--primary)"/>
+                                <circle cx="70" cy="70" r="10" fill="var(--primary)"/>
+                                <rect x="36" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="76" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="36" y="21" width="44" height="8" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="rhythm-box" data-tempo="13">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <path d="M45 25 c0 5, 10 10, 5 15 c-10 10, 15 15, 5 25 c-5 5, -5 10, 0 10" stroke="var(--primary)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="14">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="45" cy="70" r="12" fill="var(--primary)"/>
+                                <rect x="53" y="20" width="4" height="50" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="15">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="30" cy="70" r="10" fill="var(--primary)"/>
+                                <circle cx="70" cy="70" r="10" fill="var(--primary)"/>
+                                <rect x="36" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="76" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="36" y="21" width="44" height="8" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="16">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <text x="50" y="22" fill="var(--primary)" font-size="16" font-weight="900" text-anchor="middle">3</text>
+                                <circle cx="25" cy="75" r="8" fill="var(--primary)"/>
+                                <circle cx="50" cy="75" r="8" fill="var(--primary)"/>
+                                <circle cx="75" cy="75" r="8" fill="var(--primary)"/>
+                                <rect x="30" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="55" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="80" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="30" y="27" width="53" height="6" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="rhythm-box" data-tempo="17">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="30" cy="70" r="10" fill="var(--primary)"/>
+                                <circle cx="70" cy="70" r="10" fill="var(--primary)"/>
+                                <rect x="36" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="76" y="25" width="4" height="45" fill="var(--primary)"/>
+                                <rect x="36" y="21" width="44" height="8" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="18">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <circle cx="45" cy="70" r="12" fill="var(--primary)"/>
+                                <rect x="53" y="20" width="4" height="50" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="19">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <path d="M45 25 c0 5, 10 10, 5 15 c-10 10, 15 15, 5 25 c-5 5, -5 10, 0 10" stroke="var(--primary)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="rhythm-box" data-tempo="20">
+                        <div class="rhythm-svg-container">
+                            <svg viewBox="0 0 100 100" class="rhythm-icon">
+                                <text x="50" y="22" fill="var(--primary)" font-size="16" font-weight="900" text-anchor="middle">3</text>
+                                <circle cx="25" cy="75" r="8" fill="var(--primary)"/>
+                                <circle cx="50" cy="75" r="8" fill="var(--primary)"/>
+                                <circle cx="75" cy="75" r="8" fill="var(--primary)"/>
+                                <rect x="30" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="55" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="80" y="30" width="3" height="45" fill="var(--primary)"/>
+                                <rect x="30" y="27" width="53" height="6" fill="var(--primary)"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <footer class="footer-help-section">
+            <div class="help-box">
+                <span class="help-box-title">Treino de Percepção Rítmica</span>
+                <p>O domínio do tempo é a metade invisível da boa música. Selecione a assinatura de compasso desejada, ajuste o andamento no metrônomo e pratique batendo as mãos ou cantando a subdivisão de cada bloco em sincronia com o cursor luminoso.</p>
+            </div>
+            <div class="context-note">
+                Dica: Mantenha o pé batendo no pulso principal (clique do metrônomo) enquanto suas mãos executam as subdivisões indicadas em amarelo.
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="scripts/ritmo-pro.js"></script>
+</body>
+</html>

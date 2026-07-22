@@ -1,0 +1,223 @@
+:root {
+    --primary: #FFC502;
+    --bg-dark: #1E2227;
+    --card-bg: #2a2f36;
+    --text-white: #ffffff;
+    --kb-black: #121417;
+    --line-thickness: 2px;
+    --glow-shadow: 0 0 15px rgba(255, 197, 2, 0.6);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0; padding: 20px 10px;
+    display: flex; flex-direction: column; align-items: center;
+}
+
+.app-container { 
+    width: 100%; 
+    max-width: 380px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+}
+
+/* CABEÇALHO */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 0 5px; }
+.back-btn { color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 800; }
+.main-title { font-size: 16px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+
+/* CARD PRINCIPAL */
+.main-card {
+    background-color: var(--card-bg);
+    border-radius: 24px;
+    padding: 15px; /* Reduzido de 20px para economizar altura no celular */
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; /* Reduzido de 20px para manter tudo no campo visual */
+}
+
+/* PAINEL DE CONTROLE INTEGRADO */
+.control-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* BOTÃO DE SELEÇÃO DE COMPASSO */
+.btn-time-signature {
+    width: 100%;
+    background: var(--primary);
+    border: none;
+    color: #1e2227;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.1s ease;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.btn-time-signature:active {
+    transform: scale(0.98);
+}
+
+.btn-recycle-icon {
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e2227;
+    transition: transform 0.3s ease;
+}
+
+.btn-time-signature:hover .btn-recycle-icon {
+    transform: rotate(180deg);
+}
+
+/* LINHA INFERIOR DO CONTROLE (PLAY, BPM, LOOP) */
+.control-row-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-play-toggle { 
+    background: var(--primary); 
+    border: none; 
+    width: 48px; 
+    height: 48px; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+.btn-play-toggle svg { fill: #1e2227; width: 22px; height: 22px; }
+
+.bpm-selector { 
+    background: #121417; 
+    border: 1px solid #444; 
+    color: var(--primary); 
+    padding: 14px; 
+    border-radius: 12px; 
+    font-weight: bold; 
+    flex: 1; 
+    text-align: center; 
+    font-size: 13px;
+    outline: none;
+}
+
+.btn-loop-toggle { 
+    background: #121417; 
+    border: 1px solid #444; 
+    color: #666; 
+    flex: 1; 
+    padding: 14px; 
+    border-radius: 12px; 
+    font-weight: 800; 
+    cursor: pointer; 
+    font-size: 11px;
+    transition: all 0.2s;
+}
+.btn-loop-toggle.active { color: var(--primary); border-color: var(--primary); }
+
+
+/* 🎯 A GRADE DE RITMOS (4 COLUNAS - COMPASSOS DE 4 TEMPOS) */
+.rhythm-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas perfeitas */
+    gap: 10px;
+}
+
+/* OS RETÂNGULOS ESCUROS DAS NOTAS */
+.rhythm-box {
+    background: var(--kb-black);
+    border: 1.5px solid #444;
+    aspect-ratio: 1 / 1.05; /* Ajuste milimétrico para economizar altura vertical */
+    border-radius: 12px; /* Cantos levemente mais firmes para os blocos compactos */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px; /* Reduzido para dar mais área útil para o SVG interno */
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+/* CONTAINER INTERNO PARA GARANTIR RESPONSIVIDADE DO SVG */
+.rhythm-svg-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rhythm-icon {
+    width: 100%;
+    height: 100%;
+    max-width: 50px; /* Impede que o traço fique gigante em telas grandes */
+    max-height: 50px;
+}
+
+/* EFEITO GLOW AMARELO NO CURSOR DO METRÔNOMO */
+.rhythm-box.active-glow {
+    border-color: var(--primary);
+    box-shadow: var(--glow-shadow);
+    background: rgba(255, 197, 2, 0.08);
+    transform: scale(1.04);
+}
+
+
+/* SEÇÃO DE AJUDA EXTERNA NO RODAPÉ */
+.footer-help-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 5px;
+}
+
+.help-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.help-box-title {
+    font-size: 10px;
+    color: var(--primary);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.help-box p {
+    font-size: 12px;
+    color: #aaa;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.context-note {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.5;
+    font-style: italic;
+    border-left: 2px solid #444;
+    padding-left: 10px;
+}
