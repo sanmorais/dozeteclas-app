@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doze Cifras | Álbum Vozes no Altar - Canção Nova</title>
+    <link rel="stylesheet" href="css/artista.css"> 
+    
+    <!-- Meta Tags para Redes Sociais (WhatsApp, Instagram, Direct) -->
+    <meta property="og:type" content="website">
+    <meta id="og-title" property="og:title" content="Álbum Vozes no Altar | Canção Nova (Doze Cifras)">
+    <meta id="og-desc" property="og:description" content="Confira as cifras simplificadas e revisadas de todas as faixas do álbum Vozes no Altar da Canção Nova para teclado.">
+    <meta property="og:image" content="https://dozeteclas.com.br/assets/og-cover.png">
+</head>
+<body class="portal-artista-page">
+
+    <header class="main-header" style="padding: 20px; background-color: #121416;">
+        <div class="header-container" style="max-width: 800px; margin: 0 auto; display: flex; justify-content: flex-start;">
+            <a href="cifra.html" style="color: #ffd700 !important; text-decoration: none; font-size: 0.9rem; font-weight: bold; letter-spacing: 0.5px;">
+                ← Voltar ao Acervo
+            </a>
+        </div>
+    </header>
+
+    <main class="container-artista">
+        <div class="artista-header-block">
+            <!-- ✏️ TÍTULO E SUBTÍTULO CONFIGURÁVEIS MANUAMENTE -->
+            <p class="subtitle-label">– ÁLBUM COMPLETO –</p>
+            <h1 id="nome-artista-titulo">Vozes no Altar</h1>
+            <p style="color: #a0a0a0; font-size: 0.95rem; margin-top: 6px;">Canção Nova (2026)</p>
+            <div class="divider-line" style="margin-top: 15px;"></div>
+        </div>
+
+        <div id="lista-musicas-container" class="grid-musicas-artista">
+            <div class="loading-placeholder">Carregando faixas do álbum...</div>
+        </div>
+    </main>
+
+    <!-- Scripts da Plataforma -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/analytics.js" defer></script>
+    <script src="scripts/supabase-db.js" defer></script> 
+
+    <!-- Script Customizado para Filtro Manual em Sequência -->
+    <script type="module">
+        // Wait for Supabase to initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('lista-musicas-container');
+
+        // 🎯 LISTA MANUAL DE SLUGS CORRIGIDA:
+        const listaSlugsManuais = [
+            "vida-que-transborda-cancao-nova",
+            "gloria-cancao-nova",
+            "a-igreja-esta-de-pe-cancao-nova",
+            "santo-cancao-nova",
+            "a-missa-terminou-cancao-nova",
+            "kyrie-eleison-cancao-nova",
+            "profundo-amor-cancao-nova",
+            "dons-cancao-nova",
+            "aleluia-agora-e-o-senhor-quem-vai-falar-cancao-nova"
+        ];
+
+try {
+    if (typeof _supabase === 'undefined') {
+        throw new Error("Supabase não foi carregado corretamente.");
+    }
+
+    // 💡 REMOVIDO 'tom_original' para evitar erro de coluna inexistente
+    const { data: musicas, error } = await _supabase
+        .from('musicas')
+        .select('id, titulo, autor, slug') 
+        .in('slug', listaSlugsManuais);
+
+    if (error) throw error;
+
+    if (!musicas || musicas.length === 0) {
+        container.innerHTML = '<div class="loading-placeholder">Nenhuma música encontrada para este álbum.</div>';
+        return;
+    }
+
+    // Ordena os resultados exatamente na mesma sequência do array manual
+    const musicasOrdenadas = listaSlugsManuais
+        .map(slug => musicas.find(m => m.slug === slug))
+        .filter(Boolean);
+
+    container.innerHTML = '';
+
+    // Renderiza os cards das faixas
+    // Renderiza os cards mantendo o mesmo padrão visual da página de artistas
+    musicasOrdenadas.forEach((musica, index) => {
+        const card = document.createElement('a');
+        card.href = `cifra.html?s=${musica.slug}`;
+        card.className = 'card-musica-item';
+        card.style.textDecoration = 'none'; // Garante que a caixa toda não tenha sublinhado
+
+        // Estrutura HTML idêntica à página artista.html
+        card.innerHTML = `
+            <div class="musica-info" style="flex: 1;">
+                <h3 class="musica-titulo" style="color: #ffffff; font-size: 1.1rem; margin-bottom: 6px;">
+                    <span style="color: #ffd700; font-size: 1.2rem; margin-right: 8px; font-weight: 800;">${String(index + 1).padStart(2, '0')}</span>
+                    ${musica.titulo}
+                </h3>
+                <p class="musica-autor" style="color: #a0a0a0; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                    ${musica.autor || 'Canção Nova'}
+                </p>
+            </div>
+            <div class="musica-action" style="display: flex; align-items: center;">
+                <span class="btn-ver" style="color: #ffd700; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px;">VER ▶</span>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+
+    if (typeof gtag === 'function') {
+        gtag('event', 'visualizacao_album', {
+            'nome_album': 'Vozes no Altar',
+            'total_faixas': musicasOrdenadas.length
+        });
+    }
+
+} catch (err) {
+    console.error("Erro ao carregar faixas do álbum:", err);
+    container.innerHTML = '<div class="loading-placeholder">Erro ao carregar o álbum. Tente novamente mais tarde.</div>';
+}
+        });
+    </script>
+</body>
+</html>
