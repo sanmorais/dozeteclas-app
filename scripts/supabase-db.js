@@ -1,10 +1,24 @@
 // supabase-db.js - Gerenciamento exclusivo de dados do Doze Teclas
+//
+// 🛡️ AUDITORIA DE SEGURANÇA (Chaves e Segredos):
+// A constante SUPABASE_KEY abaixo é a chave pública "anon" do projeto (visível no JWT
+// decodificado: "role":"anon"). Esta chave é PROJETADA para ser exposta no client-side —
+// é o equivalente a uma API Key pública protegida por Row Level Security (RLS) no
+// PostgreSQL. NUNCA substitua este valor pela "service_role_key" do painel do Supabase,
+// pois ela ignora todas as políticas de RLS e permite acesso irrestrito ao banco inteiro
+// (leitura/escrita/exclusão em qualquer tabela) para quem inspecionar o código-fonte.
+//
+// ⚠️ Pré-requisito obrigatório de segurança: a proteção real dos dados NÃO vem de
+// esconder esta chave (impossível em app 100% client-side), e sim de políticas de RLS
+// bem configuradas no Supabase (Database > Tables > musicas > RLS Policies), garantindo
+// que apenas usuários autenticados como admin possam fazer INSERT/UPDATE/DELETE, e que
+// leitura pública (SELECT) exponha somente colunas seguras (sem dados sensíveis).
 const SUPABASE_URL = "https://bzkqetttagpvfcayhovp.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6a3FldHR0YWdwdmZjYXlob3ZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMzE4NzIsImV4cCI6MjA5MTcwNzg3Mn0.WA15riHx0dE-KvxrrXwQhQfO7a-WXrPI7TwS9X6nNKk";
 
 // Inicializa o cliente Supabase globalmente
-// Inicializa o cliente Supabase globalmente
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 
 function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);

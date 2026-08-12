@@ -1,0 +1,179 @@
+/* catalogo.css - Índice Alfabético de Artistas (Doze Teclas)
+   Reaproveita a identidade visual padrão do projeto:
+   Fundo #121416/#181a1d, cards #1a1d20, destaque dourado #ffd700/#f59e0b */
+
+/* ─── CABEÇALHO DA PÁGINA ─── */
+.catalogo-hero {
+    text-align: center;
+    padding: 50px 20px 20px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 50px;
+}
+
+.catalogo-tagline {
+    color: #ffd700;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.catalogo-hero h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.5px;
+}
+
+.catalogo-subtitle {
+    color: #8b949e;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* ─── BARRA DE ÍNDICE RÁPIDO A-Z ─── */
+.az-index-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 12px 16px;
+    background: #181a1d;
+    border-bottom: 1px solid #2d3238;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    margin: 30px 0 0 0;
+}
+
+.az-index-bar::-webkit-scrollbar {
+    height: 4px;
+}
+
+.az-index-bar::-webkit-scrollbar-thumb {
+    background: #ffd700;
+    border-radius: 2px;
+}
+
+.az-index-bar a {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: #1a1d20;
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-decoration: none;
+    border: 1px solid #2d3238;
+    transition: all 0.15s ease-in-out;
+}
+
+.az-index-bar a:hover {
+    background: #ffd700;
+    color: #121416;
+    border-color: #ffd700;
+}
+
+.az-index-bar a.disabled {
+    color: #4b5157;
+    background: #1a1d20;
+    border-color: #23262a;
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* ─── CONTAINER PRINCIPAL / SEÇÕES ALFABÉTICAS ─── */
+.catalogo-lista-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 20px 60px 20px;
+}
+
+.catalogo-letter-section {
+    margin-bottom: 30px;
+    scroll-margin-top: 70px; /* compensa a barra sticky ao usar âncoras */
+}
+
+.catalogo-letter-heading {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #ffd700;
+    /* border-bottom: 2px solid #f59e0b; */
+    padding-bottom: 6px;
+    margin: 0 0 15px 0;
+    letter-spacing: 1px;
+}
+
+.catalogo-artist-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.catalogo-artist-link {
+    display: block;
+    background: #1a1d20;
+    border: 1px solid #2d3238;
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+    word-break: break-word;
+}
+
+.catalogo-artist-link:hover {
+    background: #24292e;
+    border-color: #ffd700;
+    color: #ffd700;
+    transform: translateY(-2px);
+}
+
+/* ─── ESTADOS: LOADING / ERRO / VAZIO ─── */
+.loading-placeholder, .no-songs-box, .error-msg {
+    text-align: center;
+    padding: 40px;
+    color: #8b949e;
+    background-color: #1a1d20;
+    border-radius: 8px;
+    border: 1px dashed #2d3238;
+}
+
+/* ─── RESPONSIVIDADE MOBILE-FIRST ─── */
+@media (max-width: 480px) {
+    .catalogo-hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .catalogo-artist-grid {
+        grid-template-columns: 1fr; /* uma coluna no celular */
+    }
+
+    .az-index-bar a {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+}
+
+/* ─── DESKTOP: Centraliza a barra de índice A-Z (mobile permanece com scroll horizontal) ─── */
+@media (min-width: 768px) {
+    .az-index-bar {
+        justify-content: center;
+        flex-wrap: wrap;
+        overflow-x: visible;
+    }
+}
+
+

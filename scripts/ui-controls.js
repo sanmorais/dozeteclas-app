@@ -1,6 +1,19 @@
 // ui-controls.js - O Maestro da Interface (Doze Teclas)
 
+// 🛡️ SANITIZAÇÃO ANTI-XSS: Escapa caracteres HTML antes de injetar texto (títulos, artistas)
+// vindo do Supabase via innerHTML, impedindo execução de <script> ou tags maliciosas.
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 let musicaBase = null;
+
 let tomAtualIdx = 0;       // Índice da nota selecionada no momento
 let tomOriginalIdx = 0;    // Índice do tom original da cifra calibrado
 let useSharps = true;
@@ -314,9 +327,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // Escuta o que o usuário digita
     inputBusca.addEventListener('input', (e) => {
         clearTimeout(timeoutBusca);
-        const termo = e.target.value.trim();
+        const termoOriginal = e.target.value.trim();
 
-        if (!termo) {
+        if (!termoOriginal) {
+            dropdownBusca.innerHTML = "";
+            dropdownBusca.classList.add('search-dropdown-hide');
+            return;
+        }
+
+        // 🛡️ SANITIZAÇÃO ANTI-INJEÇÃO POSTGREST: A sintaxe .or() do Supabase interpreta
+        // vírgulas, parênteses e pontos como operadores de filtro. Sem essa limpeza, um
+        // usuário poderia digitar algo como "x,titulo.neq.impossivel" para manipular a
+        // query e vazar registros fora do filtro pretendido. Removemos esses caracteres
+        // especiais antes de montar a string do filtro.
+        const termoSeguro = termoOriginal.replace(/[,()."'`;]/g, '').trim();
+
+        if (!termoSeguro) {
             dropdownBusca.innerHTML = "";
             dropdownBusca.classList.add('search-dropdown-hide');
             return;
@@ -329,8 +355,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const { data: resultados, error } = await _supabase
                     .from('musicas')
                     .select('titulo, autor, slug')
-                    .or(`titulo.ilike.%${termo}%,autor.ilike.%${termo}%`)
+                    .or(`titulo.ilike.%${termoSeguro}%,autor.ilike.%${termoSeguro}%`)
                     .limit(8); // Limita a 8 resultados para manter o painel limpo
+
 
                 if (error) throw error;
 
@@ -357,10 +384,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 resultados.forEach(m => {
                     const item = document.createElement('div');
                     item.className = 'search-portal-item';
+                    // 🛡️ Escapa título/autor para impedir XSS armazenado vindo do banco
                     item.innerHTML = `
-                        <div class="spi-title">${m.titulo}</div>
-                        <div class="spi-artist">${m.autor || 'Desconhecido'}</div>
+                        <div class="spi-title">${escapeHtml(m.titulo)}</div>
+                        <div class="spi-artist">${escapeHtml(m.autor || 'Desconhecido')}</div>
                     `;
+
 
                     // Ao clicar no item, o portal rastreia a busca bem-sucedida e redireciona
                     item.onclick = () => {
@@ -377,8 +406,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         // Fluxo normal do seu site
                         inputBusca.value = "";
                         dropdownBusca.classList.add('search-dropdown-hide');
-                        window.location.href = `cifra.html?s=${m.slug}`;
+                        // 🛡️ encodeURIComponent evita que o slug quebre a URL ou injete parâmetros extras
+                        window.location.href = `cifra.html?s=${encodeURIComponent(m.slug)}`;
                     };
+
 
                     dropdownBusca.appendChild(item);
                 });

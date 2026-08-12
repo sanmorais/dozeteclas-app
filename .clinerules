@@ -1,0 +1,75 @@
+# 🎹 DOZE TECLAS / DOZE CIFRAS - GUIA DE ARQUITETURA & REGRAS DO PROJETO
+
+## 🚀 Visão Geral do Ecossistema
+O **Doze Teclas** é uma plataforma web estática de ensino musical, treino de percepção/ritmo, recomendação de equipamentos e acervo de cifras verificadas (**Doze Cifras**).
+- **Hospedagem:** GitHub Pages (Domínio customizado via `CNAME`).
+- **Backend / Banco de Dados:** Supabase (PostgreSQL + RLS + API REST JavaScript Client).
+- **Analytics:** Google Analytics 4 (GA4) com disparos de eventos customizados e pageviews virtuais.
+
+---
+
+## 📂 Mapeamento de Arquivos e Módulos do Projeto
+
+### 🌐 Páginas Principais (Raiz)
+- `index.html` -> Landing Page / Portal de Entrada.
+- `cifra.html` -> Exibição pública de cifras (Lê URL: `?s=slug-da-musica`).
+- `cifra-editor.html` -> Editor interativo de cifras no formato ChordPro.
+- `artista.html` -> Acervo filtrado por artista (Lê URL: `?a=slug-artista`).
+- `album.html` / `vozesnoaltar.html` -> Templates para playlists/álbuns com lista manual de slugs.
+- `playlist.html` -> Gerenciador/leitor de listas de reprodução e repertórios para eventos.
+
+### 🎼 Módulos Teóricos & Ferramentas Interativas (Pro)
+- `campo-harmonico-pro.html` & `css/campoharmonico.css` & `scripts/campo-harmonico-pro.js`
+- `dicionario.html` & `css/dicionario.css` & `scripts/dicionario.js`
+- `escalas.html` & `css/escalas.css` & `scripts/escalas.js`
+- `inversoes.html` & `css/inversoes.css` & `scripts/inversoes.js`
+- `progressoes-pro.html` & `css/progressoes.css` & `scripts/progressoes-pro.js`
+- `ritmo-pro.html` (Pozzoli Digital) & `css/ritmo.css` & `scripts/ritmo-pro.js`
+- `teclado.html` (Teclado Virtual) & `css/teclado.css` & `scripts/teclado.js`
+- `ciclos.html` & `css/ciclos.css` & `scripts/ciclos.js`
+
+### 🛒 Afiliados & Recomendação de Equipamentos
+- `equipamentos.html` -> Vitrine geral de hardwares/acessórios.
+- `detalhes-*.html` -> Páginas de pouso individuais para equipamentos (ex: `detalhes-lk61-mk4-novation.html`, `detalhes-scarlett-solo.html`).
+
+### 📝 Conteúdo, Blog & Institucional
+- `blog.html` / `artigo-escalas.html` -> Módulo de artigos e SEO.
+- `cursos.html`, `sobre.html`, `contato.html`, `obrigado.html`, `ajustes.html`.
+- `app/politica-de-privacidade.html` / `app/termos-de-servico.html` -> Documentos legais.
+
+### ⚙️ Núcleo JavaScript (`/scripts/`)
+- `supabase-db.js` -> Inicialização do cliente Supabase (`_supabase`).
+- `chordpro-parser.js` & `editor-parser.js` -> Motor de conversão e parsing de texto ChordPro para HTML.
+- `editor-controls.js` -> Lógica dos controles do editor de cifras.
+- `audio-engine.js` & `music-engine.js` -> Motor de síntese de áudio (Web Audio API) para metrônomo, teclado e treino rítmico.
+- `ui-controls.js` -> Interações globais de UI e busca com *debounce* do portal.
+- `analytics.js` -> Gerenciador de eventos e métricas do Google Analytics 4.
+
+---
+
+## ⚠️ Regras Obrigatórias para o Agente (Roo Code / Cline)
+
+1. **Arquitetura 100% Client-Side (GitHub Pages):**
+   - Não utilizar SSR ou código que exija execução de servidor Node.js público.
+   - Toda manipulação dinâmica ocorre via JavaScript Vanilla consumindo a API REST do Supabase.
+
+2. **Padrão de Manipulação de Cifras (ChordPro):**
+   - O banco de dados armazena letras e acordes mesclados no padrão ChordPro (`[Acorde]Letra`).
+   - O parsing visual posiciona os acordes exatamente acima das sílabas no CSS sem desalinhamento no celular.
+   - Algoritmos de transposição de tom devem alterar APENAS o conteúdo entre colchetes `[...]`.
+
+3. **Injeção de Meta Tags Open Graph (OG):**
+   - As redes sociais (Instagram Direct, WhatsApp, Facebook) **não executam JavaScript** ao gerar cards de pré-visualização.
+   - As tags `<meta property="og:...">` base devem ser mantidas no HTML estático de cada página.
+   - Alterações dinâmicas como `document.title = ...` afetam apenas a aba do navegador e os disparos do GA4.
+
+4. **Integridade do Banco Supabase:**
+   - Na tabela `musicas`, consultar apenas campos validados: `id`, `titulo`, `autor`, `slug`, `cifra_chordpro` (ou campos explicitamente presentes na tabela).
+   - NUNCA assumir colunas inexistentes (como `tom_original`) sem confirmação prévia.
+
+5. **Identidade Visual & UI/UX:**
+   - Fundo Padrão: Escuro `#121416` / `#181a1d`.
+   - Elementos em Destaque: Dourado `#ffd700` ou `#f59e0b`.
+   - Cards e Seções: `#1a1d20` com bordas sutis.
+   - Botões de Ação: Estilo `VER ▶` em dourado alinhado via Flexbox.
+   - Responsividade Mobile First: Todo layout deve ter usabilidade perfeita em smartphones.

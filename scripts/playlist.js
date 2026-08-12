@@ -1,9 +1,29 @@
 // playlist.js - Filtro Temático de Repertórios (Playlists por Tags)
 
+// 🛡️ SANITIZAÇÃO ANTI-XSS: Escapa texto vindo do Supabase (título, autor) antes de
+// injetar via innerHTML, impedindo execução de <script>/tags maliciosas salvas no banco.
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// 🛡️ SANITIZAÇÃO DE FILTRO ILIKE: Escapa os caracteres especiais do PostgREST (% e _)
+// que atuam como wildcards dentro do operador ilike, evitando que o valor vindo da URL
+// (?t=) manipule o filtro para retornar resultados além do pretendido.
+function escapeIlike(str) {
+    return String(str).replace(/[%_]/g, '\\$&');
+}
+
 // 🎯 FUNÇÃO CENTRAL DE EXECUÇÃO
 async function carregarPlaylistTematica() {
     const urlParams = new URLSearchParams(window.location.search);
     const playlistTag = urlParams.get('t');
+
 
     const tituloEl = document.getElementById('playlist-title');
     const container = document.getElementById('playlist-grid-container');
@@ -43,8 +63,9 @@ async function carregarPlaylistTematica() {
         const { data: musicas, error } = await instanciaSupabase
             .from('musicas')
             .select('titulo, autor, slug, tom, compasso, tags') // Buscando a coluna certa
-            .ilike('tags', `%${playlistTag}%`)                 // Filtrando na coluna certa
+            .ilike('tags', `%${escapeIlike(playlistTag)}%`)     // Filtrando na coluna certa (sanitizado)
             .order('titulo', { ascending: true });
+
 
         if (error) throw error;
         if (!container) return;
@@ -72,10 +93,11 @@ async function carregarPlaylistTematica() {
 
             const card = document.createElement('div');
             card.className = 'card-musica-item';
+            // 🛡️ Título/autor escapados para impedir XSS armazenado vindo do banco
             card.innerHTML = `
                 <div class="card-info">
-                    <h3 class="card-song-title">${musica.titulo}</h3>
-                    <p class="card-song-meta">${musica.autor.toUpperCase()} • TOM: <span>${tomVisual}</span></p>
+                    <h3 class="card-song-title">${escapeHtml(musica.titulo)}</h3>
+                    <p class="card-song-meta">${escapeHtml((musica.autor || '').toUpperCase())} • TOM: <span>${escapeHtml(tomVisual)}</span></p>
                 </div>
                 <div class="card-action">
                     <span class="btn-acessar-cifra">VER ▶</span>
@@ -83,8 +105,10 @@ async function carregarPlaylistTematica() {
             `;
 
             card.addEventListener('click', () => {
-                window.location.href = `cifra.html?s=${musica.slug}`;
+                // 🛡️ encodeURIComponent evita que o slug quebre a URL ou injete parâmetros extras
+                window.location.href = `cifra.html?s=${encodeURIComponent(musica.slug)}`;
             });
+
 
             container.appendChild(card);
         });

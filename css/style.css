@@ -559,6 +559,27 @@ body:not(.portal-vitrine-active) footer {
     transform: translateY(-1px);
 }
 
+/* Botão "Ver Todos" - Selo dourado clicável, mesmo porte compacto do .badge-tag */
+.btn-ver-todos {
+    display: inline-block;
+    background: #ffd700;
+    color: #121416 !important;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-ver-todos:hover {
+    background: #f5c400;
+    transform: translateY(-1px);
+}
+
+
 /* Seção de Categorias e Lista de Sugestões */
 .vitrine-secao-titulo {
     color: #ffffff;
