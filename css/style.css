@@ -656,8 +656,6 @@ body:not(.portal-vitrine-active) footer {
 /* Container de Rodapé da Vitrine */
 .vitrine-footer {
     text-align: center;
-    /* border-top: 1px solid #2a2d34; Sua linha divisória atual */
-    padding-top: -20px;
     margin-top: 0px;
     display: flex;
     flex-direction: column;
@@ -667,8 +665,8 @@ body:not(.portal-vitrine-active) footer {
 
 /* Texto de Chamada */
 .footer-prompt {
-    color: #a0a5b0 !important; /* Tom cinza claro mais visível */
-    font-size: 14px;
+    color: #6e7681 !important; Tom cinza claro mais visível
+    font-size: 13px;
     margin: 0;
     line-height: 1.4;
 }
