@@ -149,8 +149,17 @@ function renderizarCifraNaTela() {
     const renderContainer = document.getElementById('cifra-render');
     if (renderContainer) {
         renderContainer.innerHTML = resultado.html ? resultado.html : resultado;
+
+        // 🧹 Se o modo "Apenas Texto" estiver ativo, remove novamente o caractere "_"
+        // e os espaços de alinhamento no início das linhas do conteúdo recém-renderizado
+        // (ex: após transposição de tom), sem afetar nenhum outro símbolo do texto.
+        if (onlyText) {
+            renderContainer.innerHTML = removerMarcasApenasTexto(renderContainer.innerHTML);
+        }
+
     }
 }
+
 
 // --- FUNÇÃO DO YOUTUBE INTEGRADA ---
 function extractId(url) {
@@ -268,19 +277,48 @@ function resetZoom() {
     document.getElementById('cifra-render').style.fontSize = "16px"; 
 }
 
+// 🧹 FUNÇÃO UTILITÁRIA DO MODO "APENAS TEXTO": remove o caractere "_" (usado como
+// espaçamento de sílaba) e também as sequências de "&nbsp;" que ficam no INÍCIO de
+// cada linha (<div class="c-line">) — ou seja, apenas os espaços de alinhamento usados
+// para posicionar a letra sob o acorde, sem afetar espaços no meio/fim do texto.
+function removerMarcasApenasTexto(html) {
+    return html
+        .replace(/_/g, '')
+        .replace(/(<div class="c-line">)(?:&nbsp;)+/g, '$1');
+}
+
 function toggleTxt() { 
     onlyText = !onlyText; 
     const container = document.getElementById('cifra-render');
-    const btn = document.querySelector('button[onclick="toggleTxt()"]');
-    
+    const btn = document.getElementById('btn-toggle-txt');
+
+    if (!container) return;
+
     if (onlyText) {
+        // 🧹 Guarda o HTML original (com os underlines "_" e espaços de alinhamento)
+        // antes de removê-los, para que seja possível restaurar o conteúdo exato
+        // ao desativar o modo.
+        container.dataset.originalHtml = container.innerHTML;
+
+        // Remove o caractere "_" e os espaços em branco do início de cada linha
+        // exibidos no modo Apenas Texto. Nenhum outro símbolo do conteúdo é alterado.
+        container.innerHTML = removerMarcasApenasTexto(container.innerHTML);
+
         container.classList.add('only-text-mode');
         btn?.classList.add('active');
     } else {
+        // Restaura o HTML original (com os underlines e espaços) ao sair do modo Apenas Texto
+        if (container.dataset.originalHtml !== undefined) {
+            container.innerHTML = container.dataset.originalHtml;
+            delete container.dataset.originalHtml;
+        }
+
         container.classList.remove('only-text-mode');
         btn?.classList.remove('active');
     }
 }
+
+
 
 function toggleAccidental() { 
     useSharps = !useSharps; 
@@ -511,3 +549,44 @@ document.getElementById('btn-print')?.addEventListener('click', () => {
 document.getElementById('btn-preview')?.addEventListener('click', () => {
     if (typeof window.togglePreview === 'function') window.togglePreview();
 });
+
+// =========================================================================
+// ☀️🌙 ALTERNADOR DE TEMA CLARO/ESCURO (Toggle Button - Bootstrap Icons)
+// =========================================================================
+
+// Aplica visualmente o tema solicitado no <body> e atualiza o ícone do toggle
+function aplicarTema(tema) {
+    const icone = document.getElementById('theme-toggle-icon');
+
+    if (tema === 'light') {
+        document.body.classList.add('light-theme');
+        if (icone) {
+            icone.classList.remove('bi-toggle-off');
+            icone.classList.add('bi-toggle-on');
+        }
+    } else {
+        document.body.classList.remove('light-theme');
+        if (icone) {
+            icone.classList.remove('bi-toggle-on');
+            icone.classList.add('bi-toggle-off');
+        }
+    }
+}
+window.aplicarTema = aplicarTema;
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 💾 Recupera a preferência salva (padrão: tema escuro do Doze Teclas)
+    const temaSalvo = localStorage.getItem('theme') || 'dark';
+    aplicarTema(temaSalvo);
+
+    // 🖱️ Alterna o tema ao clicar no botão e persiste a escolha no localStorage,
+    // garantindo que a preferência do usuário se mantenha em outras cifras.
+    document.getElementById('btn-theme-toggle')?.addEventListener('click', () => {
+        const modoClaroAtivo = document.body.classList.contains('light-theme');
+        const novoTema = modoClaroAtivo ? 'dark' : 'light';
+        aplicarTema(novoTema);
+        localStorage.setItem('theme', novoTema);
+    });
+});
+
+

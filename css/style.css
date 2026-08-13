@@ -656,9 +656,9 @@ body:not(.portal-vitrine-active) footer {
 /* Container de Rodapé da Vitrine */
 .vitrine-footer {
     text-align: center;
-    border-top: 1px solid #2a2d34; /* Sua linha divisória atual */
-    padding-top: 30px;
-    margin-top: 20px;
+    /* border-top: 1px solid #2a2d34; Sua linha divisória atual */
+    padding-top: -20px;
+    margin-top: 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1011,3 +1011,253 @@ body:not(.portal-vitrine-active) footer {
         grid-template-columns: repeat(3, 1fr); /* 3 Colunas limpas no Desktop */
     }
 }
+
+/* ==========================================================
+   ☀️🌙 ALTERNADOR DE TEMA CLARO/ESCURO (Toggle Button)
+   ========================================================== */
+
+/* Botão de alternância posicionado ao lado da barra de busca */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0 4px;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+    color: var(--primary);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.9);
+}
+
+/* Ícone "toggle-on" (tema claro) já vem destacado em dourado */
+.theme-toggle-btn .bi-toggle-on {
+    color: var(--primary);
+}
+
+/* ==========================================================
+   ☀️ MODO CLARO (Light Theme)
+   Paleta baseada no css/print.css: fundo branco/cinza claro,
+   texto escuro e acentos de contraste mantidos (dourado).
+   ========================================================== */
+
+body.light-theme {
+    --bg: #ffffff;
+    --panel: #f8f9fa;
+    --text: #1a1d20;
+    --accent: #5f6368;
+}
+
+body.light-theme {
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Cabeçalho e barra de ferramentas */
+body.light-theme .header-main {
+    background: var(--panel);
+    border-bottom: 1px solid #dfe1e5;
+}
+
+body.light-theme .header-tools {
+    background: var(--panel);
+    border-top: 1px solid #dfe1e5;
+}
+
+body.light-theme .btn-tool {
+    background: #eef0f3;
+    border: 1px solid #d5d8dc;
+    color: var(--text);
+}
+
+body.light-theme .btn-tool.active,
+body.light-theme #btn-columns.active,
+body.light-theme #btn-preview.active {
+    background-color: var(--primary) !important;
+    color: #000 !important;
+}
+
+/* Cabeçalho da música */
+body.light-theme .song-header h1 {
+    color: #121416;
+}
+
+body.light-theme #view-meta {
+    color: #6c727f;
+}
+
+/* Badge e popup de tom */
+body.light-theme .current-tone-badge {
+    background: #eef0f3;
+    border: 1px solid #d5d8dc;
+    color: #b8860b;
+}
+
+body.light-theme #tone-popup {
+    background: var(--panel);
+    border: 1px solid #d5d8dc;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+body.light-theme .tone-btn {
+    background: #eef0f3;
+    color: var(--text);
+}
+
+body.light-theme .tone-btn.active {
+    background: var(--primary);
+    color: #000;
+}
+
+body.light-theme .original-btn {
+    background-color: #eef0f3 !important;
+    color: #b8860b !important;
+    border: 1px solid #d5d8dc;
+}
+
+/* Renderização da cifra */
+body.light-theme #cifra-render .c-line {
+    color: var(--text);
+}
+
+body.light-theme .c-chord {
+    color: #b8860b;
+}
+
+body.light-theme .c-comment {
+    color: #6c727f;
+}
+
+body.light-theme .section-label {
+    background-color: #ffd700;
+    color: #121416;
+}
+
+/* Barra de busca do portal */
+body.light-theme #input-busca-portal {
+    background: #ffffff;
+    border: 1px solid #d5d8dc;
+    color: var(--text);
+}
+
+body.light-theme #input-busca-portal:focus {
+    border-color: var(--primary);
+    background: #ffffff;
+}
+
+body.light-theme #dropdown-busca-portal {
+    background: #ffffff;
+    border: 1px solid #d5d8dc;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+body.light-theme .search-portal-item {
+    border-bottom: 1px solid #eee;
+}
+
+body.light-theme .spi-title {
+    color: var(--text);
+}
+
+body.light-theme .spi-artist {
+    color: #6c727f;
+}
+
+/* Botão de retorno minimalista */
+body.light-theme .btn-voltar-minimal {
+    color: #6c727f;
+}
+
+/* Rodapé e vitrine (portal de boas-vindas) */
+body.light-theme footer {
+    border-top: 1px solid #dfe1e5;
+}
+
+body.light-theme footer p {
+    color: #6c727f;
+}
+
+body.light-theme footer a {
+    color: #6c727f;
+}
+
+body.light-theme .vitrine-wrapper {
+    color: var(--text);
+}
+
+body.light-theme .vitrine-hero-block h2 {
+    color: #121416;
+}
+
+body.light-theme .vitrine-pitch-text,
+body.light-theme .vitrine-hero p {
+    color: #4b5563;
+}
+
+body.light-theme .vitrine-banner-destaque {
+    background: linear-gradient(135deg, #f8f9fa 0%, #eef0f3 100%);
+    border-color: #d5d8dc;
+}
+
+body.light-theme .vitrine-banner-destaque .destaque-titulo {
+    color: #121416;
+}
+
+body.light-theme .vitrine-showcase-tools {
+    background-color: #f8f9fa;
+    border: 1px solid #dfe1e5;
+}
+
+body.light-theme .tool-explain-card {
+    background: #ffffff;
+    border: 1px solid #dfe1e5;
+}
+
+body.light-theme .tool-explain-card h5 {
+    color: #121416;
+}
+
+body.light-theme .card-sugestao {
+    background: #ffffff;
+    border: 1px solid #dfe1e5;
+}
+
+body.light-theme .card-sugestao:hover {
+    border-color: #c5c9cf;
+    background: #f8f9fa;
+}
+
+body.light-theme .card-sugestao .cs-info .cs-titulo {
+    color: #121416;
+}
+
+/* Títulos de Seção da Vitrine (Grandes Artistas, Playlists, Guia Prático) */
+body.light-theme .vitrine-secao-titulo {
+    color: #121416;
+}
+
+/* Ícones da barra de ferramentas: Imprimir e Preview (SVGs internos com fill fixo) */
+body.light-theme #btn-print,
+body.light-theme #btn-preview {
+    color: #121416;
+}
+
+body.light-theme #btn-print svg,
+body.light-theme #btn-preview svg,
+body.light-theme #btn-print svg path,
+body.light-theme #btn-preview svg path {
+    fill: currentColor;
+}
+
+
+

@@ -176,4 +176,98 @@
     }
 }
 
+/* ==========================================================
+   ☀️ Botão de Alternância de Tema (reaproveitado do style.css)
+   ========================================================== */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    color: #777;
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0 4px;
+    margin-left: 12px;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+    color: #ffd700;
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.9);
+}
+
+.theme-toggle-btn .bi-toggle-on {
+    color: #ffd700;
+}
+
+/* ==========================================================
+   ☀️ MODO CLARO (Light Theme) - Catálogo de Artistas A-Z
+   ========================================================== */
+body.light-theme .catalogo-tagline {
+    color: #b8860b;
+}
+
+body.light-theme .catalogo-hero h1 {
+    color: #121416;
+}
+
+body.light-theme .catalogo-subtitle {
+    color: #4b5563;
+}
+
+body.light-theme .az-index-bar {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dfe1e5;
+}
+
+body.light-theme .az-index-bar a {
+    background: #ffffff;
+    color: #b8860b;
+    border: 1px solid #dfe1e5;
+}
+
+body.light-theme .az-index-bar a:hover {
+    background: #ffd700;
+    color: #121416;
+    border-color: #ffd700;
+}
+
+body.light-theme .az-index-bar a.disabled {
+    color: #b0b5bb;
+    background: #f0f1f3;
+    border-color: #e2e4e7;
+}
+
+body.light-theme .catalogo-letter-heading {
+    color: #b8860b;
+}
+
+body.light-theme .catalogo-artist-link {
+    background: #ffffff;
+    border-color: #dfe1e5;
+    color: #121416;
+}
+
+body.light-theme .catalogo-artist-link:hover {
+    background: #f8f9fa;
+    border-color: #ffd700;
+    color: #b8860b;
+}
+
+body.light-theme .loading-placeholder,
+body.light-theme .no-songs-box,
+body.light-theme .error-msg {
+    background-color: #f8f9fa;
+    color: #4b5563;
+    border-color: #dfe1e5;
+}
+
+
 

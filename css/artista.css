@@ -127,3 +127,129 @@
     opacity: 0.8;
     text-decoration: none;
 }
+
+/* Cabeçalho padrão das páginas de filtro (Artista/Álbum/Playlist) */
+.artista-page-header {
+    padding: 20px;
+    background-color: #121416;
+}
+
+.artista-page-header .header-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Legenda auxiliar (ex: "Canção Nova (2026)") usada em álbuns */
+.album-subinfo {
+    color: #a0a0a0;
+    font-size: 0.95rem;
+    margin-top: 6px;
+}
+
+/* ==========================================================
+   ☀️ Botão de Alternância de Tema (reaproveitado do style.css)
+   ========================================================== */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    color: #777;
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0 4px;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+    color: #ffd700;
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.9);
+}
+
+.theme-toggle-btn .bi-toggle-on {
+    color: #ffd700;
+}
+
+/* ==========================================================
+   ☀️ MODO CLARO (Light Theme) - Páginas de Filtro do Acervo
+   ========================================================== */
+body.light-theme.portal-artista-page {
+    background-color: #ffffff;
+    color: #1a1d20;
+}
+
+body.light-theme .artista-page-header {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #dfe1e5;
+}
+
+body.light-theme .btn-voltar,
+body.light-theme .btn-voltar:visited {
+    color: #b8860b !important;
+}
+
+body.light-theme #nome-artista-titulo,
+body.light-theme #playlist-title {
+    color: #121416;
+}
+
+body.light-theme .subtitle-label {
+    color: #b8860b;
+}
+
+body.light-theme .album-subinfo {
+    color: #4b5563 !important;
+}
+
+body.light-theme .card-musica-item,
+body.light-theme .card-sugestao {
+    background-color: #ffffff;
+    border-color: #dfe1e5;
+}
+
+body.light-theme .card-musica-item:hover {
+    background-color: #f8f9fa;
+    border-color: #ffd700;
+}
+
+body.light-theme .card-song-title,
+body.light-theme .musica-titulo {
+    color: #121416 !important;
+}
+
+body.light-theme .musica-titulo span {
+    color: #b8860b !important;
+}
+
+body.light-theme .card-song-meta,
+body.light-theme .musica-autor {
+    color: #4b5563 !important;
+}
+
+body.light-theme .card-song-meta span {
+    color: #121416;
+}
+
+body.light-theme .btn-acessar-cifra,
+body.light-theme .btn-ver {
+    color: #b8860b !important;
+}
+
+body.light-theme .loading-placeholder,
+body.light-theme .no-songs-box,
+body.light-theme .error-msg {
+    background-color: #f8f9fa;
+    color: #4b5563;
+    border-color: #dfe1e5;
+}
+
+
