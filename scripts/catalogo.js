@@ -39,12 +39,35 @@ async function carregarCatalogoArtistas() {
         }
 
         // 🎯 BUSCA OTIMIZADA: seleciona apenas a coluna 'autor' (nenhum dado extra é transferido)
+        //
+        // 🐛 CORREÇÃO DE BUG CRÍTICO (Artista desaparecendo do catálogo):
+        // O PostgREST (API do Supabase) tem um limite MÁXIMO DE LINHAS RETORNADAS por
+        // requisição sem paginação explícita (geralmente 100 ou 1000, dependendo da
+        // configuração "Max Rows" do projeto). Sem `.order()`, o banco pode devolver as
+        // linhas em QUALQUER ordem física da tabela — e um simples UPDATE (como salvar
+        // uma cifra no editor) faz o Postgres criar uma nova versão física da linha
+        // (MVCC), o que pode mudar sua posição no resultado "sem ordenação". Se essa
+        // linha for empurrada para além do limite padrão, o único registro daquele
+        // artista some da consulta, e o artista desaparece do catálogo — mesmo a música
+        // continuando 100% intacta no banco (por isso ainda aparece na busca geral).
+        //
+        // A correção definitiva combina duas medidas:
+        //   1. `.order('autor')` → garante uma ordenação determinística e estável,
+        //      independente da posição física da linha na tabela.
+        //   2. `.limit(2000)` → garante margem confortável acima do total de músicas
+        //      do acervo, evitando cortes silenciosos caso o acervo cresça.
         const { data: musicas, error } = await instanciaSupabase
             .from('musicas')
             .select('autor')
-            .not('autor', 'is', null);
+            .not('autor', 'is', null)
+            .order('autor', { ascending: true })
+            .limit(2000);
 
-        if (error) throw error;
+        if (error) {
+            console.error('Erro no catálogo:', error);
+            throw error;
+        }
+
 
         if (!musicas || musicas.length === 0) {
             container.innerHTML = `

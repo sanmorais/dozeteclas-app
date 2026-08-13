@@ -19,6 +19,15 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 // Inicializa o cliente Supabase globalmente
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// 🛡️ CORREÇÃO DE ESCOPO GLOBAL: `const`/`let` declarados no nível superior de um
+// <script> clássico NÃO se tornam propriedades de `window` automaticamente (diferente
+// de `var`/funções). Scripts do tipo module (como catalogo.js e artista.js) dependem
+// de `window._supabase` como uma das formas de localizar o cliente já inicializado.
+// Atribuir explicitamente aqui garante 100% de confiabilidade, independente da ordem
+// de carregamento ou do tipo de script que for consumir esta instância depois.
+window._supabase = _supabase;
+
+
 
 function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);

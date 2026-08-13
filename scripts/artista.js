@@ -41,12 +41,24 @@ async function carregarCatalogoArtista() {
         // qual deles, ao ser slugificado, corresponde exatamente ao slug recebido na URL.
         // Isso permite URLs limpas (?a=adoracao-e-vida) sem depender de colunas extras
         // no banco, mantendo a integridade mesmo com acentos/maiúsculas variados.
+        // 🐛 MESMA CORREÇÃO DE BUG APLICADA NO catalogo.js: sem `.order()` e sem um
+        // `.limit()` generoso, o PostgREST pode devolver as linhas em ordem física
+        // não-determinística (afetada por UPDATEs/MVCC), fazendo com que o único
+        // registro de um artista "suma" da lista se ele for empurrado além do limite
+        // padrão de linhas retornadas. Isso faria o próprio artista.html reportar
+        // "Nenhum artista encontrado" mesmo com a música intacta no banco.
         const { data: linhasAutores, error: errAutores } = await instanciaSupabase
             .from('musicas')
             .select('autor')
-            .not('autor', 'is', null);
+            .not('autor', 'is', null)
+            .order('autor', { ascending: true })
+            .limit(2000);
 
-        if (errAutores) throw errAutores;
+        if (errAutores) {
+            console.error('Erro no catálogo do artista:', errAutores);
+            throw errAutores;
+        }
+
 
         const mapaAutores = new Map();
         (linhasAutores || []).forEach(linha => {
