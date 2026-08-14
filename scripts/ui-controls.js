@@ -278,13 +278,14 @@ function resetZoom() {
 }
 
 // 🧹 FUNÇÃO UTILITÁRIA DO MODO "APENAS TEXTO": remove o caractere "_" (usado como
-// espaçamento de sílaba) e também as sequências de "&nbsp;" que ficam no INÍCIO de
-// cada linha (<div class="c-line">) — ou seja, apenas os espaços de alinhamento usados
-// para posicionar a letra sob o acorde, sem afetar espaços no meio/fim do texto.
+// espaçamento de sílaba), normaliza os espaços entre palavras e remove as sequências 
+// de "&nbsp;" que ficam no INÍCIO de cada linha (<div class="c-line">).
 function removerMarcasApenasTexto(html) {
     return html
-        .replace(/_/g, '')
-        .replace(/(<div class="c-line">)(?:&nbsp;)+/g, '$1');
+        .replace(/_/g, '') // Remove underlines usados para espaçamento
+        .replace(/(<div class="c-line">)(?:&nbsp;)+/g, '$1') // Remove espaços do início das linhas
+        .replace(/&nbsp;+/g, ' ') // Substitui múltiplos &nbsp; por um espaço simples
+        .replace(/\s+/g, ' '); // Normaliza múltiplos espaços em branco para um espaço simples
 }
 
 function toggleTxt() { 

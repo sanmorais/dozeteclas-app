@@ -352,6 +352,16 @@
         </div>
     </div>
 
+    <!-- Auto-Scroll Flutuante -->
+    <div id="auto-scroll-container" class="auto-scroll-container">
+        <div id="speed-slider-container" class="speed-slider-container">
+            <input type="range" id="speed-slider" class="speed-slider" min="10" max="100" value="30" orient="vertical">
+        </div>
+        <button id="auto-scroll-btn" class="auto-scroll-btn" title="Rolagem Automática">
+            <i class="bi bi-play-fill" id="auto-scroll-icon"></i>
+        </button>
+    </div>
+
     <footer style="text-align: center; padding: 30px 20px; border-top: 1px solid #2d3238;">
         <p style="color: #6e7681; font-size: 0.85rem; margin: 0;">
             Doze Teclas &copy; 2026 <br> 
@@ -364,6 +374,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="scripts/supabase-db.js" defer></script>
     <script src="scripts/music-engine.js" defer></script>
+    <script src="scripts/auto-scroll.js" defer></script>
     <script src="scripts/theme-toggle.js" defer></script>
     <script type="module" src="scripts/ui-controls.js"></script>
 </body>
