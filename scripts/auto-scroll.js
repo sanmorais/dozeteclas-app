@@ -13,6 +13,10 @@ class AutoScrollEngine {
         this.animationId = null;
         this.hideTimeout = null;
         
+        // Acumulador de posição fracionária para velocidades ultralentas
+        this.currentScrollY = 0;
+        this.manualScrollDetected = false;
+        
         // Elementos DOM
         this.container = document.getElementById('auto-scroll-container');
         this.btn = document.getElementById('auto-scroll-btn');
@@ -63,10 +67,23 @@ class AutoScrollEngine {
             this.resetHideTimer();
         });
         
-        // Parar rolagem ao chegar no fim da página
+        // Detectar rolagem manual e sincronizar posição
         window.addEventListener('scroll', () => {
-            if (this.isScrolling && this.isAtBottom()) {
-                this.stopAutoScroll();
+            if (this.isScrolling) {
+                // Verificar se foi rolagem manual (diferença significativa)
+                const currentWindowScroll = window.pageYOffset || document.documentElement.scrollTop;
+                const diff = Math.abs(currentWindowScroll - this.currentScrollY);
+                
+                // Se a diferença for maior que 10px, foi rolagem manual
+                if (diff > 10) {
+                    this.currentScrollY = currentWindowScroll;
+                    this.manualScrollDetected = true;
+                }
+                
+                // Parar ao chegar no fim
+                if (this.isAtBottom()) {
+                    this.stopAutoScroll();
+                }
             }
         });
         
@@ -91,6 +108,10 @@ class AutoScrollEngine {
         
         this.isScrolling = true;
         this.lastTimestamp = null;
+        
+        // Sincronizar acumulador com a posição atual da janela
+        this.currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        this.manualScrollDetected = false;
         
         // Atualizar UI
         this.btn.classList.add('playing');
@@ -155,11 +176,12 @@ class AutoScrollEngine {
         const deltaTime = (timestamp - this.lastTimestamp) / 1000; // converter para segundos
         this.lastTimestamp = timestamp;
         
-        // Calcular pixels a rolar baseado na velocidade e tempo decorrido
-        const pixelsToScroll = this.scrollSpeed * deltaTime;
+        // Acumular pixels fracionários (essencial para velocidades ultralentas)
+        this.currentScrollY += this.scrollSpeed * deltaTime;
         
-        // Rolar suavemente
-        window.scrollBy(0, pixelsToScroll);
+        // Aplicar rolagem usando scrollTo com posição acumulada
+        // Isso garante que até deltas de 0.05px sejam acumulados e aplicados
+        window.scrollTo(0, Math.round(this.currentScrollY));
         
         // Verificar se chegou ao fim da página
         if (this.isAtBottom()) {
@@ -224,7 +246,8 @@ class AutoScrollEngine {
     
     // Método público para controle externo
     setSpeed(speed) {
-        this.scrollSpeed = Math.max(10, Math.min(100, speed));
+        // Permitir velocidades ultralentas de 2 a 100 px/s
+        this.scrollSpeed = Math.max(2, Math.min(100, speed));
         this.speedSlider.value = this.scrollSpeed;
     }
     

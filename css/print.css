@@ -61,6 +61,10 @@ body {
 #yt-player,
 .btn-tool,
 .tools-wrapper,
+#auto-scroll-container,
+.auto-scroll-container,
+.auto-scroll-btn,
+#speed-slider-container,
 svg {
     display: none !important;
     height: 0 !important;
@@ -238,4 +242,10 @@ svg {
     display: block !important;
     min-height: 1.2em !important;
     line-height: 1.2 !important;
+}
+
+/* 5. Força as seções (section-label) a ficarem em linhas separadas no modo texto */
+.only-text-mode .section-label {
+    display: block !important;
+    width: fit-content !important;
 }

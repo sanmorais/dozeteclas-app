@@ -314,6 +314,12 @@ body {
     line-height: 0 !important;
 }
 
+/* 5. Força as seções (section-label) a ficarem em linhas separadas no modo texto */
+.only-text-mode .section-label {
+    display: block !important;
+    width: fit-content !important;
+}
+
 /* Alinhamento de segurança para o print.css refletir o mesmo comportamento se impresso em TXT */
 @media print {
     .only-text-mode .c-chord {
@@ -1305,10 +1311,15 @@ body.light-theme #btn-preview svg path {
     bottom: 20px;
     right: 20px;
     z-index: 1001;
-    display: flex;
+    display: none; /* Oculto por padrão - só aparece após carregamento da cifra */
     flex-direction: column;
     align-items: center;
     gap: 15px;
+}
+
+/* Classe para exibir o container quando a cifra estiver carregada */
+.auto-scroll-container.visible {
+    display: flex;
 }
 
 .auto-scroll-btn {

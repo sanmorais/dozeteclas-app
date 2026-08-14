@@ -107,11 +107,40 @@ function montarVitrinePortal() {
     if (mainContent) mainContent.style.display = 'none';
     if (headerTools) headerTools.style.display = 'none';
 
+    // Oculta o botão de auto-scroll quando a vitrine estiver ativa
+    ocultarBotaoAutoScroll();
+
     // Exibe o painel da vitrine removendo a classe de ocultação
     const painelVitrine = document.getElementById('portal-landing-vitrine');
     if (painelVitrine) {
         painelVitrine.classList.remove('vitrine-display-none');
         painelVitrine.style.display = 'block'; // Força exibição limpa
+    }
+}
+
+// ==========================================
+// 🎯 CONTROLE DE VISIBILIDADE DO BOTÃO AUTO-SCROLL
+// ==========================================
+
+/**
+ * Exibe o botão flutuante de auto-scroll após a cifra ser carregada
+ */
+function exibirBotaoAutoScroll() {
+    const autoScrollContainer = document.getElementById('auto-scroll-container');
+    if (autoScrollContainer) {
+        autoScrollContainer.classList.add('visible');
+        console.log('✅ Botão de auto-scroll exibido');
+    }
+}
+
+/**
+ * Oculta o botão flutuante de auto-scroll
+ */
+function ocultarBotaoAutoScroll() {
+    const autoScrollContainer = document.getElementById('auto-scroll-container');
+    if (autoScrollContainer) {
+        autoScrollContainer.classList.remove('visible');
+        console.log('🔒 Botão de auto-scroll ocultado');
     }
 }
 
@@ -157,6 +186,8 @@ function renderizarCifraNaTela() {
             renderContainer.innerHTML = removerMarcasApenasTexto(renderContainer.innerHTML);
         }
 
+        // 🎯 EXIBE O BOTÃO DE AUTO-SCROLL após a cifra ser renderizada com sucesso
+        exibirBotaoAutoScroll();
     }
 }
 
