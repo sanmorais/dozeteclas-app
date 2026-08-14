@@ -551,42 +551,10 @@ document.getElementById('btn-preview')?.addEventListener('click', () => {
 });
 
 // =========================================================================
-// ☀️🌙 ALTERNADOR DE TEMA CLARO/ESCURO (Toggle Button - Bootstrap Icons)
+// ☀️🌙 ALTERNADOR DE TEMA REMOVIDO DESTE ARQUIVO
 // =========================================================================
-
-// Aplica visualmente o tema solicitado no <body> e atualiza o ícone do toggle
-function aplicarTema(tema) {
-    const icone = document.getElementById('theme-toggle-icon');
-
-    if (tema === 'light') {
-        document.body.classList.add('light-theme');
-        if (icone) {
-            icone.classList.remove('bi-toggle-off');
-            icone.classList.add('bi-toggle-on');
-        }
-    } else {
-        document.body.classList.remove('light-theme');
-        if (icone) {
-            icone.classList.remove('bi-toggle-on');
-            icone.classList.add('bi-toggle-off');
-        }
-    }
-}
-window.aplicarTema = aplicarTema;
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 💾 Recupera a preferência salva (padrão: tema escuro do Doze Teclas)
-    const temaSalvo = localStorage.getItem('theme') || 'dark';
-    aplicarTema(temaSalvo);
-
-    // 🖱️ Alterna o tema ao clicar no botão e persiste a escolha no localStorage,
-    // garantindo que a preferência do usuário se mantenha em outras cifras.
-    document.getElementById('btn-theme-toggle')?.addEventListener('click', () => {
-        const modoClaroAtivo = document.body.classList.contains('light-theme');
-        const novoTema = modoClaroAtivo ? 'dark' : 'light';
-        aplicarTema(novoTema);
-        localStorage.setItem('theme', novoTema);
-    });
-});
+// A funcionalidade de alternância de tema foi movida para theme-toggle.js
+// para evitar conflitos entre scripts. O theme-toggle.js é o responsável
+// exclusivo por gerenciar a alternância entre temas claro e escuro.
 
 

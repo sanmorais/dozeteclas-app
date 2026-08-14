@@ -17,6 +17,45 @@ html, body {
     --accent: #777; 
 }
 
+/* Regras para o tema claro */
+body.light-theme {
+    --bg: #ffffff;
+    --panel: #f8f9fa;
+    --text: #1a1d20;
+    --accent: #4b5563;
+}
+
+body.light-theme {
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+body.light-theme .header-main {
+    background: var(--panel);
+    border-bottom: 1px solid #dfe1e5;
+}
+
+body.light-theme .btn-tool {
+    background: #e9ecef;
+    border-color: #ced4da;
+    color: #495057;
+}
+
+body.light-theme .btn-tool.active {
+    background: var(--primary);
+    color: #000;
+}
+
+body.light-theme .tone-btn {
+    background: #e9ecef;
+    color: #495057;
+}
+
+body.light-theme .tone-btn.active {
+    background: var(--primary);
+    color: #000;
+}
+
 * { 
     box-sizing: border-box; 
 }
@@ -665,7 +704,7 @@ body:not(.portal-vitrine-active) footer {
 
 /* Texto de Chamada */
 .footer-prompt {
-    color: #6e7681 !important; Tom cinza claro mais visível
+    color: #6e7681 !important; /* Tom cinza claro mais visível */
     font-size: 13px;
     margin: 0;
     line-height: 1.4;
