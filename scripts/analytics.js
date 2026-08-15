@@ -8,7 +8,7 @@ if (window.location.hostname !== 'localhost' && window.location.hostname !== '12
     // Injeta dinamicamente a tag externa do Google Tag Manager no HTML
     const gTagScript = document.createElement('script');
     gTagScript.async = true;
-    gTagScript.src = 'https://www.googletagmanager.com/googletagmanager.com/gtag/js?id=G-08QR6T5GD9';
+    gTagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-08QR6T5GD9';
     document.head.appendChild(gTagScript);
 
     // Inicializa as configurações do GA4
