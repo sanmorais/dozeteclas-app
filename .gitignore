@@ -1,5 +1,23 @@
+# Arquivos de edição e controle local
 cifra-editor.html
+cifra editor.html
+editor.html
+css/editor.css
+
+# Scripts e parsers do editor
 scripts/editor-controls.js
 scripts/chordpro-parser.js
 scripts/editor-parser.js
-css/editor.css
+scripts/artist-autocomplete.js
+
+# Scripts SQL e configurações de banco
+supabase-artistas-setup.sql
+*.sql
+
+# Documentações internas de desenvolvimento
+AUTOCOMPLETE-ARTISTAS-README.md
+MODAL-ARTISTAS-CRUD-README.md
+*-README.md
+
+# Documentações AJUSTE DOS COLCHETES E SÍMBOLOS
+TESTE-CORRECAO-COLCHETES.md

@@ -20,7 +20,7 @@
     }
 }
     
-    @bottom-right {
+    /* @bottom-right { aqui
         content: counter(page);
         font-family: 'Segoe UI', sans-serif;
         font-size: 9pt;
@@ -32,7 +32,7 @@
         font-family: 'Segoe UI', sans-serif;
         font-size: 9pt;
         color: #777777;
-    }
+    } */
 
 
 /* 2. Reset e Otimização para Impressão */
@@ -66,6 +66,28 @@ body {
 .auto-scroll-btn,
 #speed-slider-container,
 svg {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+/* Ocultar elementos de interface */
+.header-main,
+.header-tools,
+.tone-control-wrapper,
+#tone-popup,
+#preview-container,
+#yt-player,
+.btn-tool,
+.tools-wrapper,
+#auto-scroll-container,
+.auto-scroll-container,
+.auto-scroll-btn,
+#speed-slider-container,
+.cifra-actions-footer,       /* <-- NOVO: Oculta o botão 'Ver Acordes' */
+.btn-diagramas-cifra,        /* <-- NOVO */
+.btn-fechar-painel,          /* <-- NOVO: Oculta o botão (X) */
+svg:not(.st0):not(.st1) {
     display: none !important;
     height: 0 !important;
     margin: 0 !important;
@@ -248,4 +270,178 @@ svg {
 .only-text-mode .section-label {
     display: block !important;
     width: fit-content !important;
+}
+
+/* ==========================================================
+   6. RENDERIZAÇÃO DOS DIAGRAMAS DE TECLADO NA IMPRESSÃO / PDF
+   ========================================================== */
+
+/* Oculta o painel caso esteja fechado na interface */
+.painel-diagramas-container[style*="display: none"] {
+    display: none !important;
+}
+
+/* Painel com fluxo contínuo (permite divisão natural entre páginas) */
+.painel-diagramas-container {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin-top: 10pt !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+}
+
+.painel-diagramas-header {
+    border-bottom: none !important;
+    margin-bottom: 6pt !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+}
+
+.painel-diagramas-titulo {
+    color: #000000 !important;
+    font-size: 11pt !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Grade de 3 colunas fluida */
+.grade-diagramas-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10pt !important;
+    width: 100% !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+}
+
+/* Evita que um teclado seja cortado ao meio na virada da folha */
+.card-acorde-item {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 2pt 0 4pt 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+.card-acorde-nome {
+    color: #000000 !important;
+    font-size: 10.5pt !important;
+    font-weight: 800 !important;
+    margin-bottom: 3pt !important;
+    text-align: center !important;
+}
+
+/* Mini Teclado Compacto e Proporcional para Papel A4 */
+.mini-diagrama.piano-container {
+    height: 34pt !important;
+    background-color: #000000 !important;
+    border: 0.4pt solid #000000 !important;
+    padding: 0.8pt !important;
+    gap: 0.8pt !important;
+    border-radius: 2pt !important;
+}
+
+.mini-diagrama .key-w {
+    background: #ffffff !important;
+    border: 0.2pt solid #dddddd !important;
+    border-radius: 0 0 1pt 1pt !important;
+}
+
+.mini-diagrama .key-b {
+    background: #111111 !important;
+}
+
+/* Destaques das Teclas Ativas no Papel */
+.mini-diagrama .key-w.active {
+    background-color: #d1d5db !important;
+    border-color: #9ca3af !important;
+}
+
+.mini-diagrama .key-b.active {
+    background-color: #9ca3af !important;
+    outline: 0.4pt solid #000000 !important;
+}
+
+.mini-diagrama .key-w.key-bass {
+    background-color: #93c5fd !important;
+    border-color: #60a5fa !important;
+}
+
+.mini-diagrama .key-b.key-bass {
+    background-color: #60a5fa !important;
+    outline: 0.4pt solid #000000 !important;
+}
+
+/* Modo TXT: oculta os diagramas */
+.only-text-mode .painel-diagramas-container {
+    display: none !important;
+}
+
+/* ==========================================================================
+   TEMA CLARO (LIGHT-THEME) - ADAPTAÇÃO DO PAINEL DE DIAGRAMAS
+   ========================================================================== */
+
+/* Botão Disparador no Modo Claro */
+body.light-theme .btn-diagramas-cifra {
+  background-color: #f1f3f5;
+  color: #1f2937;
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .btn-diagramas-cifra:hover {
+  background-color: #FFC502;
+  color: #111827;
+  border-color: #FFC502;
+}
+
+/* Painel Container com fundo claro suave e sombra limpa */
+body.light-theme .painel-diagramas-container {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+body.light-theme .painel-diagramas-header {
+  border-bottom-color: #e2e8f0;
+}
+
+body.light-theme .painel-diagramas-titulo {
+  color: #b45309; /* Tom ocre/dourado escuro para alto contraste na leitura */
+}
+
+body.light-theme .btn-fechar-painel {
+  color: #64748b;
+}
+
+body.light-theme .btn-fechar-painel:hover {
+  color: #0f172a;
+}
+
+/* Card do Acorde transparente/integrado */
+body.light-theme .card-acorde-item {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+body.light-theme .card-acorde-item:hover {
+  border-color: #cbd5e1;
+}
+
+/* Nome do Acorde escuro e de fácil leitura */
+body.light-theme .card-acorde-nome {
+  color: #0f172a;
+}
+
+/* Teclas Brancas com borda nítida sobre fundo claro */
+body.light-theme .mini-diagrama .key-w {
+  border: 0.5px solid #e2e8f0;
 }

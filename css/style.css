@@ -1544,5 +1544,345 @@ body.light-theme .speed-slider::-moz-range-track {
     }
 }
 
+/* ==========================================================================
+   DOZE TECLAS | SISTEMA DE DIAGRAMAS DE ACORDES (COMPLETO E RESPONSIVO)
+   ========================================================================== */
 
+/* --- 1 MOBILE --- */
 
+/* --- BOTÃO DISPARADOR --- */
+.cifra-actions-footer {
+  display: flex;
+  justify-content: flex-start;
+  margin: 30px 0 15px 0;
+  width: 100%;
+}
+
+.btn-diagramas-cifra {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #2a2f36;
+  color: #FFC502;
+  border: 1px solid rgba(255, 197, 2, 0.3);
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-diagramas-cifra:hover {
+  background-color: #FFC502;
+  color: #121417;
+}
+
+/* --- PAINEL CONTAINER MOBILE --- */
+.painel-diagramas-container {
+  width: 100%;
+  margin: 15px 0 40px 0;
+  background-color: #242930;
+  border-radius: 16px;
+  padding: 18px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.painel-diagramas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  /* border-bottom: 1px solid rgba(255, 255, 255, 0.06); */
+}
+
+.painel-diagramas-titulo {
+  font-size: 11px;
+  color: #FFC502;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.btn-fechar-painel {
+  background: transparent;
+  border: none;
+  color: #b0b3b8;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* --- GRADE MOBILE (1 POR LINHA) --- */
+.grade-diagramas-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  width: 100%;
+}
+
+.card-acorde-item {
+  background-color: #31363d;
+  border-radius: 10px;
+  padding: 12px 10px 14px 10px;
+  box-sizing: border-box;
+  /* border: 1px solid rgba(255, 255, 255, 0.05); */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-acorde-nome {
+  font-size: 16px;
+  font-weight: 800;
+  color: #FFC502;
+  margin-bottom: 8px;
+}
+
+/* --- MINI PIANO BASE --- */
+.mini-diagrama.piano-container {
+  position: relative;
+  width: 100%;
+  height: 64px;
+  background-color: #000000;
+  padding: 2px;
+  border-radius: 6px;
+  display: flex;
+  gap: 2px;
+  box-sizing: border-box;
+}
+
+.mini-diagrama .key-w {
+  flex: 1;
+  background: #ffffff;
+  height: 100%;
+  border-radius: 0 0 2px 2px;
+  z-index: 1;
+}
+
+.mini-diagrama .key-b {
+  position: absolute;
+  background: #121417;
+  width: 4.2%;
+  height: 55%;
+  z-index: 2;
+  border-radius: 0 0 2px 2px;
+  border-left: 0.5px solid #000000;
+  border-right: 0.5px solid #000000;
+}
+
+.mini-diagrama .key-w.active {
+  background-color: #FFC502 !important;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.mini-diagrama .key-b.active {
+  background-color: #FFC502 !important;
+  outline: 1.5px solid #121417;
+  outline-offset: 0px;
+  z-index: 10;
+}
+
+.mini-diagrama .key-w.key-bass {
+  background-color: #38bdf8 !important;
+}
+
+.mini-diagrama .key-b.key-bass {
+  background-color: #38bdf8 !important;
+  outline: 1.5px solid #121417;
+  outline-offset: 0px;
+  z-index: 10;
+}
+
+/* ==========================================================================
+   AJUSTE DE DESKTOP: TECLADOS LARGOS, 3 COLUNAS E ALTA LEGIBILIDADE
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  /* Painel mais amplo e alinhado ao fluxo da cifra */
+  .painel-diagramas-container {
+    max-width: 1280px;
+    padding: 30px 28px;
+    border-radius: 20px;
+  }
+
+  /* 3 colunas em vez de 4: dá espaço real para cada teclado respirar */
+  .grade-diagramas-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  /* Card espaçoso */
+  .card-acorde-item {
+    padding: 16px 18px 18px 18px;
+    border-radius: 14px;
+    /* background-color: #1a1e24; */
+  }
+
+  .card-acorde-nome {
+    font-size: 19px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Mini Piano com proporção real e teclas largas */
+  .card-acorde-item .mini-diagrama.piano-container {
+    height: 66px;
+    padding: 2.5px;
+    gap: 2px;
+    border-radius: 6px;
+  }
+
+  /* Teclas Pretas com largura visual clara */
+  .mini-diagrama .key-b {
+    width: 4.8%;
+    height: 56%;
+  }
+}
+
+/* Telas Ultra-Wide / Monitores Grandes (acima de 1600px) */
+@media (min-width: 1600px) {
+  .painel-diagramas-container {
+    max-width: 1400px;
+  }
+
+  .grade-diagramas-grid {
+    gap: 26px;
+  }
+
+  .card-acorde-item .mini-diagrama.piano-container {
+    height: 72px;
+  }
+}
+
+/* ==========================================================================
+   TEMA CLARO (LIGHT-THEME) - FORÇAR SOBREPOSIÇÃO NO PAINEL DE DIAGRAMAS
+   ========================================================================== */
+
+/* 1. Botão 'Ver Acordes' no tema claro */
+body.light-theme .btn-diagramas-cifra {
+  background-color: #e5e7eb !important;
+  color: #1f2937 !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-theme .btn-diagramas-cifra:hover {
+  background-color: #FFC502 !important;
+  color: #111827 !important;
+  border-color: #FFC502 !important;
+}
+
+/* 2. Container do Painel com fundo claro */
+body.light-theme .painel-diagramas-container {
+  background-color: #f3f4f6 !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 3. Cabeçalho e Botão Fechar (X) */
+body.light-theme .painel-diagramas-header {
+  border-bottom-color: #e5e7eb !important;
+}
+
+body.light-theme .painel-diagramas-titulo {
+  color: #b45309 !important;
+}
+
+body.light-theme .btn-fechar-painel {
+  color: #6b7280 !important;
+}
+
+body.light-theme .btn-fechar-painel:hover {
+  color: #111827 !important;
+}
+
+/* 4. Cards individuais dos acordes */
+body.light-theme .card-acorde-item {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.light-theme .card-acorde-item:hover {
+  border-color: #cbd5e1 !important;
+}
+
+/* 5. Nome do acorde escuro para leitura clara */
+body.light-theme .card-acorde-nome {
+  color: #111827 !important;
+}
+
+/* 6. Contorno das teclas brancas no fundo claro */
+body.light-theme .mini-diagrama .key-w {
+  border: 0.5px solid #e5e7eb !important;
+}
+
+/* 1. CELULAR (até 599px): 1 acorde por linha */
+.grade-diagramas-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  width: 100%;
+}
+
+.card-acorde-item .mini-diagrama.piano-container {
+  height: 64px;
+}
+
+/* 2. TABLET (600px até 1023px): 2 colunas equilibradas */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .painel-diagramas-container {
+    max-width: 100%;
+    padding: 22px;
+  }
+
+  .grade-diagramas-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .card-acorde-item {
+    padding: 14px 12px 16px 12px;
+  }
+
+  .card-acorde-nome {
+    font-size: 17px;
+    margin-bottom: 10px;
+  }
+
+  .card-acorde-item .mini-diagrama.piano-container {
+    height: 60px; /* Proporção ideal para tela de tablet */
+  }
+}
+
+/* 3. DESKTOP (1024px+): 3 colunas amplas */
+@media (min-width: 1024px) {
+  .painel-diagramas-container {
+    max-width: 1280px;
+    padding: 30px 28px;
+    border-radius: 20px;
+  }
+
+  .grade-diagramas-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  .card-acorde-item {
+    padding: 16px 18px 18px 18px;
+  }
+
+  .card-acorde-nome {
+    font-size: 19px;
+    margin-bottom: 12px;
+  }
+
+  .card-acorde-item .mini-diagrama.piano-container {
+    height: 66px;
+  }
+}

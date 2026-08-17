@@ -1,5 +1,7 @@
 // ui-controls.js - O Maestro da Interface (Doze Teclas)
 
+import { parseAcorde, renderMiniTeclado } from './chord-diagram-engine.js';
+
 // 🛡️ SANITIZAÇÃO ANTI-XSS: Escapa caracteres HTML antes de injetar texto (títulos, artistas)
 // vindo do Supabase via innerHTML, impedindo execução de <script> ou tags maliciosas.
 function escapeHtml(str) {
@@ -590,3 +592,67 @@ document.getElementById('btn-preview')?.addEventListener('click', () => {
 // exclusivo por gerenciar a alternância entre temas claro e escuro.
 
 
+// --- RENDERIZADOR DE DIAGRAMAS DE TECLADO ---
+function configurarPainelDiagramas() {
+  document.addEventListener('click', (e) => {
+    const btnToggle = e.target.closest('#btn-toggle-diagramas');
+    if (btnToggle) {
+      const painel = document.getElementById('painel-diagramas-cifra');
+      const grade = document.getElementById('grade-diagramas');
+
+      if (!painel || !grade) return;
+
+      if (painel.style.display === 'block') {
+        painel.style.display = 'none';
+        return;
+      }
+
+      grade.innerHTML = '';
+      const acordesUnicos = new Set();
+      const ignorar = new Set(['|', '||', '%', 'intro', 'solo', 'fim', 'final', 'refrão', 'refrao', 'ponte', 'verso', 'c:', 't:', 'b:']);
+
+      document.querySelectorAll('.c-chord').forEach(el => {
+        const txt = el.textContent.replace(/[\[\]]/g, '').trim();
+        if (txt && !ignorar.has(txt.toLowerCase()) && !/^\d+x$/.test(txt)) {
+          acordesUnicos.add(txt);
+        }
+      });
+
+      if (acordesUnicos.size === 0) {
+        grade.innerHTML = '<p style="color: #b0b3b8; font-size: 13px; grid-column: 1/-1; text-align: center;">Nenhum acorde detectado nesta música.</p>';
+        painel.style.display = 'block';
+        return;
+      }
+
+      acordesUnicos.forEach(acordeStr => {
+        const info = parseAcorde(acordeStr);
+        if (!info) return;
+
+        const card = document.createElement('div');
+        card.className = 'card-acorde-item';
+
+        const titulo = document.createElement('div');
+        titulo.className = 'card-acorde-nome';
+        titulo.textContent = info.original;
+        card.appendChild(titulo);
+
+        const teclado = renderMiniTeclado(info);
+        card.appendChild(teclado);
+
+        grade.appendChild(card);
+      });
+
+      painel.style.display = 'block';
+      painel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+
+    const btnFechar = e.target.closest('#btn-fechar-diagramas');
+    if (btnFechar) {
+      const painel = document.getElementById('painel-diagramas-cifra');
+      if (painel) painel.style.display = 'none';
+    }
+  });
+}
+
+configurarPainelDiagramas();
