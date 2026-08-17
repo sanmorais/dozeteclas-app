@@ -45,6 +45,8 @@ export const TABELA_INTERVALOS = {
   "madd9": [0, 3, 7, 14],
   "m9": [0, 3, 7, 10, 14],
   "7M(9)": [0, 4, 7, 11, 14],
+  "m7(9)": [0, 2, 3, 7, 10],
+  "m7/9": [0, 2, 3, 7, 10],
 
   // Tensões II-V-I (Dominantes Alterados)
   "7(b9)": [0, 4, 7, 10, 13],
