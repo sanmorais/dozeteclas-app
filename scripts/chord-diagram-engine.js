@@ -20,7 +20,8 @@ export const TABELA_INTERVALOS = {
   // Quinta Aumentada (5#)
   "5#": [0, 4, 8],
   "aug": [0, 4, 8],
-  "7(5#)": [0, 4, 8, 10],
+  "7(5#)": [0, 4, 8, 10],       // Fundamental (0), 3M (4), 5Aum (8), 7m (10)
+  "7(#5)": [0, 4, 8, 10],
   "7M(5#)": [0, 4, 8, 11],
 
   // Diminutos & Meio-diminutos
