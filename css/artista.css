@@ -1,157 +1,232 @@
-/* Estilos para a página de categorias por Artista */
+/* =========================================================================
+   🎨 PÁGINA DO ARTISTA (DOZE TECLAS) - PERFIL & LISTA DE MÚSICAS
+   ========================================================================= */
+
 .portal-artista-page {
-    background-color: #121416; /* Fundo escuro premium */
+    background-color: #121416;
     color: #ffffff;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
 }
 
-.artista-header-block {
-    text-align: center;
-    padding: 40px 20px 20px 20px;
-}
-
-.subtitle-label {
-    color: #ffd700; /* O dourado do Doze Teclas para destacar */
-    font-size: 0.8rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    margin-bottom: 5px;
-}
-
-#nome-artista-titulo {
-    font-size: 2.5rem;
-    margin: 0;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-}
-
-.divider-line {
-    width: 60px;
-    height: 4px;
-    background-color: #ffd700;
-    margin: 15px auto 0 auto;
-    border-radius: 2px;
-}
-
-.grid-musicas-artista {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 0 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Espaçamento entre os cards */
-}
-
-/* Card de cada música do repertório */
-.card-musica-item {
-    background-color: #1a1d20;
-    border: 1px solid #2d3238;
-    border-radius: 8px;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between; /* Empurra um para cada lado */
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    gap: 15px; /* Garante que o título nunca encoste no botão */
-}
-
-.card-musica-item:hover {
-    background-color: #24292e;
-    border-color: #ffd700;
-    transform: translateY(-2px); /* Efeito sutil de flutuação */
-}
-
-.card-info {
-    flex: 1; /* Ocupa o máximo de espaço possível na esquerda */
-    min-width: 0; /* Evita que o flexbox estoure a largura da tela */
-}
-
-.card-action {
-    flex-shrink: 0; /* Impede que o botão seja esmagado por títulos grandes */
-    white-space: nowrap; /* Impede que o "VER CIFRA" vire duas linhas */
-    text-align: right;
-}
-
-.card-song-title {
-    margin: 0 0 5px 0;
-    font-size: 1.25rem;
-    color: #ffffff;
-    word-wrap: break-word; /* Permite a quebra de palavra se necessário */
-    white-space: normal;   /* Força o texto a quebrar linha em vez de empurrar o botão */
-}
-
-.card-song-meta {
-    margin: 0;
-    font-size: 0.85rem;
-    color: #8b949e;
-}
-
-.card-song-meta span {
-    color: #ffffff;
-    font-weight: 600;
-}
-
-.btn-acessar-cifra {
-    color: #ffd700;
-    font-size: 0.9rem;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-}
-
-/* Placeholders e Mensagens */
-.loading-placeholder, .no-songs-box, .error-msg {
-    text-align: center;
-    padding: 40px;
-    color: #8b949e;
-    background-color: #1a1d20;
-    border-radius: 8px;
-    border: 1px dashed #2d3238;
-}
-
-/* Força o link de voltar a ignorar o roxo padrão do navegador */
-.btn-voltar, 
-.btn-voltar:visited {
-    color: #ffd700 !important; /* Mantém o dourado sempre */
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    transition: opacity 0.2s ease-in-out;
-}
-
-/* Efeito sutil quando o usuário passar o mouse por cima no computador */
-.btn-voltar:hover {
-    opacity: 0.8;
-    text-decoration: none;
-}
-
-/* Cabeçalho padrão das páginas de filtro (Artista/Álbum/Playlist) */
+/* --- Cabeçalho Superior Minimalista --- */
 .artista-page-header {
-    padding: 20px;
+    padding: 18px 20px;
     background-color: #121416;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .artista-page-header .header-container {
-    max-width: 800px;
+    max-width: 860px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-/* Legenda auxiliar (ex: "Canção Nova (2026)") usada em álbuns */
-.album-subinfo {
-    color: #a0a0a0;
-    font-size: 0.95rem;
-    margin-top: 6px;
+.btn-voltar, 
+.btn-voltar:visited {
+    color: #f1c40f !important;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: opacity 0.2s ease;
 }
 
-/* ==========================================================
-   ☀️ Botão de Alternância de Tema (reaproveitado do style.css)
-   ========================================================== */
+.btn-voltar:hover {
+    opacity: 0.8;
+}
+
+/* --- Container Principal --- */
+.container-artista {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+}
+
+/* --- Hero Profile Card do Artista --- */
+.artista-hero-card {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    background: #18181f;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 36px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.artista-avatar-wrapper {
+    flex-shrink: 0;
+}
+
+.artista-avatar-img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(241, 196, 15, 0.35);
+    background-color: #24242e;
+    display: block;
+}
+
+.artista-detalhes {
+    flex: 1;
+    min-width: 0;
+}
+
+.badge-acervo {
+    display: inline-block;
+    color: #f1c40f;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.artista-detalhes h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+    line-height: 1.2;
+}
+
+.artista-bio {
+    color: #9ea3b0;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 14px 0;
+}
+
+.artista-bio:empty {
+    display: none;
+}
+
+.stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #d1d5db;
+}
+
+.stat-pill i {
+    color: #f1c40f;
+}
+
+/* --- Seção de Repertório e Título --- */
+.secao-repertorio-header {
+    margin-bottom: 18px;
+}
+
+.secao-repertorio-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f3f4f6;
+    margin: 0 0 8px 0;
+}
+
+.divider-line {
+    width: 40px;
+    height: 3px;
+    background: #f1c40f;
+    border-radius: 2px;
+}
+
+/* --- Lista de Músicas (Cards do Repertório) --- */
+.grid-musicas-artista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.grid-musicas-artista .card-sugestao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #18181f;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    box-sizing: border-box;
+    gap: 16px;
+}
+
+.grid-musicas-artista .card-sugestao:hover {
+    background-color: #22222a;
+    border-color: rgba(241, 196, 15, 0.5);
+    transform: translateY(-2px);
+}
+
+.grid-musicas-artista .cs-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.grid-musicas-artista .cs-textos-bloco {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.grid-musicas-artista .cs-titulo {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.grid-musicas-artista .cs-desc {
+    color: #8c8c9a;
+    font-size: 13px;
+}
+
+.grid-musicas-artista .cs-desc strong {
+    color: #f1c40f;
+    font-weight: 700;
+}
+
+.grid-musicas-artista .cs-seta {
+    color: #f1c40f;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.grid-musicas-artista .card-sugestao:hover .cs-seta {
+    transform: translateX(4px);
+}
+
+/* --- Estados de Carregamento e Mensagens --- */
+.loading-placeholder, 
+.empty-state, 
+.error-msg {
+    text-align: center;
+    padding: 36px 20px;
+    color: #8b949e;
+    background-color: #18181f;
+    border-radius: 10px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    font-size: 14px;
+}
+
+/* --- Botão de Tema --- */
 .theme-toggle-btn {
     background: none;
     border: none;
@@ -161,35 +236,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    padding: 0 4px;
     cursor: pointer;
-    transition: color 0.2s ease, transform 0.15s ease;
+    transition: color 0.2s ease;
 }
 
 .theme-toggle-btn:hover {
-    color: #ffd700;
+    color: #f1c40f;
 }
 
-.theme-toggle-btn:active {
-    transform: scale(0.9);
-}
-
-.theme-toggle-btn .bi-toggle-on {
-    color: #ffd700;
-}
-
-/* ==========================================================
-   ☀️ MODO CLARO (Light Theme) - Páginas de Filtro do Acervo
-   ========================================================== */
+/* =========================================================================
+   ☀️ MODO CLARO (Light Theme)
+   ========================================================================= */
 body.light-theme.portal-artista-page {
-    background-color: #ffffff;
+    background-color: #f8f9fa;
     color: #1a1d20;
 }
 
 body.light-theme .artista-page-header {
-    background-color: #f8f9fa !important;
-    border-bottom: 1px solid #dfe1e5;
+    background-color: #ffffff;
+    border-bottom-color: #e5e7eb;
 }
 
 body.light-theme .btn-voltar,
@@ -197,59 +262,95 @@ body.light-theme .btn-voltar:visited {
     color: #b8860b !important;
 }
 
-body.light-theme #nome-artista-titulo,
-body.light-theme #playlist-title {
-    color: #121416;
+body.light-theme .artista-hero-card {
+    background: #ffffff;
+    border-color: #e5e7eb;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-body.light-theme .subtitle-label {
+body.light-theme .artista-detalhes h1 {
+    color: #111827;
+}
+
+body.light-theme .artista-bio {
+    color: #4b5563;
+}
+
+body.light-theme .stat-pill {
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+    color: #374151;
+}
+
+body.light-theme .secao-repertorio-header h2 {
+    color: #111827;
+}
+
+body.light-theme .grid-musicas-artista .card-sugestao {
+    background-color: #ffffff;
+    border-color: #e5e7eb;
+}
+
+body.light-theme .grid-musicas-artista .card-sugestao:hover {
+    background-color: #f9fafb;
+    border-color: #b8860b;
+}
+
+body.light-theme .grid-musicas-artista .cs-titulo {
+    color: #111827;
+}
+
+body.light-theme .grid-musicas-artista .cs-desc {
+    color: #6b7280;
+}
+
+body.light-theme .grid-musicas-artista .cs-desc strong {
     color: #b8860b;
 }
 
-body.light-theme .album-subinfo {
-    color: #4b5563 !important;
+body.light-theme .grid-musicas-artista .cs-seta {
+    color: #b8860b;
 }
 
-body.light-theme .card-musica-item,
-body.light-theme .card-sugestao {
-    background-color: #ffffff;
-    border-color: #dfe1e5;
-}
-
-body.light-theme .card-musica-item:hover {
-    background-color: #f8f9fa;
-    border-color: #ffd700;
-}
-
-body.light-theme .card-song-title,
-body.light-theme .musica-titulo {
-    color: #121416 !important;
-}
-
-body.light-theme .musica-titulo span {
-    color: #b8860b !important;
-}
-
-body.light-theme .card-song-meta,
-body.light-theme .musica-autor {
-    color: #4b5563 !important;
-}
-
-body.light-theme .card-song-meta span {
-    color: #121416;
-}
-
-body.light-theme .btn-acessar-cifra,
-body.light-theme .btn-ver {
-    color: #b8860b !important;
-}
-
-body.light-theme .loading-placeholder,
-body.light-theme .no-songs-box,
+body.light-theme .loading-placeholder, 
+body.light-theme .empty-state, 
 body.light-theme .error-msg {
-    background-color: #f8f9fa;
-    color: #4b5563;
-    border-color: #dfe1e5;
+    background-color: #ffffff;
+    color: #6b7280;
+    border-color: #e5e7eb;
 }
 
+/* =========================================================================
+   📱 RESPONSIVIDADE MOBILE
+   ========================================================================= */
+@media (max-width: 640px) {
+    .container-artista {
+        padding: 16px 14px 40px;
+    }
 
+    .artista-hero-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 22px 16px;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .artista-avatar-img {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto;
+    }
+
+    .artista-detalhes h1 {
+        font-size: 22px;
+    }
+
+    .divider-line {
+        margin: 0 auto;
+    }
+
+    .grid-musicas-artista .card-sugestao {
+        padding: 14px 16px;
+    }
+}

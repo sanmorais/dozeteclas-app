@@ -1,155 +1,144 @@
-// artista.js - Controle Dinâmico do Catálogo por Artista
+// scripts/artista.js - Renderização do Perfil e Repertório com Conversão de Tons
 
-import { slugify } from './slug-utils.js';
+const SVG_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='48' height='48'%3E%3Crect width='48' height='48' fill='%232a2a35'/%3E%3Ccircle cx='24' cy='18' r='8' fill='%23555566'/%3E%3Cpath d='M10 40c0-7.7 6.3-14 14-14s14 6.3 14 14z' fill='%23555566'/%3E%3C/svg%3E";
 
-// 🛡️ SANITIZAÇÃO ANTI-XSS: Escapa texto vindo do Supabase (título, autor) antes de
-// injetar via innerHTML, impedindo execução de <script>/tags maliciosas salvas no banco.
-function escapeHtml(str) {
-    if (str === null || str === undefined) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+// Tabela de conversão cromática (0 = C até 11 = B)
+const ESCALA_NOTAS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+
+function formatarTom(valorTom) {
+    if (valorTom === null || valorTom === undefined || valorTom === '') return 'N/D';
+    
+    // Se o valor for um número (ou string numérica como "7", "0", "5")
+    if (!isNaN(valorTom) && valorTom !== true && valorTom !== false) {
+        const idx = ((parseInt(valorTom, 10) % 12) + 12) % 12;
+        return ESCALA_NOTAS[idx];
+    }
+    
+    // Se já estiver como texto (ex: "G", "Am", "F#")
+    return valorTom.toString().trim();
 }
 
-// 🎯 FUNÇÃO CENTRAL DE EXECUÇÃO
-async function carregarCatalogoArtista() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const slugArtista = urlParams.get('a');
+function getSlugFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('a') || '';
+}
 
+function normalizar(str) {
+    return (str || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '')
+        .trim();
+}
+
+function getSupabaseClient() {
+    if (typeof _supabase !== 'undefined' && typeof _supabase.from === 'function') return _supabase;
+    if (typeof supabaseClient !== 'undefined' && typeof supabaseClient.from === 'function') return supabaseClient;
+    if (typeof db !== 'undefined' && typeof db.from === 'function') return db;
+    if (typeof supabase !== 'undefined' && typeof supabase.from === 'function') return supabase;
+
+    if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
+        if (window.SUPABASE_URL && window.SUPABASE_KEY) {
+            return supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+        }
+    }
+    return null;
+}
+
+async function inicializarPaginaArtista() {
+    const slug = getSlugFromUrl();
     const tituloEl = document.getElementById('nome-artista-titulo');
-    const container = document.getElementById('lista-musicas-container');
+    const bioEl = document.getElementById('artista-bio');
+    const avatarEl = document.getElementById('artista-avatar');
+    const totalCifrasEl = document.getElementById('total-cifras-badge');
+    const listaContainer = document.getElementById('lista-musicas-container');
 
-    if (!slugArtista) {
-        console.error("Nenhum artista especificado na URL.");
-        if (tituloEl) tituloEl.innerText = "Artista não encontrado";
-        if (container) container.innerHTML = `<p class="error-msg">Por favor, selecione um artista válido na página inicial.</p>`;
+    if (!slug) {
+        if (tituloEl) tituloEl.textContent = 'Artista não especificado';
+        if (listaContainer) listaContainer.innerHTML = '<p class="error-msg">Nenhum artista foi selecionado.</p>';
+        return;
+    }
+
+    const client = getSupabaseClient();
+    if (!client) {
+        console.error('❌ Cliente Supabase não encontrado no escopo global.');
         return;
     }
 
     try {
-        // 🎯 CAPTURA INTELIGENTE DE ESCOPO: Tenta buscar de qualquer escopo global disponível
-        const instanciaSupabase = window._supabase || (typeof _supabase !== 'undefined' ? _supabase : null);
+        // 1. Busca os dados do artista
+        const { data: artistasDb, error: errArtista } = await client
+            .from('artistas')
+            .select('nome, foto_url, bio');
 
-        if (!instanciaSupabase) {
-            throw new Error("A instância do Supabase não foi encontrada no escopo.");
+        if (errArtista) throw errArtista;
+
+        const artistaAtual = artistasDb?.find(a => normalizar(a.nome) === normalizar(slug.replace(/-/g, ' ')));
+        const nomeOficial = artistaAtual ? artistaAtual.nome : slug.replace(/-/g, ' ').toUpperCase();
+
+        // 2. Preenche os dados no Hero Card
+        if (tituloEl) tituloEl.textContent = nomeOficial;
+        document.title = `${nomeOficial} - Cifras e Repertório | Doze Teclas`;
+
+        if (bioEl && artistaAtual?.bio) {
+            bioEl.textContent = artistaAtual.bio;
         }
 
-        // 1️⃣ RESOLUÇÃO DO SLUG: busca todos os nomes de autor cadastrados e encontra
-        // qual deles, ao ser slugificado, corresponde exatamente ao slug recebido na URL.
-        // Isso permite URLs limpas (?a=adoracao-e-vida) sem depender de colunas extras
-        // no banco, mantendo a integridade mesmo com acentos/maiúsculas variados.
-        // 🐛 MESMA CORREÇÃO DE BUG APLICADA NO catalogo.js: sem `.order()` e sem um
-        // `.limit()` generoso, o PostgREST pode devolver as linhas em ordem física
-        // não-determinística (afetada por UPDATEs/MVCC), fazendo com que o único
-        // registro de um artista "suma" da lista se ele for empurrado além do limite
-        // padrão de linhas retornadas. Isso faria o próprio artista.html reportar
-        // "Nenhum artista encontrado" mesmo com a música intacta no banco.
-        const { data: linhasAutores, error: errAutores } = await instanciaSupabase
-            .from('musicas')
-            .select('autor')
-            .not('autor', 'is', null)
-            .order('autor', { ascending: true })
-            .limit(2000);
-
-        if (errAutores) {
-            console.error('Erro no catálogo do artista:', errAutores);
-            throw errAutores;
-        }
-
-
-        const mapaAutores = new Map();
-        (linhasAutores || []).forEach(linha => {
-            const nome = (linha.autor || '').trim();
-            if (!nome) return;
-            const chave = nome.toLowerCase();
-            if (!mapaAutores.has(chave)) {
-                mapaAutores.set(chave, nome);
+        if (avatarEl) {
+            let fotoFinal = SVG_FALLBACK;
+            if (artistaAtual?.foto_url) {
+                if (artistaAtual.foto_url.startsWith('http://') || artistaAtual.foto_url.startsWith('https://')) {
+                    fotoFinal = artistaAtual.foto_url;
+                } else {
+                    const { data } = client.storage.from('artista').getPublicUrl(artistaAtual.foto_url);
+                    fotoFinal = data?.publicUrl || SVG_FALLBACK;
+                }
             }
-        });
-
-        const nomeReal = Array.from(mapaAutores.values()).find(nome => slugify(nome) === slugArtista);
-
-        if (!nomeReal) {
-            console.error(`Nenhum artista encontrado para o slug: ${slugArtista}`);
-            if (tituloEl) tituloEl.innerText = "Artista não encontrado";
-            if (container) container.innerHTML = `<p class="error-msg">Não encontramos este artista no acervo.</p>`;
-            return;
+            avatarEl.src = fotoFinal;
+            avatarEl.onerror = () => { avatarEl.src = SVG_FALLBACK; };
         }
 
-        // 🎯 Exibe o nome ORIGINAL formatado (com acentos/maiúsculas corretos), nunca a versão com hífens
-        if (tituloEl) tituloEl.innerText = nomeReal;
-        document.title = `${nomeReal} | Doze Teclas`;
-
-        document.getElementById('og-title')?.setAttribute('content', `Cifras de ${nomeReal} | Doze Teclas`);
-        document.getElementById('og-desc')?.setAttribute('content', `Acesse o repertório completo e revisado de ${nomeReal} para teclado.`);
-
-        // 2️⃣ BUSCA EXATA: agora que temos o nome real cadastrado no banco, buscamos
-        // as músicas com correspondência EXATA (.eq), sem depender de ilike/wildcards.
-        const { data: musicas, error } = await instanciaSupabase
+        // 3. Busca o repertório do artista
+        const { data: musicas, error: errMusicas } = await client
             .from('musicas')
-            .select('titulo, autor, slug, tom, compasso')
-            .eq('autor', nomeReal)
+            .select('id, titulo, tom, slug')
+            .ilike('autor', `%${nomeOficial}%`)
             .order('titulo', { ascending: true });
 
-        if (error) throw error;
-        if (!container) return;
+        if (errMusicas) throw errMusicas;
 
-        container.innerHTML = "";
+        // 4. Renderiza as músicas com o tom devidamente formatado
+        const qtd = musicas?.length || 0;
+        if (totalCifrasEl) {
+            totalCifrasEl.innerHTML = `<i class="bi bi-music-note-beamed"></i> ${qtd} ${qtd === 1 ? 'cifra disponível' : 'cifras disponíveis'}`;
+        }
 
         if (!musicas || musicas.length === 0) {
-            container.innerHTML = `
-                <div class="no-songs-box">
-                    <p>Ainda estamos revisando e preparando as cifras deste artista.</p>
-                    <small>Em breve o catálogo completo estará disponível!</small>
-                </div>`;
+            listaContainer.innerHTML = '<div class="empty-state">Nenhuma cifra cadastrada para este artista ainda.</div>';
             return;
         }
 
-        const escalaExibicao = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-
-        musicas.forEach(musica => {
-            let tomVisual = "--";
-            let tomRaw = parseInt(musica.tom, 10);
-            if (!isNaN(tomRaw)) {
-                let idx = (tomRaw - 3 + 12) % 12;
-                tomVisual = escalaExibicao[idx];
-            }
-
-            const card = document.createElement('div');
-            card.className = 'card-musica-item';
-            // 🛡️ Título escapado para impedir XSS armazenado vindo do banco
-            card.innerHTML = `
-                <div class="card-info">
-                    <h3 class="card-song-title">${escapeHtml(musica.titulo)}</h3>
-                    <p class="card-song-meta">TOM ORIGINAL: <span>${escapeHtml(tomVisual)}</span></p>
+        listaContainer.innerHTML = musicas.map(musica => `
+            <a href="cifra.html?s=${musica.slug}" class="card-sugestao">
+                <div class="cs-info">
+                    <div class="cs-textos-bloco">
+                        <div class="cs-titulo">${musica.titulo}</div>
+                        <div class="cs-desc">Tom Original: <strong>${formatarTom(musica.tom)}</strong></div>
+                    </div>
                 </div>
-                <div class="card-action">
-                    <span class="btn-acessar-cifra">VER ▶</span>
-                </div>
-            `;
+                <div class="cs-seta">VER ➔</div>
+            </a>
+        `).join('');
 
-            card.addEventListener('click', () => {
-                // 🛡️ encodeURIComponent evita que o slug quebre a URL ou injete parâmetros extras
-                window.location.href = `cifra.html?s=${encodeURIComponent(musica.slug)}`;
-            });
-
-            container.appendChild(card);
-        });
+        console.log(`✅ Repertório carregado: ${nomeOficial} (${qtd} cifras formatadas).`);
 
     } catch (err) {
-        console.error("Erro crítico ao carregar catálogo do artista:", err);
-        if (container) container.innerHTML = `<p class="error-msg">Erro ao conectar com o acervo. Tente novamente mais tarde.</p>`;
+        console.error('❌ Erro ao carregar página do artista:', err);
+        if (listaContainer) {
+            listaContainer.innerHTML = '<div class="error-msg">Erro ao carregar o repertório do artista.</div>';
+        }
     }
 }
 
-// 🎯 MOTOR DE CHECAGEM: Aguarda qualquer declaração do Supabase ficar pronta antes de disparar
-const checarSupabase = setInterval(() => {
-    const existeNoEscopo = window._supabase || typeof _supabase !== 'undefined';
-    if (existeNoEscopo) {
-        clearInterval(checarSupabase);
-        carregarCatalogoArtista();
-    }
-}, 50);
+document.addEventListener('DOMContentLoaded', inicializarPaginaArtista);

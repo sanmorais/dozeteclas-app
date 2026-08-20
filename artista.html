@@ -24,9 +24,42 @@
         </div>
     </header>
 
-
-
     <main class="container-artista">
+    <!-- Hero Profile do Artista -->
+    <section class="artista-hero-card">
+        <div class="artista-avatar-wrapper">
+            <img 
+                id="artista-avatar" 
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%232a2a35'/%3E%3Ccircle cx='24' cy='18' r='8' fill='%23555566'/%3E%3Cpath d='M10 40c0-7.7 6.3-14 14-14s14 6.3 14 14z' fill='%23555566'/%3E%3C/svg%3E" 
+                alt="Foto do Artista"
+                class="artista-avatar-img"
+            >
+        </div>
+
+        <div class="artista-detalhes">
+            <span class="badge-acervo">ARTISTA</span>
+            <h1 id="nome-artista-titulo">Carregando...</h1>
+            <p id="artista-bio" class="artista-bio"></p>
+            <div class="artista-stats">
+                <span id="total-cifras-badge" class="stat-pill"><i class="bi bi-music-note-beamed"></i> Carregando repertório...</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cabeçalho da Seção de Cifras -->
+    <div class="secao-repertorio-header">
+        <h2>Repertório Disponível</h2>
+        <div class="divider-line"></div>
+    </div>
+
+    <!-- Lista / Grid de Músicas -->
+    <div id="lista-musicas-container" class="grid-musicas-artista">
+        <div class="loading-placeholder">Buscando repertório no acervo...</div>
+    </div>
+    </main>
+
+
+    <!-- <main class="container-artista">
         <div class="artista-header-block">
             <p class="subtitle-label">– ACERVO –</p>
             <h1 id="nome-artista-titulo">Carregando artista...</h1>
@@ -36,13 +69,13 @@
         <div id="lista-musicas-container" class="grid-musicas-artista">
             <div class="loading-placeholder">Buscando repertório no acervo...</div>
         </div>
-    </main>
+    </main> -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="scripts/analytics.js" defer></script>
     <script src="scripts/supabase-db.js" defer></script> 
     <script src="scripts/theme-toggle.js" defer></script>
-    <script type="module" src="scripts/artista.js"></script>
+    <script src="scripts/artista.js" defer></script>
     <script type="module" src="scripts/ui-controls.js"></script>
 </body>
 

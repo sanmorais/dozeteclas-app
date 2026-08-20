@@ -1886,3 +1886,45 @@ body.light-theme .mini-diagrama .key-w {
     height: 66px;
   }
 }
+
+/* --- Novo elemento: Avatar do Artista no Card --- */
+.card-sugestao .cs-avatar {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  background-color: #2a2a35;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card-sugestao:hover .cs-avatar {
+  border-color: #f1c40f;
+  transform: scale(1.04);
+}
+
+/* Garante o alinhamento central da foto com os textos */
+.card-sugestao .cs-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Grid dos Destaques de Artistas */
+#grid-destaques-artistas {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Responsividade Mobile: volta para 1 coluna */
+@media (max-width: 768px) {
+  #grid-destaques-artistas {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
