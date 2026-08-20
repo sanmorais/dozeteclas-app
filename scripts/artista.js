@@ -8,13 +8,15 @@ const ESCALA_NOTAS = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb"
 function formatarTom(valorTom) {
     if (valorTom === null || valorTom === undefined || valorTom === '') return 'N/D';
     
-    // Se o valor for um número (ou string numérica como "7", "0", "5")
+    // Se o valor for numérico (ex: "7", "0", 5)
     if (!isNaN(valorTom) && valorTom !== true && valorTom !== false) {
-        const idx = ((parseInt(valorTom, 10) % 12) + 12) % 12;
+        const valorNumerico = parseInt(valorTom, 10);
+        // Subtrai 3 semitons para alinhar com o tom real da cifra
+        const idx = (((valorNumerico - 3) % 12) + 12) % 12;
         return ESCALA_NOTAS[idx];
     }
     
-    // Se já estiver como texto (ex: "G", "Am", "F#")
+    // Se já estiver salvo como texto (ex: "E", "G", "Am")
     return valorTom.toString().trim();
 }
 
