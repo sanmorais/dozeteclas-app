@@ -43,6 +43,10 @@
     } else {
       // Páginas Estáticas (Home, Catálogo, etc)
       urlFinal = `${window.location.origin}${window.location.pathname}`;
+      // Limpa index.html da URL final para SEO
+      if (urlFinal.endsWith('/index.html')) {
+        urlFinal = urlFinal.replace('/index.html', '/');
+      }
     }
 
     const imagemPadrao = `${window.location.origin}/assets/logo-dozeteclas-card.jpg`;
