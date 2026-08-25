@@ -367,7 +367,42 @@ function toggleColumns() {
     document.getElementById('btn-columns')?.classList.toggle('active');
 }
 
+function isInAppBrowser() {
+    return /Instagram|FBAN|FBAV|Twitter|TikTok/i.test(navigator.userAgent);
+}
+
+function showPrintAlert() {
+    // Cria um overlay de alerta elegante se não existir
+    let modal = document.getElementById('print-modal-alert');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'print-modal-alert';
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.85); display: flex; align-items: center; 
+            justify-content: center; z-index: 9999; padding: 20px;
+        `;
+        modal.innerHTML = `
+            <div style="background: #1a1d20; color: #fff; padding: 25px; border-radius: 12px; max-width: 400px; text-align: center; border: 1px solid #ffd700;">
+                <h3 style="color: #ffd700; margin-bottom: 15px;">Atenção</h3>
+                <p style="margin-bottom: 20px; line-height: 1.5;">O navegador do Instagram/Redes Sociais bloqueia a impressão direta.</p>
+                <p style="margin-bottom: 20px; line-height: 1.5; font-size: 0.9em;">Toque nos <b>3 pontinhos (⋮ ou •••)</b> no canto superior e selecione <b>"Abrir no navegador externo"</b> para imprimir ou salvar em PDF.</p>
+                <button id="btn-close-print-modal" style="background: #ffd700; color: #000; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer;">Entendido</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('btn-close-print-modal').onclick = () => modal.style.display = 'none';
+    } else {
+        modal.style.display = 'flex';
+    }
+}
+
 function triggerPrintLayout() {
+    if (isInAppBrowser()) {
+        showPrintAlert();
+        return;
+    }
+    
     document.body.classList.add('print-mode');
     setTimeout(() => {
         window.print();
