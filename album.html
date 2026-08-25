@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doze Cifras | Álbum Vozes no Altar - Canção Nova</title>
-    <link rel="stylesheet" href="css/artista.css">
+    <link rel="stylesheet" href="css/playlist.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Meta Tags para Redes Sociais (WhatsApp, Instagram, Direct) -->
@@ -13,7 +13,7 @@
     <meta id="og-desc" property="og:description" content="Confira as cifras simplificadas e revisadas de todas as faixas do álbum Vozes no Altar da Canção Nova para teclado.">
     <meta property="og:image" content="https://dozeteclas.com.br/assets/og-cover.png">
 </head>
-<body class="portal-artista-page">
+<body class="portal-artista-page playlist-page">
 
     <header class="artista-page-header">
         <div class="header-container">
@@ -93,27 +93,21 @@ try {
     container.innerHTML = '';
 
     // Renderiza os cards das faixas
-    // Renderiza os cards mantendo o mesmo padrão visual da página de artistas
     musicasOrdenadas.forEach((musica, index) => {
         const card = document.createElement('a');
         card.href = `cifra.html?s=${musica.slug}`;
         card.className = 'card-musica-item';
-        card.style.textDecoration = 'none'; // Garante que a caixa toda não tenha sublinhado
+        card.style.textDecoration = 'none';
 
-        // Estrutura HTML idêntica à página artista.html
         card.innerHTML = `
-            <div class="musica-info" style="flex: 1;">
-                <h3 class="musica-titulo" style="color: #ffffff; font-size: 1.1rem; margin-bottom: 6px;">
-                    <span style="color: #ffd700; font-size: 1.2rem; margin-right: 8px; font-weight: 800;">${String(index + 1).padStart(2, '0')}</span>
-                    ${musica.titulo}
-                </h3>
-                <p class="musica-autor" style="color: #a0a0a0; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
-                    ${musica.autor || 'Canção Nova'}
-                </p>
+            <div class="musica-info">
+                <span class="track-index">${String(index + 1).padStart(2, '0')}</span>
+                <div class="track-details">
+                    <h3>${musica.titulo}</h3>
+                    <p>${musica.autor || 'Canção Nova'}</p>
+                </div>
             </div>
-            <div class="musica-action" style="display: flex; align-items: center;">
-                <span class="btn-ver" style="color: #ffd700; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px;">VER ▶</span>
-            </div>
+            <span class="btn-ver">VER ▶</span>
         `;
 
         container.appendChild(card);
