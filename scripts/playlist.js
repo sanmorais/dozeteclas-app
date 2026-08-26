@@ -92,23 +92,27 @@ async function carregarPlaylistTematica() {
             }
 
             const card = document.createElement('div');
-            card.className = 'card-musica-item';
+            card.className = 'playlist-item-card';
+            const slugEncoded = encodeURIComponent(musica.slug);
+            const autorFormatado = escapeHtml((musica.autor || 'Desconhecido').toUpperCase());
+
             // 🛡️ Título/autor escapados para impedir XSS armazenado vindo do banco
             card.innerHTML = `
-                <div class="card-info">
-                    <h3 class="card-song-title">${escapeHtml(musica.titulo)}</h3>
-                    <p class="card-song-meta">${escapeHtml((musica.autor || '').toUpperCase())} • TOM: <span>${escapeHtml(tomVisual)}</span></p>
+                <div class="playlist-item-info">
+                    <h3 class="playlist-song-title">${escapeHtml(musica.titulo)}</h3>
+                    <div class="playlist-song-meta">
+                        <span class="playlist-artist-name">${autorFormatado}</span>
+                        <span class="playlist-divider">•</span>
+                        <span class="playlist-song-tone">TOM: <strong>${escapeHtml(tomVisual)}</strong></span>
+                    </div>
                 </div>
-                <div class="card-action">
-                    <span class="btn-acessar-cifra">VER ▶</span>
-                </div>
+                <a href="cifra.html?s=${slugEncoded}" class="btn-ver-cifra">VER ▶</a>
             `;
 
-            card.addEventListener('click', () => {
-                // 🛡️ encodeURIComponent evita que o slug quebre a URL ou injete parâmetros extras
-                window.location.href = `cifra.html?s=${encodeURIComponent(musica.slug)}`;
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('a')) return;
+                window.location.href = `cifra.html?s=${slugEncoded}`;
             });
-
 
             container.appendChild(card);
         });

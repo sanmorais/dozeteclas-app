@@ -2,11 +2,13 @@
     --bg-main:#121416;--bg-card:#18181f;--text-main:#ffffff;--text-sec:#8c8c9a;
     --accent:#f1c40f;--accent-hover:#ffd700;--border:rgba(255,255,255,0.06);
     --border-hover:rgba(241,196,15,0.5);--header-bg:#121416;--header-border:rgba(255,255,255,0.05);
+    --card-bg:#1a1a1a;--accent-yellow:#f59e0b;
 }
 body.light-theme {
     --bg-main:#f8f9fa;--bg-card:#ffffff;--text-main:#1a1d20;--text-sec:#6b7280;
     --accent:#b8860b;--accent-hover:#916a08;--border:#e5e7eb;--border-hover:#b8860b;
     --header-bg:#ffffff;--header-border:#e5e7eb;
+    --card-bg:#ffffff;--accent-yellow:#b8860b;
 }
 .portal-artista-page, .playlist-page {
     background-color: var(--bg-main) !important;
@@ -96,10 +98,139 @@ body.light-theme .track-card:hover { background-color: rgba(0,0,0,0.01); }
     display:flex;align-items:center;justify-content:center;cursor:pointer;transition:color 0.2s;
 }
 .theme-toggle-btn:hover { color: var(--accent); }
+
+/* ==========================================
+   🎵 NOVO LAYOUT DE CARDS DE PLAYLIST (MOBILE FIRST)
+   ========================================== */
+.playlist-item-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    gap: 1rem;
+    border-radius: 12px;
+    background-color: var(--bg-card);
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border, rgba(255,255,255,0.06));
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.playlist-item-card:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+    border-color: var(--border-hover, rgba(241, 196, 15, 0.5));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.playlist-item-card:hover .btn-ver-cifra {
+    transform: translateX(4px);
+    color: var(--accent-hover, #ffd700);
+}
+
+.playlist-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.playlist-song-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+    white-space: normal;
+    line-height: 1.3;
+    margin: 0;
+    word-break: break-word;
+}
+
+.playlist-song-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+    color: #a0a0a0;
+}
+
+.playlist-artist-name {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.playlist-divider {
+    color: var(--text-sec, #8c8c9a);
+    opacity: 0.7;
+}
+
+.playlist-song-tone {
+    font-weight: 600;
+}
+
+.playlist-song-tone strong {
+    color: var(--accent-yellow, #f59e0b);
+    font-weight: 700;
+}
+
+.btn-ver-cifra {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent-yellow, #f59e0b);
+    text-decoration: none;
+    white-space: nowrap;
+    padding-left: 0.5rem;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    transition: transform 0.2s, color 0.2s;
+}
+
+/* Suporte ao Tema Claro (Light Theme) */
+body.light-theme .playlist-item-card {
+    background-color: var(--card-bg, #ffffff);
+    border-color: var(--border, #e5e7eb);
+}
+
+body.light-theme .playlist-item-card:hover {
+    background-color: rgba(0, 0, 0, 0.01);
+    border-color: var(--border-hover, #b8860b);
+}
+
+body.light-theme .playlist-song-title {
+    color: var(--text-main, #1a1d20);
+}
+
+body.light-theme .playlist-song-meta {
+    color: var(--text-sec, #6b7280);
+}
+
+body.light-theme .playlist-song-tone strong,
+body.light-theme .btn-ver-cifra {
+    color: var(--accent-yellow, #b8860b);
+}
+
 @media (max-width: 640px) {
     .container-artista, .playlist-container { padding:16px 14px 40px; }
     .artista-header-block h1, .playlist-header h1 { font-size:22px; }
     .grid-musicas-artista .card-musica-item,
     .playlist-list .card-musica-item,
     .playlist-list .track-card, .track-card { padding:14px 16px; }
+    .playlist-item-card {
+        padding: 0.875rem 1rem;
+        gap: 0.75rem;
+    }
+    .playlist-song-title {
+        font-size: 1rem;
+    }
+    .playlist-song-meta {
+        font-size: 0.78rem;
+        gap: 0.35rem;
+    }
+    .btn-ver-cifra {
+        font-size: 0.85rem;
+    }
 }
