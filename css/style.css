@@ -120,14 +120,35 @@ body {
 
 .song-header h1 { 
     margin: 0; 
-    font-size: 1.8rem; 
+    font-size: 1.6rem; 
     color: #fff; 
+}
+
+.badge-revisada {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.45rem;
+    font-size: 0.75em;
+    color: #94a3b8;
+    vertical-align: middle;
 }
 
 #view-artist { 
     font-size: 1.1rem; 
     color: var(--primary); 
     margin-bottom: 10px; 
+}
+
+.link-artista-cifra {
+    color: var(--primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, text-decoration 0.2s ease;
+}
+
+.link-artista-cifra:hover {
+    opacity: 0.85;
+    text-decoration: underline;
 }
 
 #view-meta {

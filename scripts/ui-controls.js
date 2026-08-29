@@ -1,6 +1,7 @@
 // ui-controls.js - O Maestro da Interface (Doze Teclas)
 
 import { parseAcorde, renderMiniTeclado } from './chord-diagram-engine.js';
+import { slugify } from './slug-utils.js';
 
 // 🛡️ SANITIZAÇÃO ANTI-XSS: Escapa caracteres HTML antes de injetar texto (títulos, artistas)
 // vindo do Supabase via innerHTML, impedindo execução de <script> ou tags maliciosas.
@@ -161,8 +162,22 @@ function renderizarCifraNaTela() {
     const resultado = renderizarMusica(musicaBase.conteudo, diff, useSharps);
 
     // Injeta os Metadados na tela
-    document.getElementById('view-title').innerText = musicaBase.titulo || "Sem Título";
-    document.getElementById('view-artist').innerText = musicaBase.autor || "Artista Desconhecido";
+    const elTitulo = document.getElementById('view-title');
+    if (elTitulo) {
+        const tituloTexto = musicaBase.titulo || "Sem Título";
+        if (musicaBase.revisada === true) {
+            elTitulo.innerHTML = `${escapeHtml(tituloTexto)} <i class="bi bi-patch-check-fill badge-revisada" title="Cifra revisada" aria-label="Cifra revisada"></i>`;
+        } else {
+            elTitulo.textContent = tituloTexto;
+        }
+    }
+    // Renderiza o artista com link
+    const elArtista = document.getElementById('view-artist');
+    if (elArtista) {
+        const nomeArtista = musicaBase.autor || "Artista Desconhecido";
+        const slugArtista = slugify(nomeArtista);
+        elArtista.innerHTML = `<a href="artista.html?a=${encodeURIComponent(slugArtista)}" class="link-artista-cifra">${escapeHtml(nomeArtista)}</a>`;
+    }
     
     const tomOriginalNome = formatNote(escala[tomOriginalIdx], useSharps);
     const meta = document.getElementById('view-meta');
