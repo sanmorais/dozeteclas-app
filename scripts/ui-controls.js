@@ -14,6 +14,16 @@ function escapeHtml(str) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 }
+// Função utilitária para normalização de texto (insensível a acentos e cedilhas)
+function normalizarTexto(str) {
+    return (str || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+}
+
+
 
 let musicaBase = null;
 
@@ -445,110 +455,72 @@ document.addEventListener('click', (e) => {
 // 🔍 MOTOR DE BUSCA INTERNO DO PORTAL PÚBLICO
 // ==========================================
 
+let acervoBuscaCache = null;
+
+async function carregarCacheBusca() {
+    if (acervoBuscaCache) return;
+    try {
+        const { data, error } = await _supabase
+            .from('musicas')
+            .select('titulo, autor, slug');
+        
+        if (error) throw error;
+        acervoBuscaCache = data || [];
+    } catch (err) {
+        console.error("Erro ao carregar cache de busca:", err);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const inputBusca = document.getElementById('input-busca-portal');
     const dropdownBusca = document.getElementById('dropdown-busca-portal');
 
     if (!inputBusca || !dropdownBusca) return;
 
+    // Carrega o cache assim que a página carregar
+    carregarCacheBusca();
+
     let timeoutBusca = null;
 
     // Escuta o que o usuário digita
-    inputBusca.addEventListener('input', (e) => {
+    inputBusca.addEventListener('input', async (e) => {
         clearTimeout(timeoutBusca);
         const termoOriginal = e.target.value.trim();
 
-        if (!termoOriginal) {
+        if (termoOriginal.length < 2) {
             dropdownBusca.innerHTML = "";
             dropdownBusca.classList.add('search-dropdown-hide');
             return;
         }
 
-        // 🛡️ SANITIZAÇÃO ANTI-INJEÇÃO POSTGREST: A sintaxe .or() do Supabase interpreta
-        // vírgulas, parênteses e pontos como operadores de filtro. Sem essa limpeza, um
-        // usuário poderia digitar algo como "x,titulo.neq.impossivel" para manipular a
-        // query e vazar registros fora do filtro pretendido. Removemos esses caracteres
-        // especiais antes de montar a string do filtro.
-        const termoSeguro = termoOriginal.replace(/[,()."'`;]/g, '').trim();
+        // Garante que o cache esteja carregado
+        if (!acervoBuscaCache) await carregarCacheBusca();
 
-        if (!termoSeguro) {
+        const termoNormalizado = normalizarTexto(termoOriginal);
+
+        timeoutBusca = setTimeout(() => {
+            const resultados = acervoBuscaCache.filter(m => {
+                const tit = normalizarTexto(m.titulo || '');
+                const art = normalizarTexto(m.autor || '');
+                return tit.includes(termoNormalizado) || art.includes(termoNormalizado);
+            }).slice(0, 8);
+
             dropdownBusca.innerHTML = "";
-            dropdownBusca.classList.add('search-dropdown-hide');
-            return;
-        }
-
-        // Aplica um pequeno "debounce" de 250ms para não sobrecarregar o Supabase a cada letra digitada
-        timeoutBusca = setTimeout(async () => {
-            try {
-                // Faz a query buscando pelo termo no título ou no autor usando ilike (case-insensitive)
-                const { data: resultados, error } = await _supabase
-                    .from('musicas')
-                    .select('titulo, autor, slug')
-                    .or(`titulo.ilike.%${termoSeguro}%,autor.ilike.%${termoSeguro}%`)
-                    .limit(8); // Limita a 8 resultados para manter o painel limpo
-
-
-                if (error) throw error;
-
-                dropdownBusca.innerHTML = "";
-                
-                // ❌ CASO 1: A busca não trouxe nenhum resultado do banco de dados
-                if (!resultados || resultados.length === 0) {
-                    const termoFalho = inputBusca.value.trim();
-
-                    // Envia o termo frustrado sinalizando o falso positivo no relatório
-                    if (termoFalho && typeof gtag === 'function') {
-                        gtag('event', 'search', {
-                            'search_term': termoFalho,
-                            'resultado_encontrado': false
-                        });
-                    }
-
-                    dropdownBusca.innerHTML = `<div class="spi-no-results">Nenhuma cifra encontrada.</div>`;
-                    dropdownBusca.classList.remove('search-dropdown-hide');
-                    return;
-                }
-
-                //  CASO 2: A busca encontrou registros com sucesso
+            
+            if (resultados.length === 0) {
+                dropdownBusca.innerHTML = `<div class="spi-no-results">Nenhuma cifra encontrada.</div>`;
+            } else {
                 resultados.forEach(m => {
-                    const item = document.createElement('div');
-                    item.className = 'search-portal-item';
-                    // 🛡️ Escapa título/autor para impedir XSS armazenado vindo do banco
-                    item.innerHTML = `
-                        <div class="spi-title">${escapeHtml(m.titulo)}</div>
-                        <div class="spi-artist">${escapeHtml(m.autor || 'Desconhecido')}</div>
-                    `;
-
-
-                    // Ao clicar no item, o portal rastreia a busca bem-sucedida e redireciona
-                    item.onclick = () => {
-                        const termoBuscado = inputBusca.value.trim();
-                        
-                        // Dispara o evento de sucesso (não passamos o parâmetro "resultado_encontrado", logo o GA4 entende como verdadeiro ou você pode omitir)
-                        if (termoBuscado && typeof gtag === 'function') {
-                            gtag('event', 'search', {
-                                'search_term': termoBuscado,
-                                'resultado_encontrado': true
-                            });
-                        }
-
-                        // Fluxo normal do seu site
-                        inputBusca.value = "";
-                        dropdownBusca.classList.add('search-dropdown-hide');
-                        // 🛡️ encodeURIComponent evita que o slug quebre a URL ou injete parâmetros extras
-                        window.location.href = `cifra.html?s=${encodeURIComponent(m.slug)}`;
-                    };
-
-
-                    dropdownBusca.appendChild(item);
+                    const div = document.createElement('div');
+                    div.className = 'search-portal-item';
+                    div.style.cursor = 'pointer';
+                    div.innerHTML = `<strong>${escapeHtml(m.titulo)}</strong><br><small>${escapeHtml(m.autor || '')}</small>`;
+                    div.onclick = () => window.location.href = `cifra.html?s=${m.slug}`;
+                    dropdownBusca.appendChild(div);
                 });
-
-                dropdownBusca.classList.remove('search-dropdown-hide');
-
-            } catch (err) {
-                console.error("Erro na busca do portal:", err);
             }
-        }, 250);
+            dropdownBusca.classList.remove('search-dropdown-hide');
+        }, 150);
     });
 
     // Fecha o painel de resultados se o usuário clicar em qualquer outro lugar da tela
