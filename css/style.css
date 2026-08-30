@@ -122,6 +122,16 @@ body {
     margin: 0; 
     font-size: 1.6rem; 
     color: #fff; 
+    text-wrap: balance;
+}
+
+.cifra-titulo {
+    text-wrap: balance;
+}
+
+.badge-wrapper-nowrap {
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .badge-revisada {
