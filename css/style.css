@@ -366,7 +366,7 @@ body {
 /* 7. Barra de Ferramentas / Rodapé Fixo */
 .header-tools { 
     position: fixed;
-    bottom: 0;
+    bottom: -1px;
     width: 100%;
     background: #16191d; 
     border-top: 1px solid #333; 
