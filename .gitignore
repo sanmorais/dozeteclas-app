@@ -36,3 +36,5 @@ yarn-error.log*
 
 # O próprio script se preferir manter apenas local
 generate-sitemap.js
+
+DOZE_TECLAS_OVERVIEW.md
