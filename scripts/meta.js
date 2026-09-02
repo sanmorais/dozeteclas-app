@@ -3,8 +3,8 @@
   function injetarMetadados() {
     const tituloAtual = document.title;
     
-    // Verifica se o título já foi carregado (geralmente contém " | Doze Teclas")
-    if (!tituloAtual || !tituloAtual.includes('|')) {
+    // 1. Só continua se o título já contiver a assinatura e o hífen separador
+    if (!tituloAtual || !tituloAtual.includes('| Doze Teclas')) {
       return false; 
     }
 
@@ -16,42 +16,62 @@
     let titulo = "";
     let artista = "";
     let descricao = "";
+    let tipoOg = "website";
     let urlFinal = window.location.href;
 
+    // Isola o trecho antes do " | Doze Teclas"
+    const miolo = tituloAtual.split('|')[0].trim();
+
     if (slug) {
-      // Padrão Cifra: "Música - Artista | Doze Teclas"
-      const partes = tituloAtual.split('|')[0].split('-');
-      titulo = partes[0]?.trim();
-      artista = partes[1]?.trim();
-      if (!titulo || !artista) return false;
+      tipoOg = "music.song";
+      
+      // Procura pelo último separador com espaços " - "
+      // Isso protege músicas como "Pai-Nosso", "Em-humildade", etc.
+      const sepIdx = miolo.lastIndexOf(' - ');
+      
+      if (sepIdx !== -1) {
+        titulo = miolo.substring(0, sepIdx).trim();
+        artista = miolo.substring(sepIdx + 3).trim();
+      } else {
+        // Fallback caso não tenha espaço em volta do hífen
+        const partes = miolo.split('-');
+        if (partes.length >= 2) {
+          artista = partes.pop().trim();
+          titulo = partes.join('-').trim();
+        } else {
+          titulo = miolo;
+          artista = "Doze Teclas";
+        }
+      }
+
+      // Se ainda estiver com o texto genérico da casca, aguarda a mutação real
+      if (titulo.toLowerCase().includes('carregando') || titulo === 'Doze Teclas') {
+        return false;
+      }
       
       descricao = `Cifra para teclado da música ${titulo} de ${artista}. Arranjo com acordes simplificados no padrão Doze Teclas.`;
       urlFinal = `${window.location.origin}${window.location.pathname}?s=${slug}`;
+
     } else if (artistaSlug) {
-      // Padrão Artista: "Nome do Artista - Cifras e Repertório | Doze Teclas"
-      const partes = tituloAtual.split('|')[0].split('-');
-      artista = partes[0]?.trim();
-      if (!artista) return false;
+      tipoOg = "profile";
+      const sepIdx = miolo.indexOf(' - ');
+      artista = sepIdx !== -1 ? miolo.substring(0, sepIdx).trim() : miolo;
 
       descricao = `Confira o acervo de cifras para teclado de ${artista}. Todas as músicas revisadas, simplificadas e com troca de tom no Doze Teclas.`;
       urlFinal = `${window.location.origin}${window.location.pathname}?a=${artistaSlug}`;
+
     } else if (playlistTag) {
-      // Padrão Playlist: "Playlist [Nome] | Doze Teclas"
-      const nomePlaylist = tituloAtual.split('|')[0].replace('Playlist', '').trim();
+      tipoOg = "music.playlist";
+      const nomePlaylist = miolo.replace(/Playlist/i, '').trim();
       descricao = `Seleção especial de cifras revisadas e preparadas para o momento de ${nomePlaylist}. Confira o repertório completo.`;
       urlFinal = `${window.location.origin}${window.location.pathname}?t=${playlistTag}`;
+
     } else {
-      // Páginas Estáticas (Home, Catálogo, etc)
-      urlFinal = `${window.location.origin}${window.location.pathname}`;
-      // Limpa index.html da URL final para SEO
-      if (urlFinal.endsWith('/index.html')) {
-        urlFinal = urlFinal.replace('/index.html', '/');
-      }
+      urlFinal = `${window.location.origin}${window.location.pathname}`.replace(/\/index\.html$/, '/');
     }
 
     const imagemPadrao = `${window.location.origin}/assets/logo-dozeteclas-card.jpg`;
 
-    // Função interna para criar/atualizar as tags no <head>
     function setMeta(seletor, attr, attrVal, conteudo) {
       if (!conteudo) return;
       let el = document.querySelector(seletor);
@@ -73,25 +93,22 @@
       el.href = href;
     }
 
-    // 1. Meta Tags (SEO e Google)
+    // Atualização das Tags
     if (descricao) setMeta('meta[name="description"]', 'name', 'description', descricao);
-    
-    // Canonical (Essencial para Google Search Console)
     setLink('canonical', urlFinal);
 
-    // 2. Open Graph (WhatsApp, Facebook)
+    setMeta('meta[property="og:type"]', 'property', 'og:type', tipoOg);
     setMeta('meta[property="og:title"]', 'property', 'og:title', tituloAtual);
     if (descricao) setMeta('meta[property="og:description"]', 'property', 'og:description', descricao);
     setMeta('meta[property="og:url"]', 'property', 'og:url', urlFinal);
     setMeta('meta[property="og:image"]', 'property', 'og:image', imagemPadrao);
 
-    // 3. Twitter Card
     setMeta('meta[name="twitter:title"]', 'name', 'twitter:title', tituloAtual);
     if (descricao) setMeta('meta[name="twitter:description"]', 'name', 'twitter:description', descricao);
     setMeta('meta[name="twitter:image"]', 'name', 'twitter:image', imagemPadrao);
 
-    // 4. Schema JSON-LD Estruturado (Apenas para Cifras)
-    if (slug && titulo && artista) {
+    // Schema JSON-LD
+    if (slug && titulo && artista && titulo !== 'Doze Teclas') {
       let scriptTag = document.querySelector('script[data-schema="music"]');
       if (!scriptTag) {
         scriptTag = document.createElement('script');
@@ -103,31 +120,29 @@
       scriptTag.textContent = JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'MusicComposition',
-        name: titulo,
-        composer: { '@type': 'Person', name: artista },
-        description: descricao,
-        url: urlFinal,
-        inLanguage: 'pt-BR'
+        'name': titulo,
+        'composer': { '@type': 'MusicGroup', 'name': artista },
+        'description': descricao,
+        'url': urlFinal,
+        'inLanguage': 'pt-BR'
       });
     }
 
-    return true; // Retorna sucesso
+    return true;
   }
 
-  // 1. Tenta rodar imediatamente (caso o título já esteja lá)
+  // Tenta rodar de imediato
   if (injetarMetadados()) return;
 
-  // 2. Se a cifra/artista demora a carregar e o título ainda não está pronto, aguarda.
+  // Se não estiver pronto, observa as alterações da tag <title>
   const titleNode = document.querySelector('title');
   if (titleNode) {
     const observer = new MutationObserver(() => {
-      // Quando o título mudar, tenta injetar novamente
       if (injetarMetadados()) {
-        observer.disconnect(); // SUCESSO: Desliga o observador na mesma hora (zero risco de loop)
+        observer.disconnect();
       }
     });
 
-    // Fica vigiando apenas o texto dentro da tag <title>
     observer.observe(titleNode, { childList: true, characterData: true, subtree: true });
   }
 })();
