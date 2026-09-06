@@ -24,7 +24,60 @@ class AutoScrollEngine {
         this.sliderContainer = document.getElementById('speed-slider-container');
         this.speedSlider = document.getElementById('speed-slider');
         
+        // Detectar o container de rolagem (setlist-main vs window)
+        this.scrollTarget = this.detectScrollTarget();
+        
         this.init();
+    }
+    
+    detectScrollTarget() {
+        // No cifra.html, a rolagem está no .cifra-scroll-wrapper
+        const cifraWrapper = document.querySelector('.cifra-scroll-wrapper');
+        if (cifraWrapper) {
+            const style = window.getComputedStyle(cifraWrapper);
+            if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+                return cifraWrapper;
+            }
+        }
+        // No setlist, a rolagem está no #setlist-main
+        const setlistMain = document.getElementById('setlist-main');
+        if (setlistMain) {
+            const style = window.getComputedStyle(setlistMain);
+            if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+                return setlistMain;
+            }
+        }
+        // Fallback: window (comportamento padrão em outras páginas)
+        return null;
+    }
+    
+    getScrollTop() {
+        if (this.scrollTarget) {
+            return this.scrollTarget.scrollTop;
+        }
+        return window.pageYOffset || document.documentElement.scrollTop;
+    }
+    
+    setScrollTop(value) {
+        if (this.scrollTarget) {
+            this.scrollTarget.scrollTop = value;
+        } else {
+            window.scrollTo(0, value);
+        }
+    }
+    
+    getScrollHeight() {
+        if (this.scrollTarget) {
+            return this.scrollTarget.scrollHeight;
+        }
+        return document.documentElement.scrollHeight;
+    }
+    
+    getClientHeight() {
+        if (this.scrollTarget) {
+            return this.scrollTarget.clientHeight;
+        }
+        return window.innerHeight;
     }
     
     init() {
@@ -68,15 +121,16 @@ class AutoScrollEngine {
         });
         
         // Detectar rolagem manual e sincronizar posição
-        window.addEventListener('scroll', () => {
+        const scrollEl = this.scrollTarget || window;
+        scrollEl.addEventListener('scroll', () => {
             if (this.isScrolling) {
                 // Verificar se foi rolagem manual (diferença significativa)
-                const currentWindowScroll = window.pageYOffset || document.documentElement.scrollTop;
-                const diff = Math.abs(currentWindowScroll - this.currentScrollY);
+                const currentScroll = this.getScrollTop();
+                const diff = Math.abs(currentScroll - this.currentScrollY);
                 
                 // Se a diferença for maior que 10px, foi rolagem manual
                 if (diff > 10) {
-                    this.currentScrollY = currentWindowScroll;
+                    this.currentScrollY = currentScroll;
                     this.manualScrollDetected = true;
                 }
                 
@@ -110,7 +164,7 @@ class AutoScrollEngine {
         this.lastTimestamp = null;
         
         // Sincronizar acumulador com a posição atual da janela
-        this.currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        this.currentScrollY = this.getScrollTop();
         this.manualScrollDetected = false;
         
         // Atualizar UI
@@ -181,7 +235,7 @@ class AutoScrollEngine {
         
         // Aplicar rolagem usando scrollTo com posição acumulada
         // Isso garante que até deltas de 0.05px sejam acumulados e aplicados
-        window.scrollTo(0, Math.round(this.currentScrollY));
+        this.setScrollTop(Math.round(this.currentScrollY));
         
         // Verificar se chegou ao fim da página
         if (this.isAtBottom()) {
@@ -236,12 +290,12 @@ class AutoScrollEngine {
     }
     
     isAtBottom() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const windowHeight = window.innerHeight;
-        const documentHeight = document.documentElement.scrollHeight;
+        const scrollTop = this.getScrollTop();
+        const clientHeight = this.getClientHeight();
+        const scrollHeight = this.getScrollHeight();
         
         // Margem de 5px para evitar problemas de precisão
-        return (scrollTop + windowHeight) >= (documentHeight - 5);
+        return (scrollTop + clientHeight) >= (scrollHeight - 5);
     }
     
     // Método público para controle externo

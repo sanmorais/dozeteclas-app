@@ -180,9 +180,9 @@ function renderizarCifraNaTela() {
             if (palavras.length > 1) {
                 const ultimaPalavra = palavras.pop();
                 const textoRestante = palavras.join(' ');
-                elTitulo.innerHTML = `${escapeHtml(textoRestante)} <span class="badge-wrapper-nowrap">${escapeHtml(ultimaPalavra)} <i class="bi bi-patch-check-fill badge-revisada" title="Cifra revisada" aria-label="Cifra revisada"></i></span>`;
+                elTitulo.innerHTML = `${escapeHtml(textoRestante)} <span class="badge-wrapper-nowrap" aria-label="Cifra revisada">${escapeHtml(ultimaPalavra)} <i class="bi bi-patch-check-fill badge-revisada" title="Cifra revisada" aria-hidden="true"></i></span>`;
             } else {
-                elTitulo.innerHTML = `<span class="badge-wrapper-nowrap">${escapeHtml(tituloTexto)} <i class="bi bi-patch-check-fill badge-revisada" title="Cifra revisada" aria-label="Cifra revisada"></i></span>`;
+                elTitulo.innerHTML = `<span class="badge-wrapper-nowrap" aria-label="Cifra revisada">${escapeHtml(tituloTexto)} <i class="bi bi-patch-check-fill badge-revisada" title="Cifra revisada" aria-hidden="true"></i></span>`;
             }
         } else {
             elTitulo.textContent = tituloTexto;

@@ -1,5 +1,5 @@
-/* ==========================================================
-   style.css - Versão Unificada (Doze Teclas)
+﻿/* ==========================================================
+   style.css - VersÃ£o Unificada (Doze Teclas)
    ========================================================== */
 
 /* 1. Estrutura Base e Reset */
@@ -102,7 +102,7 @@ body {
     height: 100%; 
 }
 
-/* 3. Área de Conteúdo Principal */
+/* 3. Ãrea de ConteÃºdo Principal */
 .content { 
     margin-top: 70px; 
     margin-bottom: 70px; 
@@ -116,6 +116,7 @@ body {
     margin-bottom: 25px;
     border-left: 4px solid var(--primary);
     padding-left: 15px;
+    min-height: 80px;
 }
 
 .song-header h1 { 
@@ -235,7 +236,7 @@ body {
     cursor: pointer;
 }
 
-/* 5. Mecanismo de Renderização da Cifra */
+/* 5. Mecanismo de RenderizaÃ§Ã£o da Cifra */
 #cifra-render {
     /* white-space: pre-wrap;  */
     word-wrap: break-word;
@@ -243,7 +244,7 @@ body {
     max-width: 100%;
 }
 
-/* Rótulos das Seções (Intro, Solo, Refrão) - UNIFICADO */
+/* RÃ³tulos das SeÃ§Ãµes (Intro, Solo, RefrÃ£o) - UNIFICADO */
 .section-label {
     display: inline-block;
     background-color: var(--primary);
@@ -278,7 +279,7 @@ body {
     min-height: 1.2em; 
 }
 
-/* Acordes e Comentários */
+/* Acordes e ComentÃ¡rios */
 .c-chord { 
     color: var(--primary); 
     font-weight: bold; 
@@ -294,7 +295,7 @@ body {
     margin-bottom: 0.3em;
 }
 
-/* 6. Modos de Exibição de Cifra (Colunas e Texto Puro) */
+/* 6. Modos de ExibiÃ§Ã£o de Cifra (Colunas e Texto Puro) */
 .two-columns {
     display: block !important;
     width: 100% !important;
@@ -306,15 +307,15 @@ body {
     max-height: none !important;
 }
 
-/* --- AJUSTE CIRÚRGICO MODO TXT --- */
+/* --- AJUSTE CIRÃšRGICO MODO TXT --- */
 
 /* 1. Esconde os acordes */
 .only-text-mode .c-chord {
     display: none !important;
 }
 
-/* 2. Se a linha contiver acordes, mas NÃO contiver letras normais ou comentários, 
-      nós sumimos com ela por completo e removemos sua altura mínima */
+/* 2. Se a linha contiver acordes, mas NÃƒO contiver letras normais ou comentÃ¡rios, 
+      nÃ³s sumimos com ela por completo e removemos sua altura mÃ­nima */
 .only-text-mode .c-line:has(.c-chord):not(:has(.c-comment)) {
     height: 0px !important;
     min-height: 0px !important;
@@ -325,7 +326,7 @@ body {
     overflow: hidden !important;
 }
 
-/* 3. Se a linha sobrou apenas com grades comuns de compasso (ex: | | |), colapsa também */
+/* 3. Se a linha sobrou apenas com grades comuns de compasso (ex: | | |), colapsa tambÃ©m */
 .only-text-mode .c-line:empty {
     display: none !important;
     height: 0px !important;
@@ -334,8 +335,8 @@ body {
     padding: 0 !important;
 }
 
-/* 4. 💥 NOVO: Remove a linha em branco residual que fica grudada 
-      imediatamente após o rótulo de uma seção (Intro, Refrão, etc) */
+/* 4. ðŸ’¥ NOVO: Remove a linha em branco residual que fica grudada 
+      imediatamente apÃ³s o rÃ³tulo de uma seÃ§Ã£o (Intro, RefrÃ£o, etc) */
 .only-text-mode .section-label + .c-line {
     display: none !important;
     height: 0px !important;
@@ -345,13 +346,13 @@ body {
     line-height: 0 !important;
 }
 
-/* 5. Força as seções (section-label) a ficarem em linhas separadas no modo texto */
+/* 5. ForÃ§a as seÃ§Ãµes (section-label) a ficarem em linhas separadas no modo texto */
 .only-text-mode .section-label {
     display: block !important;
     width: fit-content !important;
 }
 
-/* Alinhamento de segurança para o print.css refletir o mesmo comportamento se impresso em TXT */
+/* Alinhamento de seguranÃ§a para o print.css refletir o mesmo comportamento se impresso em TXT */
 @media print {
     .only-text-mode .c-chord {
         display: none !important;
@@ -363,7 +364,7 @@ body {
     }
 }
 
-/* 7. Barra de Ferramentas / Rodapé Fixo */
+/* 7. Barra de Ferramentas / RodapÃ© Fixo */
 .header-tools { 
     position: fixed;
     bottom: -1px;
@@ -431,7 +432,7 @@ body {
     }
 }
 
-/* 8. Componente de Player de Vídeo */
+/* 8. Componente de Player de VÃ­deo */
 #preview-container {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -448,7 +449,7 @@ body {
 }
 
 /* ==========================================
-   🔍 ESTILOS DA BUSCA DO PORTAL (DOZE TECLAS)
+   ðŸ” ESTILOS DA BUSCA DO PORTAL (DOZE TECLAS)
    ========================================== */
 .portal-search-container {
     margin-left: 5px;
@@ -537,7 +538,7 @@ body {
 }
 
 /* ==========================================
-   🏠 LANDING PAGE DE BOAS-VINDAS (CIFRA.HTML)
+   ðŸ  LANDING PAGE DE BOAS-VINDAS (CIFRA.HTML)
    ========================================== */
 
 /* Estado de Vitrine: Quando ativado, esconde as partes vazias da cifra */
@@ -549,8 +550,8 @@ body {
     display: none !important;
 }
 
-/* 🎯 O PULO DO GATO INVERSO:
-   Se a vitrine NÃO está ativa (ou seja, o usuário abriu uma cifra), esconde o footer! */
+/* ðŸŽ¯ O PULO DO GATO INVERSO:
+   Se a vitrine NÃƒO estÃ¡ ativa (ou seja, o usuÃ¡rio abriu uma cifra), esconde o footer! */
 body:not(.portal-vitrine-active) footer {
     display: none !important;
 }
@@ -564,7 +565,7 @@ body:not(.portal-vitrine-active) footer {
     color: #ffffff;
 }
 
-/* Bloco de Cabeçalho / Mensagem Inicial */
+/* Bloco de CabeÃ§alho / Mensagem Inicial */
 .vitrine-hero {
     text-align: center;
     margin-top: 50px;
@@ -635,7 +636,7 @@ body:not(.portal-vitrine-active) footer {
     transform: translateY(-1px);
 }
 
-/* Botão "Ver Todos" - Selo dourado clicável, mesmo porte compacto do .badge-tag */
+/* BotÃ£o "Ver Todos" - Selo dourado clicÃ¡vel, mesmo porte compacto do .badge-tag */
 .btn-ver-todos {
     display: inline-block;
     background: #ffd700;
@@ -656,7 +657,7 @@ body:not(.portal-vitrine-active) footer {
 }
 
 
-/* Seção de Categorias e Lista de Sugestões */
+/* SeÃ§Ã£o de Categorias e Lista de SugestÃµes */
 .vitrine-secao-titulo {
     color: #ffffff;
     font-size: 14px;
@@ -673,7 +674,7 @@ body:not(.portal-vitrine-active) footer {
     margin-bottom: 40px;
 }
 
-/* Card Padrão de Link/Categoria */
+/* Card PadrÃ£o de Link/Categoria */
 .card-sugestao {
     background: #1c1f24;
     border: 1px solid #2a2d34;
@@ -729,35 +730,35 @@ body:not(.portal-vitrine-active) footer {
     font-weight: bold;
 }
 
-/* Container de Rodapé da Vitrine */
+/* Container de RodapÃ© da Vitrine */
 .vitrine-footer {
     text-align: center;
     margin-top: 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px; /* Espaço perfeito entre o texto e o botão */
+    gap: 15px; /* EspaÃ§o perfeito entre o texto e o botÃ£o */
 }
 
 /* Texto de Chamada */
 .footer-prompt {
-    color: #6e7681 !important; /* Tom cinza claro mais visível */
+    color: #6e7681 !important; /* Tom cinza claro mais visÃ­vel */
     font-size: 13px;
     margin: 0;
     line-height: 1.4;
 }
 
-/* Botão de Pedidos Destacado */
+/* BotÃ£o de Pedidos Destacado */
 .btn-fazer-pedido {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     width: 100%;
-    max-width: 280px; /* Tamanho idêntico à sua barra de buscas para manter simetria */
+    max-width: 280px; /* Tamanho idÃªntico Ã  sua barra de buscas para manter simetria */
     padding: 12px 20px;
     background: transparent;
-    color: var(--primary); /* Seu amarelo padrão */
+    color: var(--primary); /* Seu amarelo padrÃ£o */
     border: 1px solid var(--primary);
     border-radius: 6px;
     font-size: 14px;
@@ -770,7 +771,7 @@ body:not(.portal-vitrine-active) footer {
     box-sizing: border-box;
 }
 
-/* Interação sutil de destaque */
+/* InteraÃ§Ã£o sutil de destaque */
 .btn-fazer-pedido:hover,
 .btn-fazer-pedido:active {
     background: var(--primary);
@@ -800,17 +801,17 @@ body:not(.portal-vitrine-active) footer {
     color: #8b949e; /* Cinza elegante de suporte */
     font-size: 0.9rem;
     text-align: center;
-    margin-top: 10px; /* Ajuste para colar no título de cima */
+    margin-top: 10px; /* Ajuste para colar no tÃ­tulo de cima */
     margin-bottom: 25px;
     font-weight: 500;
 }
 
 #total-cifras-contador {
-    color: #ffd700; /* Destaque em Dourado para o número */
+    color: #ffd700; /* Destaque em Dourado para o nÃºmero */
     font-weight: bold;
 }
 
-/* Cabeçalho da Cifra para alinhar os elementos */
+/* CabeÃ§alho da Cifra para alinhar os elementos */
 .cifra-header {
     width: 100%;
     max-width: 900px;
@@ -822,9 +823,9 @@ body:not(.portal-vitrine-active) footer {
     box-sizing: border-box;
 }
 
-/* Estilização do Botão Voltar */
+/* EstilizaÃ§Ã£o do BotÃ£o Voltar */
 .btn-voltar {
-    color: var(--primary); /* Seu amarelo padrão */
+    color: var(--primary); /* Seu amarelo padrÃ£o */
     text-decoration: none;
     font-size: 14px;
     font-weight: 700;
@@ -836,7 +837,7 @@ body:not(.portal-vitrine-active) footer {
     padding: 8px 12px;
     padding-left: 10px;
     border-radius: 6px;
-    background: rgba(255, 197, 2, 0.03); /* Fundo amarelo quase invisível */
+    background: rgba(255, 197, 2, 0.03); /* Fundo amarelo quase invisÃ­vel */
     border: 1px solid rgba(255, 197, 2, 0.15);
     transition: all 0.2s ease;
     cursor: pointer;
@@ -847,19 +848,19 @@ body:not(.portal-vitrine-active) footer {
 .btn-voltar:active {
     background: rgba(255, 197, 2, 0.1);
     border-color: var(--primary);
-    transform: translateX(-2px); /* Dá um leve impulso visual para a esquerda */
+    transform: translateX(-2px); /* DÃ¡ um leve impulso visual para a esquerda */
 }
 
-/* Botão Voltar Ultra Discreto e Compacto */
+/* BotÃ£o Voltar Ultra Discreto e Compacto */
 .btn-voltar-minimal {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 32px;
     height: 32px;
-    min-width: 32px; /* Garante que a barra de busca não esmague o círculo */
+    min-width: 32px; /* Garante que a barra de busca nÃ£o esmague o cÃ­rculo */
     text-decoration: none;
-    color: #6e7681; /* Tom cinza discreto padrão */
+    color: #6e7681; /* Tom cinza discreto padrÃ£o */
     font-size: 20px; /* Destaca o tamanho da seta literal */
     font-weight: bold;
     border-radius: 50%;
@@ -869,15 +870,15 @@ body:not(.portal-vitrine-active) footer {
     cursor: pointer;
 }
 
-/* Interação suave quando o usuário passa o mouse ou toca */
+/* InteraÃ§Ã£o suave quando o usuÃ¡rio passa o mouse ou toca */
 .btn-voltar-minimal:hover,
 .btn-voltar-minimal:active {
     color: var(--primary); /* Acende em amarelo do Doze Teclas */
     background: rgba(255, 197, 2, 0.08); /* Cria um leve fundo de foco circular */
-    transform: translateX(-2px); /* Mantém o recuo intuitivo para a esquerda */
+    transform: translateX(-2px); /* MantÃ©m o recuo intuitivo para a esquerda */
 }
 
-/* Card Base (Já existente no seu projeto, com comportamento Flex) */
+/* Card Base (JÃ¡ existente no seu projeto, com comportamento Flex) */
 .card-sugestao {
     background: #1c1f24;
     border: 1px solid #2a2d34;
@@ -890,16 +891,16 @@ body:not(.portal-vitrine-active) footer {
     transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-/* 🛠️ O Pulo do Gato: Força o ícone e os textos a ficarem lado a lado */
+/* ðŸ› ï¸ O Pulo do Gato: ForÃ§a o Ã­cone e os textos a ficarem lado a lado */
 .card-sugestao .cs-info {
     display: flex;
-    align-items: center; /* Centraliza verticalmente o ícone e a caixa de texto */
-    gap: 15px;           /* Distância perfeita entre o ícone e o texto */
+    align-items: center; /* Centraliza verticalmente o Ã­cone e a caixa de texto */
+    gap: 15px;           /* DistÃ¢ncia perfeita entre o Ã­cone e o texto */
     flex: 1;
     min-width: 0;
 }
 
-/* Envelopador do Ícone para isolar o comportamento de tamanho */
+/* Envelopador do Ãcone para isolar o comportamento de tamanho */
 .cs-icone-wrapper {
     display: flex;
     align-items: center;
@@ -921,7 +922,7 @@ body:not(.portal-vitrine-active) footer {
     gap: 3px;
 }
 
-/* Classes de texto originais que você já usa na sua folha de estilos */
+/* Classes de texto originais que vocÃª jÃ¡ usa na sua folha de estilos */
 .card-sugestao .cs-info .cs-titulo {
     font-size: 14px;
     font-weight: bold;
@@ -944,18 +945,18 @@ body:not(.portal-vitrine-active) footer {
 
 .card-sugestao:hover .icone-estilo,
 .card-sugestao:active .icone-estilo {
-    /* Parâmetros: deslocamento X (0), deslocamento Y (0), raio do borrão (8px) e a cor do brilho */
+    /* ParÃ¢metros: deslocamento X (0), deslocamento Y (0), raio do borrÃ£o (8px) e a cor do brilho */
     filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
-    transform: scale(1.05); /* Um leve aumento sutil no ícone */
+    transform: scale(1.05); /* Um leve aumento sutil no Ã­cone */
     transition: all 0.2s ease-in-out;
 }
 
 /* ==========================================================================
-   🏠 EXTENSÃO LANDING VITRINE V5 - CIFRAS DE ELITE
+   ðŸ  EXTENSÃƒO LANDING VITRINE V5 - CIFRAS DE ELITE
    ========================================================================== */
 
 .vitrine-wrapper {
-    max-width: 800px; /* Expandido de 500px para dar a imponência de Landing Page */
+    max-width: 800px; /* Expandido de 500px para dar a imponÃªncia de Landing Page */
     margin: 0 auto;
     padding: 40px 20px;
     font-family: 'Segoe UI', system-ui, sans-serif;
@@ -998,7 +999,7 @@ body:not(.portal-vitrine-active) footer {
     margin: 20px auto 0 auto;
 }
 
-/* Banner de Destaque no Padrão de Contraste da Cifra */
+/* Banner de Destaque no PadrÃ£o de Contraste da Cifra */
 .vitrine-banner-destaque {
     background: linear-gradient(135deg, #1C1F24 0%, #16191D 100%);
     border: 1px solid var(--border-color);
@@ -1016,7 +1017,7 @@ body:not(.portal-vitrine-active) footer {
     margin-bottom: 16px;
 }
 
-/* ─── GRID DE EXPLICAÇÃO DOS RECURSOS (SHOWCASE) ─── */
+/* â”€â”€â”€ GRID DE EXPLICAÃ‡ÃƒO DOS RECURSOS (SHOWCASE) â”€â”€â”€ */
 .vitrine-showcase-tools {
     margin-bottom: 45px;
     background-color: #16191D;
@@ -1068,14 +1069,14 @@ body:not(.portal-vitrine-active) footer {
     margin: 0;
 }
 
-/* Responsividade Avançada do Showcase e Filtros */
+/* Responsividade AvanÃ§ada do Showcase e Filtros */
 @media (min-width: 768px) {
     .tools-explanation-grid {
         grid-template-columns: repeat(2, 1fr); /* 2 Colunas no Tablet */
     }
     .vitrine-grid-links {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Navegação por artistas/playlists lado a lado */
+        grid-template-columns: repeat(2, 1fr); /* NavegaÃ§Ã£o por artistas/playlists lado a lado */
         gap: 16px;
     }
 }
@@ -1087,10 +1088,10 @@ body:not(.portal-vitrine-active) footer {
 }
 
 /* ==========================================================
-   ☀️🌙 ALTERNADOR DE TEMA CLARO/ESCURO (Toggle Button)
+   â˜€ï¸ðŸŒ™ ALTERNADOR DE TEMA CLARO/ESCURO (Toggle Button)
    ========================================================== */
 
-/* Botão de alternância posicionado ao lado da barra de busca */
+/* BotÃ£o de alternÃ¢ncia posicionado ao lado da barra de busca */
 .theme-toggle-btn {
     background: none;
     border: none;
@@ -1114,13 +1115,13 @@ body:not(.portal-vitrine-active) footer {
     transform: scale(0.9);
 }
 
-/* Ícone "toggle-on" (tema claro) já vem destacado em dourado */
+/* Ãcone "toggle-on" (tema claro) jÃ¡ vem destacado em dourado */
 .theme-toggle-btn .bi-toggle-on {
     color: var(--primary);
 }
 
 /* ==========================================================
-   ☀️ MODO CLARO (Light Theme)
+   â˜€ï¸ MODO CLARO (Light Theme)
    Paleta baseada no css/print.css: fundo branco/cinza claro,
    texto escuro e acentos de contraste mantidos (dourado).
    ========================================================== */
@@ -1137,7 +1138,7 @@ body.light-theme {
     color: var(--text);
 }
 
-/* Cabeçalho e barra de ferramentas */
+/* CabeÃ§alho e barra de ferramentas */
 body.light-theme .header-main {
     background: var(--panel);
     border-bottom: 1px solid #dfe1e5;
@@ -1161,7 +1162,7 @@ body.light-theme #btn-preview.active {
     color: #000 !important;
 }
 
-/* Cabeçalho da música */
+/* CabeÃ§alho da mÃºsica */
 body.light-theme .song-header h1 {
     color: #121416;
 }
@@ -1199,7 +1200,7 @@ body.light-theme .original-btn {
     border: 1px solid #d5d8dc;
 }
 
-/* Renderização da cifra */
+/* RenderizaÃ§Ã£o da cifra */
 body.light-theme #cifra-render .c-line {
     color: var(--text);
 }
@@ -1247,12 +1248,12 @@ body.light-theme .spi-artist {
     color: #6c727f;
 }
 
-/* Botão de retorno minimalista */
+/* BotÃ£o de retorno minimalista */
 body.light-theme .btn-voltar-minimal {
     color: #6c727f;
 }
 
-/* Rodapé e vitrine (portal de boas-vindas) */
+/* RodapÃ© e vitrine (portal de boas-vindas) */
 body.light-theme footer {
     border-top: 1px solid #dfe1e5;
 }
@@ -1315,12 +1316,12 @@ body.light-theme .card-sugestao .cs-info .cs-titulo {
     color: #121416;
 }
 
-/* Títulos de Seção da Vitrine (Grandes Artistas, Playlists, Guia Prático) */
+/* TÃ­tulos de SeÃ§Ã£o da Vitrine (Grandes Artistas, Playlists, Guia PrÃ¡tico) */
 body.light-theme .vitrine-secao-titulo {
     color: #121416;
 }
 
-/* Ícones da barra de ferramentas: Imprimir e Preview (SVGs internos com fill fixo) */
+/* Ãcones da barra de ferramentas: Imprimir e Preview (SVGs internos com fill fixo) */
 body.light-theme #btn-print,
 body.light-theme #btn-preview {
     color: #121416;
@@ -1334,7 +1335,7 @@ body.light-theme #btn-preview svg path {
 }
 
 /* ==========================================================
-   🎵 AUTO-SCROLL FLUTUANTE (Rolagem Automática Fluida)
+   ðŸŽµ AUTO-SCROLL FLUTUANTE (Rolagem AutomÃ¡tica Fluida)
    ========================================================== */
 
 .auto-scroll-container {
@@ -1342,10 +1343,10 @@ body.light-theme #btn-preview svg path {
     bottom: 20px;
     right: 20px;
     z-index: 1001;
-    display: none; /* Oculto por padrão - só aparece após carregamento da cifra */
+    display: none; /* Oculto por padrÃ£o - sÃ³ aparece apÃ³s carregamento da cifra */
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 22px;
 }
 
 /* Classe para exibir o container quando a cifra estiver carregada */
@@ -1415,9 +1416,9 @@ body.light-theme #btn-preview svg path {
     border-radius: 12px;
     margin: 0;
     cursor: pointer;
-    /* Remove a rotação para deixar naturalmente vertical */
-    writing-mode: bt-lr; /* IE */
-    -webkit-appearance: slider-vertical; /* WebKit */
+    /* Slider vertical moderno (sem -webkit-appearance: slider-vertical depreciado) */
+    writing-mode: vertical-lr;
+    direction: rtl;
     transition: all 0.2s ease;
 }
 
@@ -1581,12 +1582,14 @@ body.light-theme .speed-slider::-moz-range-track {
 
 /* --- 1 MOBILE --- */
 
-/* --- BOTÃO DISPARADOR --- */
+/* --- BOTÃƒO DISPARADOR --- */
 .cifra-actions-footer {
   display: flex;
   justify-content: flex-start;
+  align-items: center;
   margin: 30px 0 15px 0;
   width: 100%;
+  min-height: 46px;
 }
 
 .btn-diagramas-cifra {
@@ -1740,13 +1743,13 @@ body.light-theme .speed-slider::-moz-range-track {
     border-radius: 20px;
   }
 
-  /* 3 colunas em vez de 4: dá espaço real para cada teclado respirar */
+  /* 3 colunas em vez de 4: dÃ¡ espaÃ§o real para cada teclado respirar */
   .grade-diagramas-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 22px;
   }
 
-  /* Card espaçoso */
+  /* Card espaÃ§oso */
   .card-acorde-item {
     padding: 16px 18px 18px 18px;
     border-radius: 14px;
@@ -1760,7 +1763,7 @@ body.light-theme .speed-slider::-moz-range-track {
     letter-spacing: 0.5px;
   }
 
-  /* Mini Piano com proporção real e teclas largas */
+  /* Mini Piano com proporÃ§Ã£o real e teclas largas */
   .card-acorde-item .mini-diagrama.piano-container {
     height: 66px;
     padding: 2.5px;
@@ -1791,10 +1794,10 @@ body.light-theme .speed-slider::-moz-range-track {
 }
 
 /* ==========================================================================
-   TEMA CLARO (LIGHT-THEME) - FORÇAR SOBREPOSIÇÃO NO PAINEL DE DIAGRAMAS
+   TEMA CLARO (LIGHT-THEME) - FORÃ‡AR SOBREPOSIÃ‡ÃƒO NO PAINEL DE DIAGRAMAS
    ========================================================================== */
 
-/* 1. Botão 'Ver Acordes' no tema claro */
+/* 1. BotÃ£o 'Ver Acordes' no tema claro */
 body.light-theme .btn-diagramas-cifra {
   background-color: #e5e7eb !important;
   color: #1f2937 !important;
@@ -1815,7 +1818,7 @@ body.light-theme .painel-diagramas-container {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* 3. Cabeçalho e Botão Fechar (X) */
+/* 3. CabeÃ§alho e BotÃ£o Fechar (X) */
 body.light-theme .painel-diagramas-header {
   border-bottom-color: #e5e7eb !important;
 }
@@ -1853,7 +1856,7 @@ body.light-theme .mini-diagrama .key-w {
   border: 0.5px solid #e5e7eb !important;
 }
 
-/* 1. CELULAR (até 599px): 1 acorde por linha */
+/* 1. CELULAR (atÃ© 599px): 1 acorde por linha */
 .grade-diagramas-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1865,7 +1868,7 @@ body.light-theme .mini-diagrama .key-w {
   height: 64px;
 }
 
-/* 2. TABLET (600px até 1023px): 2 colunas equilibradas */
+/* 2. TABLET (600px atÃ© 1023px): 2 colunas equilibradas */
 @media (min-width: 600px) and (max-width: 1023px) {
   .painel-diagramas-container {
     max-width: 100%;
@@ -1887,7 +1890,7 @@ body.light-theme .mini-diagrama .key-w {
   }
 
   .card-acorde-item .mini-diagrama.piano-container {
-    height: 60px; /* Proporção ideal para tela de tablet */
+    height: 60px; /* ProporÃ§Ã£o ideal para tela de tablet */
   }
 }
 
@@ -1958,4 +1961,82 @@ body.light-theme .mini-diagrama .key-w {
     grid-template-columns: 1fr;
     gap: 10px;
   }
+}
+/* ==========================================================
+   BARRA DE ROLAGEM GLOBAL (Usada pelo cifra.html e demais pÃ¡ginas)
+   ========================================================== */
+html {
+    scrollbar-width: auto;
+    scrollbar-color: #272c35 transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #272c35;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #3e4654;
+}
+/* ==========================================================
+   CONTAINER DE ROLAGEM INTERNO - cifra.html
+   Scrollbar entre header e footer fixos
+   ========================================================== */
+body.cifra-page {
+    overflow: hidden;
+    height: 100%;
+}
+
+.cifra-scroll-wrapper {
+    position: fixed;
+    top: 54px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 0;
+    padding-bottom: 62px;
+    z-index: 1;
+    box-sizing: border-box;
+    scrollbar-width: auto;
+    scrollbar-color: #272c35 transparent;
+}
+
+.cifra-scroll-wrapper::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.cifra-scroll-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cifra-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #272c35;
+    border-radius: 5px;
+}
+
+.cifra-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #3e4654;
+}
+
+/* Remove margens do .content dentro do wrapper */
+.cifra-scroll-wrapper .content {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Footer dentro do wrapper */
+.cifra-scroll-wrapper > footer {
+    margin-bottom: 20px;
 }
