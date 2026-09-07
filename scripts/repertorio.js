@@ -39,6 +39,10 @@ let textoEditandoId = null;
 let popoverAtivo = null;
 let callbackConfirmacao = null;
 
+// 🔍 Cache em memória da lista resumida de cifras (titulo, autor, slug, tom)
+// para busca instantânea e insensível a acentos — padrão adotado no portal (ui-controls.js).
+let cacheBuscaCifras = null;
+
 /* ============================================================
    UTILITÁRIOS
    ============================================================ */
@@ -83,7 +87,13 @@ function formatarDataBR(dataISO) {
 function carregarCelebracoes() {
     try {
         const dados = localStorage.getItem(STORAGE_KEY);
-        state.celebracoes = dados ? JSON.parse(dados) : [];
+        const carregadas = dados ? JSON.parse(dados) : [];
+        // 🔥 DEFESA: preserva celebrações temporárias que estão sendo editadas em memória
+        // (ex: quando init() é chamado duas vezes por race condition do live reload)
+        const tempEmEdicao = state.editandoId
+            ? state.celebracoes.filter(c => c.id === state.editandoId && c.id.startsWith('temp_'))
+            : [];
+        state.celebracoes = [...tempEmEdicao, ...carregadas];
     } catch (e) {
         console.error('Erro ao carregar celebrações do localStorage:', e);
         state.celebracoes = [];
@@ -134,8 +144,12 @@ function excluirCelebracao(id) {
 }
 
 function adicionarItem(celebracaoId, item) {
+    console.log('[repertorio] adicionarItem — celebracaoId:', celebracaoId, '| momento:', item.momento, '| titulo:', item.titulo);
     const celeb = buscarCelebracaoPorId(celebracaoId);
-    if (!celeb) return false;
+    if (!celeb) {
+        console.error('[repertorio] ❌ adicionarItem: celebração não encontrada para id:', celebracaoId);
+        return false;
+    }
     celeb.itens.push({
         id: gerarId(),
         momento: item.momento,
@@ -151,6 +165,7 @@ function adicionarItem(celebracaoId, item) {
     });
     celeb.updatedAt = new Date().toISOString();
     salvarCelebracoes();
+    console.log('[repertorio] ✅ Item adicionado com sucesso. Total itens:', celeb.itens.length);
     return true;
 }
 
@@ -183,10 +198,33 @@ function getItensPorMomento(celebracaoId, momentoId) {
 }
 
 /* ============================================================
-   BUSCA DE CIFRAS NO SUPABASE (COM ILIKE SERVER-SIDE)
+   BUSCA DE CIFRAS (CACHE LOCAL + NORMALIZAÇÃO CLIENT-SIDE)
    ============================================================ */
-function escapeIlike(str) {
-    return String(str).replace(/[%_]/g, '\\$&');
+
+// Carrega a lista resumida de todas as cifras (uma única vez por sessão) e a
+// mantém em memória. A busca então ocorre 100% no cliente, garantindo
+// insensibilidade total a acentos, cedilhas, diacríticos e caixa alta/baixa —
+// algo que o operador ILIKE do PostgreSQL não oferece nativamente (ILIKE ignora
+// caixa, mas NÃO remove acentos: "oracao" nunca casaria com "Oração" no banco).
+async function carregarCacheBuscaCifras() {
+    if (cacheBuscaCifras) return cacheBuscaCifras;
+
+    const instancia = window._supabase || (typeof _supabase !== 'undefined' ? _supabase : null);
+    if (!instancia) return null;
+
+    try {
+        const { data, error } = await instancia
+            .from('musicas')
+            .select('titulo, autor, slug, tom')
+            .order('titulo', { ascending: true });
+
+        if (error) throw error;
+        cacheBuscaCifras = data || [];
+    } catch (err) {
+        console.error('Erro ao carregar cache de busca de cifras:', err);
+        cacheBuscaCifras = [];
+    }
+    return cacheBuscaCifras;
 }
 
 async function buscarCifrasNoBanco(termo) {
@@ -194,29 +232,14 @@ async function buscarCifrasNoBanco(termo) {
     if (termoNorm.length < 2) return [];
 
     try {
-        const instancia = window._supabase || (typeof _supabase !== 'undefined' ? _supabase : null);
-        if (!instancia) {
+        const lista = await carregarCacheBuscaCifras();
+        if (!lista) {
             console.warn('Supabase ainda não carregado, aguardando...');
             return [];
         }
-
-        const termoEscapado = escapeIlike(termo.trim());
-
-        // 🔥 CORREÇÃO: usa .or() com .ilike() para filtrar SERVER-SIDE
-        // em TODOS os registros da tabela (não apenas nos primeiros 50)
-        const { data, error } = await instancia
-            .from('musicas')
-            .select('titulo, autor, slug, tom')
-            .or(`titulo.ilike.%${termoEscapado}%,autor.ilike.%${termoEscapado}%`)
-            .order('titulo', { ascending: true })
-            .limit(30);
-
-        if (error) throw error;
-
-        // Segunda passada client-side com normalização para lidar com acentos
-        return filtrarResultados(data || [], termoNorm);
+        return filtrarResultados(lista, termoNorm);
     } catch (err) {
-        console.error('Erro ao buscar cifras no Supabase:', err);
+        console.error('Erro ao buscar cifras:', err);
         return [];
     }
 }
@@ -313,6 +336,7 @@ function renderizarLista() {
    RENDER: EDITOR DE MOMENTOS (GRID)
    ============================================================ */
 function renderizarEditor() {
+    console.log('[repertorio] renderizarEditor — editandoId:', state.editandoId);
     let celeb = null;
     if (state.editandoId) {
         celeb = buscarCelebracaoPorId(state.editandoId);
@@ -472,14 +496,20 @@ function moverItem(celebracaoId, itemId, direcao) {
    MODAIS
    ============================================================ */
 function abrirModalBusca(momentoId) {
+    console.log('[repertorio] abrirModalBusca — momentoAlvo:', momentoId, '| editandoId:', state.editandoId);
     momentoAlvoBusca = momentoId;
     document.getElementById('input-busca-cifra').value = '';
     document.getElementById('resultados-busca').innerHTML = '<p class="busca-placeholder">Digite ao menos 2 caracteres para buscar...</p>';
     document.getElementById('modal-busca').style.display = 'flex';
     setTimeout(() => document.getElementById('input-busca-cifra').focus(), 100);
+
+    // 🔥 Pré-carrega o cache de busca em background ao abrir o modal,
+    // para que a primeira digitação já encontre a lista em memória.
+    carregarCacheBuscaCifras();
 }
 
 function fecharModalBusca() {
+    console.log('[repertorio] fecharModalBusca — momentoAlvo anterior:', momentoAlvoBusca);
     document.getElementById('modal-busca').style.display = 'none';
     momentoAlvoBusca = '';
 }
@@ -494,7 +524,15 @@ function renderizarResultadosBusca(resultados) {
     container.innerHTML = resultados.map(r => {
         const dados = obterDadinhosResultado(r);
         const tomVisual = converterTomParaExibicao(dados.tomOriginal);
-        return `<div class="resultado-item" data-slug="${escapeHtml(dados.slug)}" data-titulo="${escapeHtml(dados.titulo)}" data-autor="${escapeHtml(dados.autor)}" data-tom="${dados.tomOriginal != null ? dados.tomOriginal : ''}">
+        // 🔥 CORREÇÃO: data-* attributes NÃO devem usar escapeHtml — o dataset API
+        // já lida com encoding. Usar escapeHtml aqui causa double-encoding em títulos
+        // com aspas/ampersands, corrompendo os valores lidos via dataset.
+        // Usamos .replace(/"/g,'&quot;') APENAS para não quebrar o atributo HTML.
+        const attrSlug = (dados.slug || '').replace(/"/g, '&quot;');
+        const attrTitulo = (dados.titulo || '').replace(/"/g, '&quot;');
+        const attrAutor = (dados.autor || '').replace(/"/g, '&quot;');
+        const attrTom = (dados.tomOriginal != null) ? dados.tomOriginal : '';
+        return `<div class="resultado-item" data-slug="${attrSlug}" data-titulo="${attrTitulo}" data-autor="${attrAutor}" data-tom="${attrTom}">
             <div class="resultado-info"><p class="resultado-titulo">${escapeHtml(dados.titulo)}</p><p class="resultado-autor">${escapeHtml(dados.autor)}</p></div>
             <span class="resultado-tom">${escapeHtml(tomVisual)}</span>
         </div>`;
@@ -502,22 +540,48 @@ function renderizarResultadosBusca(resultados) {
 
     container.querySelectorAll('.resultado-item').forEach(el => {
         el.addEventListener('click', () => {
-            if (!state.editandoId || !momentoAlvoBusca) return;
+            console.log('[repertorio] Click em resultado da busca:', {
+                editandoId: state.editandoId,
+                momentoAlvoBusca: momentoAlvoBusca,
+                slug: el.dataset.slug,
+                titulo: el.dataset.titulo,
+                autor: el.dataset.autor,
+                tom: el.dataset.tom
+            });
+
+            if (!state.editandoId) {
+                console.warn('[repertorio] ❌ state.editandoId está vazio — a celebração alvo foi perdida.');
+                return;
+            }
+            if (!momentoAlvoBusca) {
+                console.warn('[repertorio] ❌ momentoAlvoBusca está vazio — o momento litúrgico alvo foi perdido.');
+                return;
+            }
+
             const slug = el.dataset.slug;
             const titulo = el.dataset.titulo;
             const autor = el.dataset.autor;
             const tomStr = el.dataset.tom;
-            const tomOriginal = tomStr !== '' ? parseInt(tomStr, 10) : null;
+            const tomOriginal = (tomStr != null && tomStr !== '') ? parseInt(tomStr, 10) : null;
+
             const item = {
                 momento: momentoAlvoBusca,
                 tipo: 'cifra',
-                slug: slug,
-                titulo: titulo,
-                autor: autor,
+                slug: slug || '',
+                titulo: titulo || '',
+                autor: autor || '',
                 tomOriginal: tomOriginal,
                 tomCustom: tomOriginal
             };
-            adicionarItem(state.editandoId, item);
+
+            const adicionado = adicionarItem(state.editandoId, item);
+            console.log('[repertorio] adicionarItem retornou:', adicionado, 'para celebracaoId:', state.editandoId);
+
+            if (!adicionado) {
+                console.error('[repertorio] ❌ Falha ao adicionar item — verifique se a celebração ainda existe no estado.');
+                alert('Erro ao adicionar a cifra. A celebração pode ter sido removida. Tente novamente.');
+            }
+
             fecharModalBusca();
             renderizarEditor();
         });
@@ -690,7 +754,15 @@ function salvarCelebracaoAtual() {
 /* ============================================================
    INICIALIZAÇÃO
    ============================================================ */
+let _inicializado = false;
+
 function init() {
+    if (_inicializado) {
+        console.warn('[repertorio] ⚠️ init() bloqueado — já inicializado anteriormente.');
+        return;
+    }
+    _inicializado = true;
+    console.log('[repertorio] 🚀 init() iniciado');
     carregarCelebracoes();
     renderizarLista();
 
@@ -708,6 +780,7 @@ function init() {
         };
         state.celebracoes.unshift(temp);
         state.editandoId = tempId;
+        console.log('[repertorio] Nova celebração temporária criada:', tempId);
         document.getElementById('input-titulo').value = '';
         document.getElementById('input-data').value = hojeISO();
         document.getElementById('editor-titulo').textContent = 'Nova Celebração';
@@ -773,18 +846,19 @@ function init() {
 
 // Aguarda o Supabase carregar
 function esperarSupabase() {
+    let jaIniciou = false;
     const check = setInterval(() => {
         const existe = window._supabase || (typeof _supabase !== 'undefined');
         if (existe) {
             clearInterval(check);
-            init();
+            if (!jaIniciou) { jaIniciou = true; init(); }
         }
     }, 50);
 
     // Timeout de segurança
     setTimeout(() => {
         clearInterval(check);
-        if (typeof init === 'function') init();
+        if (!jaIniciou) { jaIniciou = true; init(); }
     }, 5000);
 }
 
