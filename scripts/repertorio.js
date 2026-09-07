@@ -7,20 +7,20 @@
 const STORAGE_KEY = 'doze_repertorios';
 const ESCALA_NOTAS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const MOMENTOS = [
-    { id: 'entrada',    label: 'Entrada' },
-    { id: 'penitencial', label: 'Ato Penitencial' },
-    { id: 'gloria',     label: 'Glória' },
-    { id: 'salmo',      label: 'Salmo Responsorial' },
-    { id: 'aclamacao',  label: 'Aclamação' },
-    { id: 'ofertorio',  label: 'Ofertório' },
-    { id: 'santo',      label: 'Santo' },
-    { id: 'amem',       label: 'Amém' },
-    { id: 'cordeiro',   label: 'Cordeiro' },
-    { id: 'comunhao',   label: 'Comunhão' },
-    { id: 'final',      label: 'Final' },
-    { id: 'homenagem',  label: 'Homenagem' },
-    { id: 'adoracao',   label: 'Adoração' },
-    { id: 'homilia',    label: 'Homilia' }
+    { id: 'entrada',      label: 'Entrada' },
+    { id: 'ato',          label: 'Ato Penitencial' },
+    { id: 'salmo',        label: 'Salmo' },
+    { id: 'aclamacao',    label: 'Aclamação' },
+    { id: 'ofertorio',    label: 'Ofertório' },
+    { id: 'santo',        label: 'Santo' },
+    { id: 'cordeiro',     label: 'Cordeiro' },
+    { id: 'amem',         label: 'Amém' },
+    { id: 'comunhao',     label: 'Comunhão' },
+    { id: 'final',        label: 'Final' },
+    { id: 'homilia',      label: 'Homilia' },
+    { id: 'homenagem',    label: 'Homenagem' },
+    { id: 'adoracao',     label: 'Adoração' },
+    { id: 'oracao',       label: 'Oração' }
 ];
 
 /* ============================================================
@@ -39,7 +39,7 @@ let textoEditandoId = null;
 let popoverAtivo = null;
 let callbackConfirmacao = null;
 
-// 🔍 Cache em memória da lista resumida de cifras (titulo, autor, slug, tom)
+// 🔍 Cache em memória da lista resumida de cifras (titulo, autor, slug, tom, tags)
 // para busca instantânea e insensível a acentos — padrão adotado no portal (ui-controls.js).
 let cacheBuscaCifras = null;
 
@@ -215,7 +215,7 @@ async function carregarCacheBuscaCifras() {
     try {
         const { data, error } = await instancia
             .from('musicas')
-            .select('titulo, autor, slug, tom')
+            .select('titulo, autor, slug, tom, tags')
             .order('titulo', { ascending: true });
 
         if (error) throw error;
@@ -227,9 +227,12 @@ async function carregarCacheBuscaCifras() {
     return cacheBuscaCifras;
 }
 
-async function buscarCifrasNoBanco(termo) {
+async function buscarCifrasNoBanco(termo, tagFiltro = '') {
     const termoNorm = normalizarTexto(termo);
-    if (termoNorm.length < 2) return [];
+    const tagAtiva = tagFiltro && tagFiltro.trim() !== '';
+
+    // Só bloqueia por texto curto se NÃO houver tag selecionada
+    if (termoNorm.length < 2 && !tagAtiva) return [];
 
     try {
         const lista = await carregarCacheBuscaCifras();
@@ -237,18 +240,33 @@ async function buscarCifrasNoBanco(termo) {
             console.warn('Supabase ainda não carregado, aguardando...');
             return [];
         }
-        return filtrarResultados(lista, termoNorm);
+        return filtrarResultados(lista, termoNorm, tagFiltro);
     } catch (err) {
         console.error('Erro ao buscar cifras:', err);
         return [];
     }
 }
 
-function filtrarResultados(lista, termoNorm) {
+function filtrarResultados(lista, termoNorm, tagFiltro = '') {
+    const termoVazio = !termoNorm || termoNorm.length < 2;
+    const tagVazia = !tagFiltro || tagFiltro === '';
+
     return (lista || []).filter(m => {
-        const tituloNorm = normalizarTexto(m.titulo || '');
-        const autorNorm = normalizarTexto(m.autor || '');
-        return tituloNorm.includes(termoNorm) || autorNorm.includes(termoNorm);
+        // Filtro de texto
+        const passaTexto = termoVazio || (() => {
+            const tituloNorm = normalizarTexto(m.titulo || '');
+            const autorNorm = normalizarTexto(m.autor || '');
+            return tituloNorm.includes(termoNorm) || autorNorm.includes(termoNorm);
+        })();
+
+        if (!passaTexto) return false;
+
+        // Filtro de tag (string separada por vírgulas) — com higienização
+        if (tagVazia) return true;
+        const tagsRaw = (m.tags || '').toLowerCase();
+        const tagsArr = tagsRaw.split(',').map(t => higienizarTag(t)).filter(Boolean);
+        const tagFiltroLimpa = higienizarTag(tagFiltro);
+        return tagsArr.includes(tagFiltroLimpa);
     }).slice(0, 30);
 }
 
@@ -263,8 +281,116 @@ function obterDadinhosResultado(r) {
         titulo: r.titulo || '',
         autor: r.autor || '',
         slug: r.slug || '',
+        tags: r.tags || '',
         tomOriginal: r.tom != null ? parseInt(r.tom, 10) : null
     };
+}
+
+/* ============================================================
+   EXTRAÇÃO E POPULAÇÃO DE TAGS (Filtro Litúrgico)
+   ============================================================ */
+
+// 🏷️ Dicionário configurável de formatação visual de tags
+// Chave: tag higienizada (minúscula, sem acentos). Valor: rótulo visual com acentuação e capitalização.
+// Tags não mapeadas recebem fallback: primeira letra maiúscula sobre o texto original.
+const DICIONARIO_TAGS = {
+    'adoracao': 'Adoração',
+    'oracao': 'Oração',
+    'animacao': 'Animação',
+    'reflexao': 'Reflexão',
+    'aclamacao': 'Aclamação',
+    'comunhao': 'Comunhão',
+    'gloria': 'Glória',
+    'bencao': 'Bênção',
+    'espirito': 'Espírito',
+    'espiritosanto': 'Espírito Santo',
+    'louvor': 'Louvor',
+    'entrada': 'Entrada',
+    'ato': 'Ato Penitencial',
+    'ofertorio': 'Ofertório',
+    'santo': 'Santo',
+    'cordeiro': 'Cordeiro',
+    'amem': 'Amém',
+    'final': 'Final',
+    'quaresma': 'Quaresma',
+    'cruz': 'Cruz',
+    'maria': 'Maria',
+    'casamento': 'Casamento',
+    'amizade': 'Amizade',
+    'familia': 'Família',
+    'balada': 'Balada',
+    'gospel': 'Gospel',
+    'cerco': 'Cerco de Jericó'
+};
+
+/**
+ * Higieniza uma tag crua (vinda do banco ou digitada):
+ * - Remove aspas simples/duplas, colchetes, chaves e espaços extras
+ * - Converte para minúsculas e remove acentos (NFD)
+ * - Normaliza espaços múltiplos para um único espaço
+ * @param {string} raw - Tag bruta
+ * @returns {string} Tag higienizada (minúscula, sem acentos, sem lixo)
+ */
+function higienizarTag(raw) {
+    if (!raw) return '';
+    return String(raw)
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
+        .replace(/["'«»„‟‚‛「」『』\[\]\{\}]/g, '')        // remove aspas, colchetes, chaves
+        .replace(/\s+/g, ' ')                                // normaliza espaços
+        .trim();
+}
+
+/**
+ * Retorna o rótulo visual formatado para exibição de uma tag.
+ * Consulta o DICIONARIO_TAGS primeiro; se não encontrar, aplica fallback:
+ * capitaliza a primeira letra do texto original (higienizado sem remover acentos).
+ * @param {string} tagHigienizada - Tag já higienizada (minúscula, sem acentos)
+ * @param {string} [textoOriginal] - Texto original antes da higienização (para fallback)
+ * @returns {string} Rótulo visual formatado
+ */
+function formatarTagVisual(tagHigienizada, textoOriginal) {
+    if (!tagHigienizada) return '';
+    // Consulta o dicionário primeiro
+    if (DICIONARIO_TAGS[tagHigienizada]) {
+        return DICIONARIO_TAGS[tagHigienizada];
+    }
+    // Fallback: usa o texto original (com acentos) ou a tag higienizada, capitalizando
+    const base = (textoOriginal || tagHigienizada).trim();
+    return base.charAt(0).toUpperCase() + base.slice(1);
+}
+
+// Catálogo base de tags litúrgicas conhecidas (fallback) — já higienizadas
+const TAGS_CONHECIDAS = [
+    'adoracao', 'santo', 'aclamacao', 'cordeiro', 'comunhao', 'louvor',
+    'entrada', 'gloria', 'ato', 'ofertorio', 'reflexao', 'espirito',
+    'maria', 'animacao', 'oracao', 'quaresma', 'cruz', 'casamento',
+    'amizade', 'familia'
+];
+
+function extrairTagsUnicas() {
+    const tagsSet = new Set(TAGS_CONHECIDAS);
+    if (cacheBuscaCifras) {
+        cacheBuscaCifras.forEach(m => {
+            const raw = (m.tags || '').toLowerCase();
+            raw.split(',').map(t => t.trim()).filter(Boolean).forEach(t => {
+                const higienizada = higienizarTag(t);
+                if (higienizada) tagsSet.add(higienizada);
+            });
+        });
+    }
+    return [...tagsSet].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+}
+
+function popularDropdownTags() {
+    const select = document.getElementById('filtro-tag-musica');
+    if (!select) return;
+    const tags = extrairTagsUnicas();
+    select.innerHTML = '<option value="">Todas as categorias</option>' +
+        tags.map(t => {
+            const rotulo = formatarTagVisual(t);
+            return `<option value="${t}">${escapeHtml(rotulo)}</option>`;
+        }).join('');
 }
 
 /* ============================================================
@@ -292,7 +418,7 @@ function renderizarLista() {
                 <div class="celebracao-info">
                     <h3 class="celebracao-titulo">${escapeHtml(c.titulo)}</h3>
                     <div class="celebracao-meta">
-                        <span class="celebracao-data">📅 ${escapeHtml(dataFmt)}</span>
+                        <span class="celebracao-data"><i class="bi bi-calendar3-event"></i>  ${escapeHtml(dataFmt)}</span>
                         <span class="celebracao-count">${totalItens} itens</span>
                     </div>
                 </div>
@@ -369,7 +495,7 @@ function renderizarEditor() {
                     ${itens.length === 0 ? '<p style="color:var(--text-sec);font-size:0.8rem;margin:0;text-align:center;">Nenhum item neste momento.</p>' : ''}
                     ${itens.map(item => renderSlot(item, m.id)).join('')}
                     <button class="btn-add-slot" data-momento="${m.id}"><i class="bi bi-plus-lg"></i> Adicionar Cifra</button>
-                    <button class="btn-add-slot btn-add-texto" data-momento="${m.id}" style="margin-top:4px;border-color:rgba(255,255,255,0.03);font-size:0.75rem;"><i class="bi bi-file-text"></i> Adicionar Texto</button>
+                    <button class="btn-add-slot btn-add-texto" data-momento="${m.id}" style="margin-top:4px;border-color:rgba(255,255,255,0.03);font-size:0.75rem;"><i class="bi bi-file-text"></i> Adicionar Anotação</button>
                 </div>
             </div>`;
     }).join('');
@@ -501,17 +627,59 @@ function abrirModalBusca(momentoId) {
     document.getElementById('input-busca-cifra').value = '';
     document.getElementById('resultados-busca').innerHTML = '<p class="busca-placeholder">Digite ao menos 2 caracteres para buscar...</p>';
     document.getElementById('modal-busca').style.display = 'flex';
-    setTimeout(() => document.getElementById('input-busca-cifra').focus(), 100);
 
     // 🔥 Pré-carrega o cache de busca em background ao abrir o modal,
     // para que a primeira digitação já encontre a lista em memória.
-    carregarCacheBuscaCifras();
+    carregarCacheBuscaCifras().then(() => {
+        popularDropdownTags();
+
+        // 🏷️ Pré-seleção contextual inteligente: mapeia momentoId → tag correspondente
+        const select = document.getElementById('filtro-tag-musica');
+        if (select && momentoId) {
+            // Mapeamento direto: maioria dos IDs de momento batem com nomes de tag
+            const MAPEAMENTO_MOMENTO_TAG = {
+                'penitencial': 'ato',      // "Ato Penitencial" → tag "ato"
+                'salmo': 'reflexao',       // Salmo → reflexão
+                'amem': 'santo',           // Amém geralmente associado ao Santo
+                'final': 'louvor',         // Final → louvor
+                'homenagem': 'maria',      // Homenagem → maria (mais comum)
+                'homilia': 'reflexao'      // Homilia → reflexão
+            };
+            const tagCorrespondente = MAPEAMENTO_MOMENTO_TAG[momentoId] || momentoId;
+            const option = Array.from(select.options).find(o => o.value === tagCorrespondente);
+            if (option) {
+                select.value = tagCorrespondente;
+                // Dispara busca inicial com a tag pré-selecionada
+                executarBuscaComFiltros();
+            } else {
+                select.value = '';
+            }
+        }
+    });
+
+    setTimeout(() => document.getElementById('input-busca-cifra').focus(), 100);
 }
 
 function fecharModalBusca() {
     console.log('[repertorio] fecharModalBusca — momentoAlvo anterior:', momentoAlvoBusca);
     document.getElementById('modal-busca').style.display = 'none';
     momentoAlvoBusca = '';
+}
+
+// 🔍 Função unificada de filtragem: acionada pelo input de texto E pelo dropdown de tags
+async function executarBuscaComFiltros() {
+    const inputBusca = document.getElementById('input-busca-cifra');
+    const selectTag = document.getElementById('filtro-tag-musica');
+    const termo = inputBusca ? inputBusca.value.trim() : '';
+    const tagFiltro = selectTag ? selectTag.value : '';
+
+    if (termo.length < 2 && !tagFiltro) {
+        document.getElementById('resultados-busca').innerHTML = '<p class="busca-placeholder">Digite ao menos 2 caracteres ou selecione uma categoria...</p>';
+        return;
+    }
+
+    const resultados = await buscarCifrasNoBanco(termo, tagFiltro);
+    renderizarResultadosBusca(resultados);
 }
 
 function renderizarResultadosBusca(resultados) {
@@ -532,8 +700,20 @@ function renderizarResultadosBusca(resultados) {
         const attrTitulo = (dados.titulo || '').replace(/"/g, '&quot;');
         const attrAutor = (dados.autor || '').replace(/"/g, '&quot;');
         const attrTom = (dados.tomOriginal != null) ? dados.tomOriginal : '';
+
+        // 🏷️ Chips de tags (máx 3 para não poluir) — com higienização e formatação visual
+        const tagsRaw = (dados.tags || '').toLowerCase();
+        const tagsArr = tagsRaw.split(',').map(t => t.trim()).filter(Boolean).slice(0, 3);
+        const tagsHtml = tagsArr.length > 0
+            ? `<div class="resultado-tags">${tagsArr.map(t => {
+                const limpa = higienizarTag(t);
+                const rotulo = formatarTagVisual(limpa, t);
+                return `<span class="resultado-tag">${escapeHtml(rotulo)}</span>`;
+            }).join('')}</div>`
+            : '';
+
         return `<div class="resultado-item" data-slug="${attrSlug}" data-titulo="${attrTitulo}" data-autor="${attrAutor}" data-tom="${attrTom}">
-            <div class="resultado-info"><p class="resultado-titulo">${escapeHtml(dados.titulo)}</p><p class="resultado-autor">${escapeHtml(dados.autor)}</p></div>
+            <div class="resultado-info"><p class="resultado-titulo">${escapeHtml(dados.titulo)}</p><p class="resultado-autor">${escapeHtml(dados.autor)}</p>${tagsHtml}</div>
             <span class="resultado-tom">${escapeHtml(tomVisual)}</span>
         </div>`;
     }).join('');
@@ -815,22 +995,46 @@ function init() {
         });
     });
 
-    // Busca com debounce
+    // Busca unificada com debounce: input de texto + dropdown de tags
     const inputBusca = document.getElementById('input-busca-cifra');
+    const selectTag = document.getElementById('filtro-tag-musica');
+
     if (inputBusca) {
         let timeoutId;
         inputBusca.addEventListener('input', () => {
             clearTimeout(timeoutId);
-            const termo = inputBusca.value.trim();
-            if (termo.length < 2) {
-                document.getElementById('resultados-busca').innerHTML = '<p class="busca-placeholder">Digite ao menos 2 caracteres para buscar...</p>';
-                return;
-            }
-            timeoutId = setTimeout(async () => {
-                const resultados = await buscarCifrasNoBanco(termo);
-                renderizarResultadosBusca(resultados);
-            }, 300);
+            timeoutId = setTimeout(() => executarBuscaComFiltros(), 300);
         });
+    }
+
+    if (selectTag) {
+        selectTag.addEventListener('change', () => executarBuscaComFiltros());
+    }
+
+    // 🔥 SINCRONIZAÇÃO IMEDIATA: Título e Data → objeto de estado em memória
+    // Resolve a perda de estado ao adicionar/remover cifras, que re-renderiza o editor
+    // e sobrescrevia os inputs com os valores obsoletos do objeto.
+    const inputTitulo = document.getElementById('input-titulo');
+    const inputData = document.getElementById('input-data');
+
+    if (inputTitulo) {
+        inputTitulo.addEventListener('input', () => {
+            if (state.editandoId) {
+                const celeb = buscarCelebracaoPorId(state.editandoId);
+                if (celeb) celeb.titulo = inputTitulo.value;
+            }
+        });
+    }
+
+    if (inputData) {
+        const sincronizarData = () => {
+            if (state.editandoId) {
+                const celeb = buscarCelebracaoPorId(state.editandoId);
+                if (celeb) celeb.data = inputData.value;
+            }
+        };
+        inputData.addEventListener('input', sincronizarData);
+        inputData.addEventListener('change', sincronizarData); // calendário dispara 'change'
     }
 
     // Keyboard shortcut: Ctrl+S salva

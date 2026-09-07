@@ -8,6 +8,7 @@ const SETLIST_PREFS_KEY = 'doze_setlist_prefs';
 const MOMENTOS_MAP = {
     entrada: 'Entrada',
     penitencial: 'Ato Penitencial',
+    ato: 'Ato Penitencial',
     gloria: 'Glória',
     salmo: 'Salmo Responsorial',
     aclamacao: 'Aclamação',
@@ -19,7 +20,8 @@ const MOMENTOS_MAP = {
     final: 'Final',
     homenagem: 'Homenagem',
     adoracao: 'Adoração',
-    homilia: 'Homilia'
+    homilia: 'Homilia',
+    oracao: 'Oração'
 };
 
 let state = {
@@ -152,13 +154,48 @@ async function carregarCifraDoBanco(slug) {
     }
 }
 
-function ordenarItens(itens) {
+/**
+ * Extrai os momentos únicos presentes nos itens e os ordena:
+ * 1. Primeiro os momentos conhecidos (presentes em MOMENTOS_MAP), na ordem litúrgica definida
+ * 2. Depois os momentos desconhecidos (customizados pelo usuário), em ordem alfabética
+ * Retorna um array de objetos { id, label }
+ */
+function extrairMomentosOrdenados(itens) {
+    const momentosUnicos = [...new Set(itens.map(i => i.momento))];
+    const conhecidos = [];
+    const desconhecidos = [];
+
+    for (const m of momentosUnicos) {
+        if (MOMENTOS_MAP[m]) {
+            conhecidos.push({ id: m, label: MOMENTOS_MAP[m] });
+        } else {
+            desconhecidos.push({ id: m, label: m });
+        }
+    }
+
+    // Ordena conhecidos pela ordem do MOMENTOS_MAP
     const ordemMomentos = Object.keys(MOMENTOS_MAP);
+    conhecidos.sort((a, b) => {
+        const idxA = ordemMomentos.indexOf(a.id);
+        const idxB = ordemMomentos.indexOf(b.id);
+        return idxA - idxB;
+    });
+
+    // Ordena desconhecidos alfabeticamente (case-insensitive)
+    desconhecidos.sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase(), 'pt-BR'));
+
+    return [...conhecidos, ...desconhecidos];
+}
+
+function ordenarItens(itens) {
+    // Mapa de prioridade: posição no array de momentos ordenados
+    const momentosOrdenados = extrairMomentosOrdenados(itens);
+    const prioridadeMap = {};
+    momentosOrdenados.forEach((m, idx) => { prioridadeMap[m.id] = idx; });
+
     return [...itens].sort((a, b) => {
-        const idxA = ordemMomentos.indexOf(a.momento);
-        const idxB = ordemMomentos.indexOf(b.momento);
-        const posA = idxA === -1 ? 999 : idxA;
-        const posB = idxB === -1 ? 999 : idxB;
+        const posA = prioridadeMap[a.momento] != null ? prioridadeMap[a.momento] : 999;
+        const posB = prioridadeMap[b.momento] != null ? prioridadeMap[b.momento] : 999;
         return posA - posB;
     });
 }
@@ -325,15 +362,15 @@ function mostrarModalEscolhaImpressao(totalMusicas) {
     modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
     modal.innerHTML = `
         <div style="background:#1a1d20;color:#fff;padding:28px 24px;border-radius:14px;max-width:420px;width:100%;text-align:center;border:1px solid #FFC502;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
-            <div style="font-size:2rem;margin-bottom:8px;">🖨️</div>
+            <div style="font-size:2rem;margin-bottom:8px;"><i class="bi bi-printer"></i></div>
             <h3 style="color:#FFC502;margin:0 0 6px 0;font-size:1.15rem;">Opções de Impressão</h3>
             <p style="margin:0 0 22px 0;font-size:0.85rem;color:#8b949e;line-height:1.4;">Escolha como deseja gerar o PDF ou imprimir:</p>
             <div style="display:flex;flex-direction:column;gap:10px;">
                 <button id="btn-print-single" style="background:#2a2d32;color:#e0e0e0;border:1px solid rgba(255,255,255,0.12);padding:13px 20px;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:0.9rem;text-align:left;display:flex;align-items:center;gap:10px;">
-                    <span style="font-size:1.2rem;">🎵</span><span>Imprimir Apenas Esta Cifra</span>
+                    <span style="font-size:1.2rem;"><i class="bi bi-music-note"></i></span><span>Imprimir apenas esta cifra</span>
                 </button>
                 <button id="btn-print-batch" style="background:linear-gradient(135deg, #FFC502, #e5b000);color:#000;border:none;padding:13px 20px;border-radius:8px;font-weight:700;cursor:pointer;transition:all 0.2s;font-size:0.9rem;text-align:left;display:flex;align-items:center;gap:10px;">
-                    <span style="font-size:1.2rem;">📖</span><span>Imprimir Celebração Completa <small style="display:block;font-weight:400;opacity:0.7;">(${totalMusicas} músicas)</small></span>
+                    <span style="font-size:1.2rem;"><i class="bi bi-book"></i></span><span>Imprimir repertório completo <small style="display:block;font-weight:400;opacity:0.7;">(${totalMusicas} músicas)</small></span>
                 </button>
                 <button id="btn-print-cancel" style="background:transparent;color:#8b949e;border:none;padding:8px;cursor:pointer;font-size:0.8rem;margin-top:4px;">Cancelar</button>
             </div>
@@ -679,11 +716,11 @@ function renderizarDrawer() {
         grupos[item.momento].push(item);
     }
     let html = '';
-    const ordemMomentos = Object.keys(MOMENTOS_MAP);
-    for (const momentoId of ordemMomentos) {
+    // Usa ordenação dinâmica: momentos conhecidos na ordem litúrgica, depois desconhecidos em ordem alfabética
+    const momentosOrdenados = extrairMomentosOrdenados(state.itens);
+    for (const { id: momentoId, label } of momentosOrdenados) {
         const itens = grupos[momentoId];
-        if (!itens) continue;
-        const label = MOMENTOS_MAP[momentoId] || momentoId;
+        if (!itens || itens.length === 0) continue;
         html += `<div class="drawer-momento-group"><p class="drawer-momento-label">${label}</p>`;
         for (const item of itens) {
             const ehAtivo = state.itens[state.itemAtualIdx]?.id === item.id;
