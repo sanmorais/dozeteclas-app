@@ -21,17 +21,18 @@
 body.light-theme {
     --bg-main: #f8f9fa;
     --bg-card: #ffffff;
-    --text-main: #1a1d20;
-    --text-sec: #6b7280;
+    --text-main: #000000;
+    --text-sec: #3b4048;
     --accent: #b8860b;
     --accent-hover: #916a08;
-    --border: #e5e7eb;
+    --border: #d1d5db;
     --border-hover: #b8860b;
     --header-bg: #ffffff;
-    --header-border: #e5e7eb;
+    --header-border: #d1d5db;
     --drawer-bg: #ffffff;
-    --drawer-border: #e5e7eb;
-    --nav-btn-bg: rgba(184,134,11,0.08);
+    --drawer-border: #d1d5db;
+    --nav-btn-bg: rgba(184,134,11,0.10);
+    --momento-badge-bg: rgba(184,134,11,0.12);
 }
 
 * { box-sizing: border-box; }
@@ -71,7 +72,7 @@ body.setlist-body {
 .setlist-titulo { font-size: 0.9rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1.2; }
 .setlist-musica-titulo { font-size: 1.3rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1.3; }
 @media (max-width: 640px) { .setlist-musica-titulo { font-size: 1.05rem; } }
-.setlist-momento-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); background-color: rgba(255,197,2,0.1); padding: 1px 8px; border-radius: 4px; }
+.setlist-momento-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); background-color: var(--momento-badge-bg, rgba(255,197,2,0.1)); padding: 1px 8px; border-radius: 4px; }
 .setlist-progresso { font-size: 0.7rem; color: var(--text-sec); font-weight: 600; }
 
 .setlist-subnav { display: flex; justify-content: center; align-items: center; gap: 4px; padding: 4px 12px 8px; }
@@ -131,7 +132,7 @@ body.setlist-body {
 #setlist-content .cifra-titulo {
     font-size: 1.4rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-main);
     margin: 0;
     text-wrap: balance;
 }
