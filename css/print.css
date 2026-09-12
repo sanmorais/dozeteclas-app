@@ -140,6 +140,49 @@ svg:not(.st0):not(.st1) {
     letter-spacing: 0.5px !important;
 }
 
+/* ==========================================================
+   💥 CORREÇÃO: Força preto para links de artista e subtítulos
+   (evita que .link-artista-cifra e .cifra-subtitulo herdem
+   as cores douradas do tema escuro na impressão/PDF)
+   ========================================================== */
+
+/* Link do artista na página de cifra (cifra.html) */
+.link-artista-cifra,
+.link-artista-cifra a,
+.link-artista-cifra:visited,
+.link-artista-cifra:hover {
+    color: #000000 !important;
+    text-decoration: none !important;
+}
+
+/* Subtítulo/artista na setlist (setlist.html) */
+.cifra-subtitulo,
+.cifra-subtitulo a,
+#setlist-content .cifra-subtitulo {
+    color: #000000 !important;
+    text-decoration: none !important;
+}
+
+/* Cabeçalhos de cifra e setlist — qualquer parágrafo interno */
+.cifra-header p,
+.setlist-header p,
+.song-header p,
+.setlist-song-header p {
+    color: #000000 !important;
+}
+
+/* Garantia extra: todos os títulos, links, spans e parágrafos em preto */
+@media print {
+    h1, h2, h3, h4, h5, h6,
+    .cifra-titulo,
+    .cifra-artista,
+    .song-header h1,
+    .song-header h2,
+    a, a:visited, a:hover, a:active {
+        color: #000000 !important;
+    }
+}
+
 /* 4. O Mecanismo de Renderização Linear */
 #cifra-render {
     /* white-space: pre-wrap !important; */

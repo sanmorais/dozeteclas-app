@@ -160,6 +160,9 @@ body.setlist-body {
     text-rendering: optimizeSpeed;
     margin: 0 !important;
     padding: 0 !important;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
     min-height: 1.2em;
 }
 
@@ -189,11 +192,77 @@ body.setlist-body {
     letter-spacing: 1px;
     margin-bottom: 10px !important;
     padding: 2px 8px;
-    break-after: avoid;
-    break-after: avoid-column;
-    -webkit-column-break-after: avoid;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
 }
 
+/* Comentários entre parênteses */
+#setlist-content .c-comment,
+#cifra-render .c-comment {
+    color: var(--text-sec);
+    font-style: italic;
+    display: inline-block;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+/* ------------------------------------------------
+   CONTROLE DE QUEBRA MULTI-COLUNA (Setlist)
+   Garante que colunas nunca cortem uma .c-line
+   internamente e que cabeçalhos de seção não
+   fiquem órfãos no rodapé da coluna.
+   ------------------------------------------------ */
+.two-columns {
+    column-fill: balance;
+}
+
+.two-columns #cifra-render .c-line,
+.two-columns .c-chord-line {
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+/* Mantém a linha de acorde colada à linha de letra seguinte */
+.two-columns #cifra-render .c-line:has(.c-chord) {
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
+}
+
+/* Cabeçalhos de seção nunca ficam órfãos */
+.two-columns .section-label {
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+/* Comentários isolados não devem ser quebrados */
+.two-columns .c-comment {
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+/* Linhas vazias (separadores de estrofes) são pontos naturais de quebra */
+.two-columns #cifra-render .c-line:empty,
+.two-columns .c-blank-line {
+    break-before: auto !important;
+    break-after: auto !important;
+}
 /* DRAWER (Roteiro da Celebração) */
 .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; }
 .drawer { position: fixed; top: 0; left: 0; width: 320px; height: 100%; background-color: var(--drawer-bg); border-right: 1px solid var(--drawer-border); z-index: 2001; overflow-y: auto; animation: slideIn 0.3s ease-out; box-shadow: 10px 0 30px rgba(0,0,0,0.3); }

@@ -256,9 +256,12 @@ body {
     letter-spacing: 1px;
     margin-bottom: 10px !important;
     padding: 2px 8px;
-    break-after: avoid;
-    break-after: avoid-column;
-    -webkit-column-break-after: avoid;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
 }
 
 /* Linha de Cifra Base - UNIFICADO */
@@ -274,8 +277,9 @@ body {
     text-rendering: optimizeSpeed;
     margin: 0 !important;
     padding: 0 !important;
-    break-inside: avoid-column;
-    -webkit-column-break-inside: avoid;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
     min-height: 1.2em; 
 }
 
@@ -293,6 +297,9 @@ body {
     display: inline-block;
     margin-top: 0.3em;
     margin-bottom: 0.3em;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
 }
 
 /* 6. Modos de ExibiÃ§Ã£o de Cifra (Colunas e Texto Puro) */
@@ -307,6 +314,52 @@ body {
     max-height: none !important;
 }
 
+/* ------------------------------------------------
+   CONTROLE DE QUEBRA MULTI-COLUNA (Desktop/Tablet)
+   Garante que colunas nunca cortem uma .c-line
+   internamente e que cabeçalhos de seção não
+   fiquem órfãos no rodapé da coluna.
+   ------------------------------------------------ */
+.two-columns .c-line,
+.two-columns .c-chord-line {
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+/* Mantém a linha de acorde colada à linha de letra seguinte */
+.two-columns .c-line:has(.c-chord) {
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
+}
+
+/* Cabeçalhos de seção nunca ficam órfãos */
+.two-columns .section-label {
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+/* Comentários isolados não devem ser quebrados */
+.two-columns .c-comment {
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+/* Linhas vazias (separadores de estrofes) são pontos naturais de quebra */
+.two-columns .c-line:empty,
+.two-columns .c-blank-line {
+    break-before: auto !important;
+    break-after: auto !important;
+}
 /* --- AJUSTE CIRÃšRGICO MODO TXT --- */
 
 /* 1. Esconde os acordes */
@@ -1599,7 +1652,7 @@ body.light-theme .speed-slider::-moz-range-track {
   background-color: #2a2f36;
   color: #FFC502;
   border: 1px solid rgba(255, 197, 2, 0.3);
-  padding: 10px 20px;
+  padding: 5px 10px;
   border-radius: 25px;
   font-size: 14px;
   font-weight: 700;
@@ -1721,11 +1774,11 @@ body.light-theme .speed-slider::-moz-range-track {
 }
 
 .mini-diagrama .key-w.key-bass {
-  background-color: #38bdf8 !important;
+  background-color: #858585 !important;
 }
 
 .mini-diagrama .key-b.key-bass {
-  background-color: #38bdf8 !important;
+  background-color: #858585 !important;
   outline: 1.5px solid #121417;
   outline-offset: 0px;
   z-index: 10;
