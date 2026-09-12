@@ -220,7 +220,7 @@ body.setlist-body {
    fiquem órfãos no rodapé da coluna.
    ------------------------------------------------ */
 .two-columns {
-    column-fill: balance;
+    column-fill: auto;
 }
 
 .two-columns #cifra-render .c-line,
@@ -235,6 +235,13 @@ body.setlist-body {
     break-after: avoid !important;
     -webkit-column-break-after: avoid !important;
     page-break-after: avoid !important;
+}
+
+/* 💥 TRAVA DUPLA: linha de letra NUNCA se descola da linha de acorde acima */
+.two-columns #cifra-render .c-line:has(.c-chord) + .c-line {
+    break-before: avoid !important;
+    -webkit-column-break-before: avoid !important;
+    page-break-before: avoid !important;
 }
 
 /* Cabeçalhos de seção nunca ficam órfãos */

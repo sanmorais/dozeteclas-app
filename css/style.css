@@ -309,7 +309,7 @@ body {
     column-count: 2 !important; 
     column-gap: 40px;
     column-rule: 1px solid #333;
-    column-fill: balance;
+    column-fill: auto;
     height: auto !important;
     max-height: none !important;
 }
@@ -332,6 +332,13 @@ body {
     break-after: avoid !important;
     -webkit-column-break-after: avoid !important;
     page-break-after: avoid !important;
+}
+
+/* 💥 TRAVA DUPLA: linha de letra NUNCA se descola da linha de acorde acima */
+.two-columns .c-line:has(.c-chord) + .c-line {
+    break-before: avoid !important;
+    -webkit-column-break-before: avoid !important;
+    page-break-before: avoid !important;
 }
 
 /* Cabeçalhos de seção nunca ficam órfãos */

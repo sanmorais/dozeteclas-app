@@ -114,7 +114,19 @@ svg:not(.st0):not(.st1) {
     margin-bottom: 15px !important; 
     border-left: 3.5pt solid #000000 !important;
     padding-left: 12px !important;
+    break-inside: avoid-page !important;
     page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    break-after: avoid-page !important;
+    page-break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+}
+
+/* 💥 TRAVA CABEÇALHO↔CIFRA (cifra avulsa): primeiro elemento após o título NUNCA se separa */
+.song-header + #cifra-render {
+    break-before: avoid-page !important;
+    page-break-before: avoid !important;
+    -webkit-column-break-before: avoid !important;
 }
 
 .song-header h1 {
@@ -261,7 +273,7 @@ svg:not(.st0):not(.st1) {
     column-count: 2 !important;
     column-gap: 30mm !important;
     column-rule: 0.5pt solid #dddddd !important;
-    column-fill: balance !important;
+    column-fill: auto !important;
     height: auto !important;
     max-height: none !important;
 }
@@ -553,29 +565,66 @@ body.print-batch-mode #print-batch-container {
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* Página individual por música: quebra garantida no final de cada uma */
+/* Página individual por música: cada música inicia no topo de uma NOVA folha.
+   Força quebra de página antes de cada card, preservando o layout de 2 colunas.
+   ⚠️ NÃO usa break-inside: avoid — músicas longas podem quebrar entre páginas;
+   a trava cabeçalho↔conteúdo (print-song-header + print-cifra-render) garante
+   que o título nunca fique órfão no rodapé. */
 .setlist-print-page {
-    break-after: page !important;
-    page-break-after: always !important;
+    /* 💥 FORÇA CADA MÚSICA EM PÁGINA PRÓPRIA */
+    break-before: page !important;
+    page-break-before: always !important;
+
+    /* Layout de 2 colunas */
+    column-count: 2 !important;
+    -webkit-column-count: 2 !important;
+    -moz-column-count: 2 !important;
+    column-gap: 24px !important;
+    -webkit-column-gap: 24px !important;
+    -moz-column-gap: 24px !important;
+    column-fill: auto !important;
+    -webkit-column-fill: auto !important;
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
 }
 
-/* Última página não deve ter quebra extra */
-.setlist-print-page:last-child {
-    break-after: auto !important;
-    page-break-after: auto !important;
+/* Primeira música NÃO deve forçar folha em branco antes dela */
+.setlist-print-page:first-child {
+    break-before: auto !important;
+    page-break-before: auto !important;
 }
 
-/* Cabeçalho de impressão da música */
+/* Cabeçalho de impressão da música: ocupa toda a largura (span all) antes
+   das 2 colunas da cifra. NÃO permite quebra entre o título e a cifra. */
 .print-song-header {
-    margin-top: 5mm !important;
-    margin-bottom: 5mm !important;
+    margin-top: 4mm !important;
+    margin-bottom: 4mm !important;
     border-left: 3.5pt solid #000000 !important;
     padding-left: 12px !important;
-    break-inside: avoid !important;
+    break-inside: avoid-page !important;
     page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    break-after: avoid-page !important;
+    page-break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    column-span: all !important;
+    -webkit-column-span: all !important;
+    -moz-column-span: all !important;
+}
+
+/* 💥 Filhos do cabeçalho (badge, título, artista, tom) nunca se separam entre si */
+.print-song-header * {
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+}
+
+/* 💥 TRAVA CABEÇALHO↔CIFRA: o corpo da música NUNCA se separa do título acima */
+.print-song-header + .print-cifra-render,
+.print-song-header + .print-text-content {
+    break-before: avoid-page !important;
+    page-break-before: avoid !important;
+    -webkit-column-break-before: avoid !important;
 }
 
 /* Badge do momento litúrgico */
@@ -668,6 +717,58 @@ body.print-batch-mode #print-batch-container {
     font-style: italic !important;
 }
 
+/* ==========================================================
+   CONTROLE DE QUEBRA: EVITA ACORDES ÓRFÃOS E SEÇÕES CORTADAS
+   Dentro do container de impressão em lote (setlist batch)
+   ========================================================== */
+
+/* Linhas de acorde e letra não devem quebrar entre colunas/páginas */
+.setlist-print-page .c-line,
+.setlist-print-page .c-chord-line,
+.print-cifra-render .c-line,
+.print-cifra-render .c-chord-line {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+}
+
+/* Cabeçalhos de seção e comentários não devem se separar da linha seguinte */
+.setlist-print-page .section-label,
+.setlist-print-page .c-section-header,
+.setlist-print-page .c-comment,
+.print-cifra-render .section-label,
+.print-cifra-render .c-section-header {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+}
+
+/* Seções também não devem quebrar internamente */
+.setlist-print-page .section-label,
+.setlist-print-page .c-section-header,
+.setlist-print-page .c-comment,
+.print-cifra-render .section-label,
+.print-cifra-render .c-section-header,
+.print-cifra-render .c-comment {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+}
+
+/* 💥 TRAVA DUPLA: linha de acorde NUNCA se separa da linha de letra seguinte */
+.print-cifra-render .c-line:has(.c-chord),
+.setlist-print-page .c-line:has(.c-chord) {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+}
+
+.print-cifra-render .c-line:has(.c-chord) + .c-line,
+.setlist-print-page .c-line:has(.c-chord) + .c-line {
+    break-before: avoid !important;
+    page-break-before: avoid !important;
+    -webkit-column-break-before: avoid !important;
+}
 /* Conteúdo textual (itens tipo "texto") */
 .print-text-content {
     font-size: 11pt !important;
