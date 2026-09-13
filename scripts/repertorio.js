@@ -9,18 +9,19 @@ const ESCALA_NOTAS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const MOMENTOS = [
     { id: 'entrada',      label: 'Entrada' },
     { id: 'ato',          label: 'Ato Penitencial' },
+    { id: 'gloria',       label: 'Glória' },
     { id: 'salmo',        label: 'Salmo' },
     { id: 'aclamacao',    label: 'Aclamação' },
+    { id: 'homilia',      label: 'Homilia' },
     { id: 'ofertorio',    label: 'Ofertório' },
     { id: 'santo',        label: 'Santo' },
-    { id: 'cordeiro',     label: 'Cordeiro' },
     { id: 'amem',         label: 'Amém' },
+    { id: 'cordeiro',     label: 'Cordeiro' },
     { id: 'comunhao',     label: 'Comunhão' },
+    { id: 'oracao',       label: 'Oração / Pós-Comunhão' },
     { id: 'final',        label: 'Final' },
-    { id: 'homilia',      label: 'Homilia' },
     { id: 'homenagem',    label: 'Homenagem' },
-    { id: 'adoracao',     label: 'Adoração' },
-    { id: 'oracao',       label: 'Oração' }
+    { id: 'adoracao',     label: 'Adoração' }
 ];
 
 /* ============================================================

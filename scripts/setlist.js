@@ -10,18 +10,18 @@ const MOMENTOS_MAP = {
     penitencial: 'Ato Penitencial',
     ato: 'Ato Penitencial',
     gloria: 'Glória',
-    salmo: 'Salmo Responsorial',
+    salmo: 'Salmo',
     aclamacao: 'Aclamação',
+    homilia: 'Homilia',
     ofertorio: 'Ofertório',
     santo: 'Santo',
     amem: 'Amém',
     cordeiro: 'Cordeiro',
     comunhao: 'Comunhão',
+    oracao: 'Oração / Pós-Comunhão',
     final: 'Final',
     homenagem: 'Homenagem',
-    adoracao: 'Adoração',
-    homilia: 'Homilia',
-    oracao: 'Oração'
+    adoracao: 'Adoração'
 };
 
 let state = {
