@@ -10,6 +10,7 @@ const MOMENTOS = [
     { id: 'entrada',      label: 'Entrada' },
     { id: 'ato',          label: 'Ato Penitencial' },
     { id: 'gloria',       label: 'Glória' },
+    { id: 'refrao_meditativo', label: 'Refrão Meditativo' },
     { id: 'salmo',        label: 'Salmo' },
     { id: 'aclamacao',    label: 'Aclamação' },
     { id: 'homilia',      label: 'Homilia' },
@@ -935,6 +936,7 @@ function abrirModalBusca(momentoId) {
             const MAPEAMENTO_MOMENTO_TAG = {
                 'penitencial': 'ato',      // "Ato Penitencial" → tag "ato"
                 'salmo': 'reflexao',       // Salmo → reflexão
+                'refrao_meditativo': 'reflexao', // Refrão Meditativo → reflexão
                 'amem': 'santo',           // Amém geralmente associado ao Santo
                 'final': 'louvor',         // Final → louvor
                 'homenagem': 'maria',      // Homenagem → maria (mais comum)

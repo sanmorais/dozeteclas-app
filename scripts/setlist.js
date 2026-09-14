@@ -10,6 +10,7 @@ const MOMENTOS_MAP = {
     penitencial: 'Ato Penitencial',
     ato: 'Ato Penitencial',
     gloria: 'Glória',
+    refrao_meditativo: 'Refrão Meditativo',
     salmo: 'Salmo',
     aclamacao: 'Aclamação',
     homilia: 'Homilia',
@@ -196,7 +197,9 @@ function ordenarItens(itens) {
     return [...itens].sort((a, b) => {
         const posA = prioridadeMap[a.momento] != null ? prioridadeMap[a.momento] : 999;
         const posB = prioridadeMap[b.momento] != null ? prioridadeMap[b.momento] : 999;
-        return posA - posB;
+        // 🔥 CORREÇÃO: Se mesmo momento litúrgico, respeita a ordem sequencial salva (propriedade `ordem`)
+        if (posA !== posB) return posA - posB;
+        return (a.ordem ?? 0) - (b.ordem ?? 0);
     });
 }
 
