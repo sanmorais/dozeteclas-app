@@ -453,7 +453,7 @@ body.setlist-body {
 /* Reduz o top do main para colar na barra de navegacao */
 :fullscreen .setlist-main,
 .fullscreen-mode .setlist-main {
-    top: 60px !important;
+    top: 100px !important;
 }
 @media (max-width: 640px) {
     :fullscreen .setlist-main,
