@@ -242,31 +242,27 @@ async function compartilharCelebracao(id) {
     const shortId = gerarHashCurto(6);
     // Sanitiza o payload: JSON.parse(JSON.stringify(...)) remove undefined e garante JSON limpo
     const payloadLimpo = JSON.parse(JSON.stringify(limparPayloadParaCompartilhamento(celeb)));
+    const body = { id: shortId, payload: payloadLimpo };
+
+    console.log('[repertorio] 🔍 DEBUG — payload a enviar:', JSON.stringify(body).substring(0, 200));
 
     try {
         const { error } = await instancia
             .from('repertorios_compartilhados')
-            .insert({
-                id: shortId,
-                payload: payloadLimpo,
-                created_at: new Date().toISOString()
-            });
+            .insert(body);
 
         if (error) throw error;
 
         const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
 
-        // Copia para o clipboard
         try {
             await navigator.clipboard.writeText(urlCurta);
             mostrarToast('🔗 Link copiado! Compartilhe com a equipe.', 'success');
         } catch (clipErr) {
-            // Fallback: exibe o link para cópia manual
             prompt('Copie o link de compartilhamento:', urlCurta);
             mostrarToast('📋 Copie o link na janela que abriu.', 'info');
         }
 
-        // Dispara evento GA4
         if (typeof gtag === 'function') {
             gtag('event', 'compartilhar_repertorio', {
                 event_category: 'repertorio',
@@ -275,44 +271,50 @@ async function compartilharCelebracao(id) {
             });
         }
     } catch (err) {
-        // Log detalhado do erro para diagnóstico
-        console.error('[repertorio] ❌ Erro ao compartilhar:', {
-            message: err?.message || err,
-            code: err?.code,
-            details: err?.details,
-            hint: err?.hint,
-            status: err?.status
-        });
+        // 🔬 LOG ULTRA-DETALHADO para diagnóstico
+        console.error('[repertorio] ❌ Erro ao compartilhar — DIAGNÓSTICO COMPLETO:');
+        console.error('  Tipo:', typeof err, '| Construtor:', err?.constructor?.name);
+        console.error('  Keys próprias:', Object.keys(err || {}));
+        console.error('  Todas as props:', Object.getOwnPropertyNames(err || {}));
+        try { console.error('  JSON.stringify:', JSON.stringify(err)); } catch (e) { console.error('  (não serializável)'); }
+        console.error('  message:', err?.message);
+        console.error('  code:', err?.code);
+        console.error('  details:', err?.details);
+        console.error('  hint:', err?.hint);
+        console.error('  status:', err?.status);
+        console.error('  statusCode:', err?.statusCode);
+        console.error('  error:', err?.error);
+        console.error('  causa:', err?.cause);
+        console.error('  Objeto cru:', err);
 
-        // Tenta upsert como fallback para colisão de hash (código 23505)
+        // Tenta extrair corpo se for Response
+        if (err && typeof err.json === 'function') {
+            try {
+                const bodyText = await err.text();
+                console.error('[repertorio] 📨 Corpo da resposta HTTP:', bodyText);
+            } catch (bodyErr) {
+                console.error('[repertorio] (não foi possível ler corpo da resposta)');
+            }
+        }
+
+        // Fallback: tenta upsert para colisão de hash
         if (err?.code === '23505') {
-            console.warn('[repertorio] ⚠️ Colisão de hash detectada, tentando upsert...');
+            console.warn('[repertorio] ⚠️ Colisão de hash, tentando upsert...');
             try {
                 const { error: upsertErr } = await instancia
                     .from('repertorios_compartilhados')
-                    .upsert({
-                        id: shortId,
-                        payload: payloadLimpo,
-                        created_at: new Date().toISOString()
-                    });
-
+                    .upsert(body);
                 if (upsertErr) throw upsertErr;
 
                 const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
-                try {
-                    await navigator.clipboard.writeText(urlCurta);
-                    mostrarToast('🔗 Link copiado! Compartilhe com a equipe.', 'success');
-                } catch (clipErr) {
-                    prompt('Copie o link de compartilhamento:', urlCurta);
-                    mostrarToast('📋 Copie o link na janela que abriu.', 'info');
-                }
+                try { await navigator.clipboard.writeText(urlCurta); mostrarToast('🔗 Link copiado!', 'success'); }
+                catch { prompt('Copie o link:', urlCurta); }
                 return;
             } catch (upsertErr) {
                 console.error('[repertorio] ❌ Upsert também falhou:', upsertErr?.message || upsertErr);
             }
         }
 
-        // Mensagem amigável baseada no tipo de erro
         if (err?.code === '42501' || (err?.message && err.message.includes('permission'))) {
             mostrarToast('🔒 Permissão negada. Verifique as políticas RLS no Supabase.', 'error');
         } else if (err?.code === '23505') {
