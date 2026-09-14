@@ -53,9 +53,14 @@ body.setlist-body {
     border-bottom: 1px solid var(--header-border);
     backdrop-filter: blur(8px);
     transition: background-color 0.2s, border-color 0.2s;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.setlist-nav { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; gap: 8px; }
+.setlist-nav { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; gap: 8px; width: 100%; }
 
 .setlist-nav-btn {
     display: inline-flex; align-items: center; gap: 4px;
@@ -71,7 +76,7 @@ body.setlist-body {
 .setlist-nav-arrow { padding: 8px 12px; font-size: 1.15rem; gap: 0; min-width: 40px; justify-content: center; }
 .setlist-nav-arrow i { font-size: 1.25rem; }
 
-.setlist-nav-center { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; min-width: 0; text-align: center; }
+.setlist-nav-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: 1; min-width: 0; text-align: center; }
 .setlist-titulo { font-size: 0.9rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1.2; }
 .setlist-musica-titulo { font-size: 1.3rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1.3; }
 @media (max-width: 640px) { .setlist-musica-titulo { font-size: 1.05rem; } }
@@ -412,23 +417,79 @@ body.setlist-body {
 }
 
 /* ==========================================================
-   TELA CHEIA / MODO PALCO: Oculta título e artista internos
-   para maximizar área visível de acordes e letra
+   TELA CHEIA / MODO PALCO: Esconde elementos nao essenciais
+   e ajusta espacamentos para maximizar a area util da cifra.
    ========================================================== */
-:fullscreen #cifra-render .cifra-titulo,
-:fullscreen #cifra-render .cifra-artista,
-.fullscreen-mode #cifra-render .cifra-titulo,
-.fullscreen-mode #cifra-render .cifra-artista {
+
+/* Oculta cabecalho interno, barra de ferramentas, subnav e tone-control */
+:fullscreen .song-header.setlist-song-header,
+.fullscreen-mode .song-header.setlist-song-header,
+:fullscreen .setlist-subnav,
+.fullscreen-mode .setlist-subnav,
+:fullscreen .toolbar-bottom,
+.fullscreen-mode .toolbar-bottom,
+:fullscreen #setlist-tools,
+.fullscreen-mode #setlist-tools,
+:fullscreen .header-tools,
+.fullscreen-mode .header-tools,
+:fullscreen .tone-control-wrapper,
+.fullscreen-mode .tone-control-wrapper {
     display: none !important;
 }
 
-/* Em modo fullscreen, a barra de ferramentas sobe um pouco */
-.fullscreen-mode .setlist-toolbar { bottom: 12px; }
+/* Zera a folga do topo da cifra */
+:fullscreen #cifra-render,
+.fullscreen-mode #cifra-render {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
 
-/* Em fullscreen, o header pode ser opcionalmente ocultado com um clique duplo */
-.fullscreen-mode .setlist-header { opacity: 0.12; transition: opacity 0.3s; }
-.fullscreen-mode .setlist-header:hover,
-.fullscreen-mode .setlist-header.header-visible { opacity: 1; }
+/* Zera padding do container principal */
+:fullscreen #setlist-content,
+.fullscreen-mode #setlist-content {
+    padding-top: 0 !important;
+}
+
+/* Reduz o top do main para colar na barra de navegacao */
+:fullscreen .setlist-main,
+.fullscreen-mode .setlist-main {
+    top: 60px !important;
+}
+@media (max-width: 640px) {
+    :fullscreen .setlist-main,
+    .fullscreen-mode .setlist-main {
+        top: 86px !important;
+    }
+}
+
+/* Mantem o botao de auto-scroll visivel */
+:fullscreen .auto-scroll-container,
+.fullscreen-mode .auto-scroll-container,
+:fullscreen #auto-scroll-container,
+.fullscreen-mode #auto-scroll-container,
+:fullscreen .btn-autoscroll-float,
+.fullscreen-mode .btn-autoscroll-float {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 9999 !important;
+}
+
+/* Header centralizado e visivel em fullscreen */
+:fullscreen .setlist-header,
+.fullscreen-mode .setlist-header {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    background-color: #12151c !important;
+}
 
 /* ==========================================================
    IMPRESSAO: Reset do container fixo para fluir normalmente
