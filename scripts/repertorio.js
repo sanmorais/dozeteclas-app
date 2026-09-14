@@ -221,10 +221,83 @@ function gerarHashCurto(tamanho = 6) {
 }
 
 /**
+ * 🔗 Popula o campo de URL no card da celebração (share-url-container).
+ * Exibe o container, define o valor do input e garante que o botão [Copiar]
+ * capture um clique direto do usuário (evitando o bloqueio da Clipboard API
+ * após requisições assíncronas do Supabase).
+ */
+function popularUrlNoCard(celebracaoId, url) {
+    const card = document.querySelector(`.celebracao-card[data-id="${celebracaoId}"]`);
+    if (!card) return;
+    const container = card.querySelector('.share-url-container');
+    const input = card.querySelector('.share-url-input');
+    if (container) container.style.display = 'flex';
+    if (input) input.value = url;
+}
+
+/**
+ * 📋 Copia o link do input para a área de transferência.
+ * Chamado diretamente pelo onclick no botão [Copiar] — clique direto do usuário,
+ * portanto a permissão da Clipboard API é garantida.
+ * Fallback: input.select() + document.execCommand('copy') para navegadores restritivos.
+ */
+function copiarLinkDoInput(btn) {
+    const container = btn.closest('.share-url-container');
+    if (!container) return;
+    const input = container.querySelector('.share-url-input');
+    if (!input || !input.value) return;
+
+    const textoOriginal = btn.innerHTML;
+    const sucesso = () => {
+        btn.innerHTML = '<i class="bi bi-check-lg"></i> Copiado!';
+        btn.classList.add('copiado');
+        setTimeout(() => {
+            btn.innerHTML = textoOriginal;
+            btn.classList.remove('copiado');
+        }, 2000);
+    };
+
+    // Tenta Clipboard API primeiro (moderno)
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(input.value).then(() => {
+            sucesso();
+            if (typeof gtag === 'function') {
+                gtag('event', 'copiar_link_repertorio', {
+                    event_category: 'repertorio',
+                    event_label: input.value
+                });
+            }
+        }).catch(() => {
+            // Fallback: selecionar + execCommand
+            input.select();
+            input.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                sucesso();
+            } catch (e) {
+                mostrarToast('📋 Pressione Ctrl+C para copiar o link.', 'info');
+            }
+        });
+    } else {
+        // Fallback para navegadores sem Clipboard API
+        input.select();
+        input.setSelectionRange(0, 99999);
+        try {
+            document.execCommand('copy');
+            sucesso();
+        } catch (e) {
+            mostrarToast('📋 Pressione Ctrl+C para copiar o link.', 'info');
+        }
+    }
+}
+// 🔓 Expõe no escopo global para uso via onclick inline (módulo ES6)
+window.copiarLinkDoInput = copiarLinkDoInput;
+
+/**
  * Compartilha/atualiza uma celebração via Supabase:
  * - Se a celebração já foi compartilhada antes (possui sharedId), faz UPSERT no registro existente.
  * - Caso contrário, cria um novo registro e armazena o sharedId na celebração.
- * Constrói URL curta e copia para o clipboard.
+ * Exibe a URL no card com botão de cópia manual (evita bloqueio da Clipboard API pós-async).
  */
 async function compartilharCelebracao(id) {
     const celeb = buscarCelebracaoPorId(id);
@@ -259,6 +332,8 @@ async function compartilharCelebracao(id) {
             if (error) throw error;
 
             const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
+            // ✅ Atualiza o campo de URL visível no card (se já estiver visível)
+            popularUrlNoCard(id, urlCurta);
             mostrarToast('✅ Repertório atualizado no link de compartilhamento!', 'success');
 
             if (typeof gtag === 'function') {
@@ -280,14 +355,9 @@ async function compartilharCelebracao(id) {
             salvarCelebracoes();
 
             const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
-
-            try {
-                await navigator.clipboard.writeText(urlCurta);
-                mostrarToast('🔗 Link copiado! Compartilhe com a equipe.', 'success');
-            } catch (clipErr) {
-                prompt('Copie o link de compartilhamento:', urlCurta);
-                mostrarToast('📋 Copie o link na janela que abriu.', 'info');
-            }
+            // ✅ Exibe a URL no card com botão de cópia manual garantido
+            popularUrlNoCard(id, urlCurta);
+            mostrarToast('🔗 Link gerado! Use o botão [Copiar] no card.', 'success');
         }
     } catch (err) {
         // 🔬 LOG ULTRA-DETALHADO para diagnóstico
@@ -334,8 +404,8 @@ async function compartilharCelebracao(id) {
 
                 const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
                 if (!isUpdate) {
-                    try { await navigator.clipboard.writeText(urlCurta); mostrarToast('🔗 Link copiado!', 'success'); }
-                    catch { prompt('Copie o link:', urlCurta); }
+                    popularUrlNoCard(id, urlCurta);
+                    mostrarToast('🔗 Link gerado! Use o botão [Copiar] no card.', 'success');
                 } else {
                     mostrarToast('✅ Repertório atualizado!', 'success');
                 }
@@ -625,20 +695,30 @@ function renderizarLista() {
     container.innerHTML = state.celebracoes.map(c => {
         const totalItens = c.itens ? c.itens.length : 0;
         const dataFmt = formatarDataBR(c.data);
+        // 🔗 Se a celebração já foi compartilhada, exibe o link automaticamente
+        const temSharedId = !!c.sharedId;
+        const urlCompartilhada = temSharedId ? `https://dozeteclas.com.br/setlist.html?id=${c.sharedId}` : '';
         return `
             <div class="celebracao-card" data-id="${escapeHtml(c.id)}">
-                <div class="celebracao-info">
-                    <h3 class="celebracao-titulo">${escapeHtml(c.titulo)}</h3>
-                    <div class="celebracao-meta">
-                        <span class="celebracao-data"><i class="bi bi-calendar3-event"></i>  ${escapeHtml(dataFmt)}</span>
-                        <span class="celebracao-count">${totalItens} itens</span>
+                <div class="celebracao-card-row">
+                    <div class="celebracao-info">
+                        <h3 class="celebracao-titulo">${escapeHtml(c.titulo)}</h3>
+                        <div class="celebracao-meta">
+                            <span class="celebracao-data"><i class="bi bi-calendar3-event"></i>  ${escapeHtml(dataFmt)}</span>
+                            <span class="celebracao-count">${totalItens} itens</span>
+                        </div>
+                    </div>
+                    <div class="celebracao-actions">
+                        <button class="btn-action-card btn-edit-list" data-id="${escapeHtml(c.id)}" title="Editar"><i class="bi bi-pencil"></i></button>
+                        <button class="btn-action-card btn-setlist" data-id="${escapeHtml(c.id)}" title="Executar"><i class="bi bi-play-fill"></i></button>
+                        <button class="btn-action-card btn-del btn-del-list" data-id="${escapeHtml(c.id)}" title="Excluir"><i class="bi bi-trash"></i></button>
                     </div>
                 </div>
-                <div class="celebracao-actions">
-                    <button class="btn-action-card btn-edit-list" data-id="${escapeHtml(c.id)}" title="Editar"><i class="bi bi-pencil"></i></button>
-                    <button class="btn-action-card btn-setlist" data-id="${escapeHtml(c.id)}" title="Executar"><i class="bi bi-play-fill"></i></button>
-                    <button class="btn-action-card btn-share" data-id="${escapeHtml(c.id)}" title="Copiar Link"><i class="bi bi-link-45deg"></i></button>
-                    <button class="btn-action-card btn-del btn-del-list" data-id="${escapeHtml(c.id)}" title="Excluir"><i class="bi bi-trash"></i></button>
+                <div class="share-url-container" style="${temSharedId ? '' : 'display:none;'}">
+                    <input type="text" class="share-url-input" value="${escapeHtml(urlCompartilhada)}" readonly onclick="this.select()">
+                    <button type="button" class="btn-copiar-link" onclick="copiarLinkDoInput(this)">
+                        <i class="bi bi-clipboard"></i> Copiar
+                    </button>
                 </div>
             </div>`;
     }).join('');
@@ -646,7 +726,7 @@ function renderizarLista() {
     // Eventos nos cards
     container.querySelectorAll('.celebracao-card').forEach(card => {
         card.addEventListener('click', (e) => {
-            if (e.target.closest('.btn-edit-list') || e.target.closest('.btn-setlist') || e.target.closest('.btn-share') || e.target.closest('.btn-del-list')) return;
+            if (e.target.closest('.btn-edit-list') || e.target.closest('.btn-setlist') || e.target.closest('.btn-del-list') || e.target.closest('.btn-copiar-link') || e.target.closest('.share-url-input')) return;
             const id = card.dataset.id;
             abrirEditor(id);
         });
@@ -663,13 +743,7 @@ function renderizarLista() {
         });
     });
 
-    // 🔗 Compartilhar via Supabase (link curto)
-    container.querySelectorAll('.btn-share').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            compartilharCelebracao(btn.dataset.id);
-        });
-    });
+    
 
     container.querySelectorAll('.btn-del-list').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -1146,12 +1220,13 @@ function abrirEditor(id) {
     renderizarEditor();
 }
 
-function salvarCelebracaoAtual() {
+async function salvarCelebracaoAtual() {
     const titulo = document.getElementById('input-titulo').value.trim();
     const data = document.getElementById('input-data').value;
 
     if (!titulo) { alert('Por favor, defina um título para a celebração.'); return; }
 
+    // 1. Salvar localmente (localStorage)
     if (state.editandoId) {
         const existente = buscarCelebracaoPorId(state.editandoId);
         if (existente) {
@@ -1168,7 +1243,69 @@ function salvarCelebracaoAtual() {
         state.editandoId = nova.id;
     }
 
+    // 2. Garantir sharedId e sincronizar com Supabase (upsert automático)
+    const celeb = buscarCelebracaoPorId(state.editandoId);
+    if (celeb) {
+        await sincronizarCelebracaoNoSupabase(celeb);
+    }
+
+    // 3. Voltar para a listagem (o toast já foi exibido na sincronização)
     mostrarLista();
+}
+
+/**
+ * 🔄 Sincroniza a celebração com o Supabase via upsert.
+ * Garante que o sharedId existe (gerando se necessário) e faz o upsert
+ * na tabela repertorios_compartilhados de forma resiliente.
+ * @param {Object} celeb - objeto celebração (já salvo no localStorage)
+ */
+async function sincronizarCelebracaoNoSupabase(celeb) {
+    const instancia = window._supabase || (typeof _supabase !== 'undefined' ? _supabase : null);
+    if (!instancia) {
+        mostrarToast('⏳ Sem conexão com o servidor. Salvo apenas localmente.', 'info');
+        return;
+    }
+
+    // Garante sharedId permanente
+    if (!celeb.sharedId) {
+        celeb.sharedId = gerarHashCurto(6);
+        salvarCelebracoes(); // persiste o sharedId imediatamente
+    }
+
+    const payloadLimpo = JSON.parse(JSON.stringify(limparPayloadParaCompartilhamento(celeb)));
+    const body = { id: celeb.sharedId, payload: payloadLimpo };
+
+    try {
+        const { error } = await instancia
+            .from('repertorios_compartilhados')
+            .upsert(body);
+
+        if (error) throw error;
+
+        mostrarToast('✅ Playlist salva e atualizada no link!', 'success');
+
+        if (typeof gtag === 'function') {
+            gtag('event', 'salvar_sincronizar_repertorio', {
+                event_category: 'repertorio',
+                event_label: celeb.titulo
+            });
+        }
+    } catch (err) {
+        console.error('[repertorio] Erro ao sincronizar com Supabase:', err?.message || err);
+        // Fallback resiliente: tenta uma segunda vez após 1s (problemas de rede intermitentes)
+        setTimeout(async () => {
+            try {
+                const { error: retryErr } = await instancia
+                    .from('repertorios_compartilhados')
+                    .upsert(body);
+                if (retryErr) throw retryErr;
+                mostrarToast('✅ Playlist salva e atualizada no link!', 'success');
+            } catch (retryError) {
+                console.error('[repertorio] Retry também falhou:', retryError?.message || retryError);
+                mostrarToast('⚠️ Salvo localmente. Sincronização pendente — tente novamente.', 'info');
+            }
+        }, 1000);
+    }
 }
 
 /* ============================================================

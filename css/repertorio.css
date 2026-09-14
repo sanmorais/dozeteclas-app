@@ -38,9 +38,10 @@ body { background-color:var(--bg-main);color:var(--text-main);font-family:'Segoe
 .empty-state i { font-size:2.5rem;margin-bottom:12px;display:block; }
 .empty-state h3 { font-size:1.1rem;margin:8px 0;color:var(--text-main); }
 .empty-state p { font-size:0.85rem;margin:0; }
-.celebracao-card { display:flex;align-items:center;justify-content:space-between;background-color:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;cursor:pointer;transition:all 0.2s;gap:12px; }
+.celebracao-card { display:flex;flex-direction:column;align-items:stretch;background-color:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;cursor:pointer;transition:all 0.2s;gap:0; }
 .celebracao-card:hover { background-color:rgba(255,255,255,0.02);border-color:var(--border-hover);transform:translateY(-2px);box-shadow:0 5px 15px rgba(0,0,0,0.15); }
 body.light-theme .celebracao-card:hover { background-color:rgba(0,0,0,0.01); }
+.celebracao-card-row { display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%; }
 .celebracao-info { flex:1;min-width:0; }
 .celebracao-titulo { font-size:1rem;font-weight:700;margin:0 0 4px 0;color:var(--text-main);white-space:normal;line-height:1.3; }
 .celebracao-meta { display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--text-sec);flex-wrap:wrap; }
@@ -51,6 +52,15 @@ body.light-theme .celebracao-card:hover { background-color:rgba(0,0,0,0.01); }
 .btn-action-card:hover { border-color:var(--accent);color:var(--accent); }
 .btn-action-card.btn-del:hover { border-color:var(--danger);color:var(--danger); }
 .btn-action-card.btn-share:hover { border-color:var(--success);color:var(--success); }
+/* Share URL Container (dentro do celebration card) */
+.share-url-container { display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);width:100%;cursor:default; }
+.share-url-input { flex:1;background-color:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;color:var(--text-main);font-size:0.78rem;padding:6px 10px;font-family:'Roboto Mono','Source Code Pro',monospace;min-width:0;cursor:text; }
+.share-url-input:focus { outline:none;border-color:var(--accent); }
+body.light-theme .share-url-input { color:#1a1d20; }
+.btn-copiar-link { display:inline-flex;align-items:center;gap:4px;background-color:var(--accent);color:#121416;border:none;border-radius:6px;padding:6px 12px;font-size:0.78rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background-color 0.2s; }
+.btn-copiar-link:hover { background-color:var(--accent-hover); }
+.btn-copiar-link i { font-size:0.85rem; }
+.btn-copiar-link.copiado { background-color:var(--success);color:#ffffff;pointer-events:none; }
 /* Form */
 .celebration-meta { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px; }
 .form-group { display:flex;flex-direction:column;gap:6px; }

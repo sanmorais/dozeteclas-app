@@ -1026,9 +1026,73 @@ function limparPayloadSetlist(celeb) {
 }
 
 /**
+ * 🔗 Exibe o painel de compartilhamento (URL + input + botão Copiar)
+ * logo abaixo da subnav do setlist. Remove painel anterior se existir.
+ */
+function exibirPainelCompartilhamento(url) {
+    // Remove painel anterior se existir
+    const existente = document.getElementById('setlist-share-panel');
+    if (existente) existente.remove();
+
+    const header = document.querySelector('.setlist-header');
+    if (!header) return;
+
+    const panel = document.createElement('div');
+    panel.id = 'setlist-share-panel';
+    panel.innerHTML = `
+        <input type="text" class="share-url-input" value="${escapeHtml(url)}" readonly onclick="this.select()">
+        <button type="button" class="btn-copiar-link" onclick="copiarLinkDoInputSetlist(this)">
+            <i class="bi bi-clipboard"></i> Copiar
+        </button>
+        <button type="button" class="btn-share-close" onclick="fecharPainelCompartilhamento()" title="Fechar">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    `;
+    header.appendChild(panel);
+
+    // Rola suavemente para o painel ficar visível
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/**
+ * 📋 Copia o link do input do painel de compartilhamento do setlist.
+ * Chamado diretamente pelo onclick — clique direto do usuário garante permissão.
+ */
+function copiarLinkDoInputSetlist(btn) {
+    const panel = document.getElementById('setlist-share-panel');
+    if (!panel) return;
+    const input = panel.querySelector('.share-url-input');
+    if (!input || !input.value) return;
+    navigator.clipboard.writeText(input.value).then(() => {
+        mostrarToastSetlist('🔗 Link copiado! Compartilhe com a equipe.', 'success');
+        if (typeof gtag === 'function') {
+            gtag('event', 'copiar_link_setlist', {
+                event_category: 'setlist',
+                event_label: input.value
+            });
+        }
+    }).catch(() => {
+        input.select();
+        mostrarToastSetlist('📋 Pressione Ctrl+C para copiar o link.', 'info');
+    });
+}
+// 🔓 Expõe no escopo global para uso via onclick inline (módulo ES6)
+window.copiarLinkDoInputSetlist = copiarLinkDoInputSetlist;
+
+/**
+ * ❌ Fecha o painel de compartilhamento do setlist.
+ */
+function fecharPainelCompartilhamento() {
+    const panel = document.getElementById('setlist-share-panel');
+    if (panel) panel.remove();
+}
+// 🔓 Expõe no escopo global para uso via onclick inline (módulo ES6)
+window.fecharPainelCompartilhamento = fecharPainelCompartilhamento;
+
+/**
  * Compartilha/atualiza a setlist atual via Supabase.
  * - Se a página foi aberta com ?id=XXX, faz UPSERT no registro existente (mantém a URL).
- * - Caso contrário, cria um novo registro e copia o link para o clipboard.
+ * - Caso contrário, cria um novo registro e exibe o link em painel visível com botão [Copiar].
  */
 async function compartilharSetlistAtual() {
     if (!state.celebracao) {
@@ -1082,13 +1146,9 @@ async function compartilharSetlistAtual() {
 
             const urlCurta = `${window.location.origin}${window.location.pathname}?id=${shortId}`;
 
-            try {
-                await navigator.clipboard.writeText(urlCurta);
-                mostrarToastSetlist('🔗 Link copiado! Compartilhe com a equipe.', 'success');
-            } catch (clipErr) {
-                prompt('Copie o link de compartilhamento:', urlCurta);
-                mostrarToastSetlist('📋 Copie o link na janela que abriu.', 'info');
-            }
+            // ✅ Exibe painel de compartilhamento com URL + botão de cópia manual
+            exibirPainelCompartilhamento(urlCurta);
+            mostrarToastSetlist('🔗 Link gerado! Use o botão [Copiar] no painel.', 'success');
 
             if (typeof gtag === 'function') {
                 gtag('event', 'compartilhar_setlist', {
@@ -1136,10 +1196,10 @@ async function compartilharSetlistAtual() {
                 if (upsertErr) throw upsertErr;
 
                 const urlCurta = `${window.location.origin}${window.location.pathname}?id=${shortId}`;
-                // Só copia o link se for um NOVO compartilhamento (não update)
+                // Só mostra o painel se for um NOVO compartilhamento (não update)
                 if (!isUpdate) {
-                    try { await navigator.clipboard.writeText(urlCurta); mostrarToastSetlist('🔗 Link copiado!', 'success'); }
-                    catch { prompt('Copie o link:', urlCurta); }
+                    exibirPainelCompartilhamento(urlCurta);
+                    mostrarToastSetlist('🔗 Link gerado! Use o botão [Copiar] no painel.', 'success');
                 } else {
                     mostrarToastSetlist('✅ Repertório atualizado com sucesso!', 'success');
                 }
