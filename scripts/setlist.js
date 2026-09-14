@@ -646,7 +646,7 @@ function renderItemAtual() {
     } else {
         elTituloSetlist.textContent = tituloTextoSetlist;
     }
-    document.getElementById('setlist-progresso').textContent = `${state.itemAtualIdx + 1}/${state.itens.length}`;
+    document.getElementById('setlist-progresso-inline').textContent = `(${state.itemAtualIdx + 1}/${state.itens.length})`;
     document.getElementById('setlist-momento').textContent = MOMENTOS_MAP[item.momento] || item.momento;
     document.title = `${item.titulo} | Setlist | Doze Teclas`;
 
@@ -829,6 +829,12 @@ function toggleFullscreen() {
         if (document.exitFullscreen) document.exitFullscreen();
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     }
+}
+
+/** Sincroniza classe .fullscreen-mode no body com o estado real de fullscreen */
+function onFullscreenChange() {
+    const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    document.body.classList.toggle('fullscreen-mode', isFull);
 }
 
 /* ============================================================
@@ -1210,12 +1216,14 @@ async function init() {
         if (!repId) {
             document.getElementById('setlist-content').innerHTML = `<div class="setlist-empty"><h2>Repertório não especificado</h2><p>Use ?r=ID na URL ou <a href="repertorio.html" style="color:var(--accent)">volte ao repertório</a>.</p></div>`;
             document.getElementById('setlist-titulo').textContent = 'Nenhum repertório';
+            document.getElementById('setlist-progresso-inline').textContent = '';
             return;
         }
         state.celebracao = carregarCelebracaoLocal(repId);
         if (!state.celebracao) {
             document.getElementById('setlist-content').innerHTML = `<div class="setlist-empty"><h2>Celebração não encontrada</h2><p>O repertório pode ter sido excluído. <a href="repertorio.html" style="color:var(--accent)">Voltar</a></p></div>`;
             document.getElementById('setlist-titulo').textContent = 'Não encontrado';
+            document.getElementById('setlist-progresso-inline').textContent = '';
             return;
         }
         state.itens = ordenarItens(state.celebracao.itens.filter(i => i.tipo === 'cifra' || i.tipo === 'texto'));
@@ -1236,6 +1244,8 @@ async function init() {
     document.getElementById('btn-fechar-drawer')?.addEventListener('click', fecharDrawer);
     document.getElementById('drawer-overlay')?.addEventListener('click', fecharDrawer);
     document.getElementById('btn-fullscreen')?.addEventListener('click', toggleFullscreen);
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
 
     // 🔗 Botão de compartilhamento da setlist (visível em ambos os modos: local e remoto)
     const btnShareSetlist = document.getElementById('btn-share-setlist');

@@ -67,13 +67,19 @@ body.setlist-body {
 .setlist-nav-btn:hover { background-color: var(--accent); color: #121417; border-color: var(--accent); }
 .setlist-nav-btn:disabled { opacity: 0.3; cursor: default; background-color: var(--nav-btn-bg); color: var(--text-sec); }
 .setlist-nav-btn:disabled:hover { background-color: var(--nav-btn-bg); color: var(--text-sec); }
+/* Botões de seta (Anterior/Próxima) compactos — apenas ícone */
+.setlist-nav-arrow { padding: 8px 12px; font-size: 1.15rem; gap: 0; min-width: 40px; justify-content: center; }
+.setlist-nav-arrow i { font-size: 1.25rem; }
 
 .setlist-nav-center { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; min-width: 0; text-align: center; }
 .setlist-titulo { font-size: 0.9rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1.2; }
 .setlist-musica-titulo { font-size: 1.3rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1.3; }
 @media (max-width: 640px) { .setlist-musica-titulo { font-size: 1.05rem; } }
+/* Linha superior: título do repertório + contador (ex: "Missa Nsa das Dores (7/10)") */
+.setlist-nav-topline { display: flex; align-items: baseline; justify-content: center; gap: 4px; max-width: 100%; }
+.setlist-progresso-inline { font-size: 0.75rem; color: var(--text-sec); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
 .setlist-momento-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); background-color: var(--momento-badge-bg, rgba(255,197,2,0.1)); padding: 1px 8px; border-radius: 4px; }
-.setlist-progresso { font-size: 0.7rem; color: var(--text-sec); font-weight: 600; }
+.setlist-progresso { display: none; } /* legado — substituído por .setlist-progresso-inline */
 
 .setlist-subnav { display: flex; justify-content: center; align-items: center; gap: 4px; padding: 4px 12px 8px; }
 .setlist-subnav-btn { background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--text-sec); font-size: 0.8rem; padding: 6px 10px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
@@ -406,6 +412,25 @@ body.setlist-body {
 }
 
 /* ==========================================================
+   TELA CHEIA / MODO PALCO: Oculta título e artista internos
+   para maximizar área visível de acordes e letra
+   ========================================================== */
+:fullscreen #cifra-render .cifra-titulo,
+:fullscreen #cifra-render .cifra-artista,
+.fullscreen-mode #cifra-render .cifra-titulo,
+.fullscreen-mode #cifra-render .cifra-artista {
+    display: none !important;
+}
+
+/* Em modo fullscreen, a barra de ferramentas sobe um pouco */
+.fullscreen-mode .setlist-toolbar { bottom: 12px; }
+
+/* Em fullscreen, o header pode ser opcionalmente ocultado com um clique duplo */
+.fullscreen-mode .setlist-header { opacity: 0.12; transition: opacity 0.3s; }
+.fullscreen-mode .setlist-header:hover,
+.fullscreen-mode .setlist-header.header-visible { opacity: 1; }
+
+/* ==========================================================
    IMPRESSAO: Reset do container fixo para fluir normalmente
    ========================================================== */
 @media print {
@@ -428,6 +453,11 @@ body.setlist-body {
     }
     .setlist-header {
         position: static !important;
+    }
+    /* Força Título e Artista a reaparecerem na impressão */
+    #cifra-render .cifra-titulo,
+    #cifra-render .cifra-artista {
+        display: block !important;
     }
 }
 
