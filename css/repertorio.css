@@ -50,6 +50,7 @@ body.light-theme .celebracao-card:hover { background-color:rgba(0,0,0,0.01); }
 .btn-action-card { background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-sec);padding:6px 8px;cursor:pointer;font-size:0.9rem;transition:all 0.2s; }
 .btn-action-card:hover { border-color:var(--accent);color:var(--accent); }
 .btn-action-card.btn-del:hover { border-color:var(--danger);color:var(--danger); }
+.btn-action-card.btn-share:hover { border-color:var(--success);color:var(--success); }
 /* Form */
 .celebration-meta { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px; }
 .form-group { display:flex;flex-direction:column;gap:6px; }
@@ -141,6 +142,7 @@ body.light-theme .resultado-tag { background-color:rgba(184,134,11,0.1);border-c
 .confirm-actions { display:flex;gap:10px;justify-content:flex-end; }
 .spinner { display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.6s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
+@keyframes toastSlideUp { from { opacity:0; transform:translateX(-50%) translateY(20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
 .repertorio-footer { text-align:center;padding:20px;border-top:1px solid var(--border);color:var(--text-sec);font-size:0.8rem; }
 @media (max-width:640px) {
   .repertorio-main { padding:12px 10px 40px; }

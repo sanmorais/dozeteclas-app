@@ -65,6 +65,42 @@ function hojeISO() {
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 
+/* ============================================================
+   TOAST NOTIFICATION (standalone, sem dependência de smart-bar)
+   ============================================================ */
+function mostrarToast(mensagem, tipo = 'info') {
+    // Remove toast anterior se existir
+    const existente = document.querySelector('.repertorio-toast');
+    if (existente) existente.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'repertorio-toast';
+    toast.textContent = mensagem;
+
+    const cores = {
+        success: { bg: '#065f46', border: '#34d399', color: '#ecfdf5' },
+        error:   { bg: '#7f1d1d', border: '#f87171', color: '#fef2f2' },
+        info:    { bg: '#1e3a5f', border: '#60a5fa', color: '#eff6ff' }
+    };
+    const c = cores[tipo] || cores.info;
+
+    toast.style.cssText = `
+        position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+        z-index: 99999; padding: 12px 24px; border-radius: 8px; font-size: 14px;
+        font-weight: 600; max-width: 90vw; text-align: center; white-space: nowrap;
+        background: ${c.bg}; border: 1px solid ${c.border}; color: ${c.color};
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: opacity 0.3s ease;
+        animation: toastSlideUp 0.3s ease;
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+    }, 3000);
+}
+
 function tomIndexParaNota(idx) {
     const i = ((idx || 0) % 12 + 12) % 12;
     return ESCALA_NOTAS[i];
@@ -142,6 +178,101 @@ function atualizarCelebracao(id, titulo, data) {
 function excluirCelebracao(id) {
     state.celebracoes = state.celebracoes.filter(c => c.id !== id);
     salvarCelebracoes();
+}
+
+/* ============================================================
+   COMPARTILHAMENTO DE REPERTÓRIO (Supabase)
+   ============================================================ */
+
+/**
+ * Limpa o payload da celebração para compartilhamento,
+ * removendo IDs locais e dados desnecessários.
+ */
+function limparPayloadParaCompartilhamento(celeb) {
+    return {
+        titulo: celeb.titulo || '',
+        data: celeb.data || '',
+        itens: (celeb.itens || []).map(item => ({
+            momento: item.momento || '',
+            tipo: item.tipo || 'cifra',
+            slug: item.slug || '',
+            titulo: item.titulo || '',
+            autor: item.autor || '',
+            tomOriginal: item.tomOriginal != null ? item.tomOriginal : null,
+            tomCustom: item.tomCustom != null ? item.tomCustom : null,
+            observacao: item.observacao || '',
+            conteudo: item.conteudo || ''
+        }))
+    };
+}
+
+/**
+ * Gera um hash aleatório curto para usar como ID do link compartilhado.
+ * @param {number} tamanho - comprimento do hash (default 6)
+ * @returns {string} hash alfanumérico minúsculo
+ */
+function gerarHashCurto(tamanho = 6) {
+    const caracteres = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let hash = '';
+    for (let i = 0; i < tamanho; i++) {
+        hash += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    return hash;
+}
+
+/**
+ * Compartilha uma celebração via Supabase:
+ * 1. Gera um hash curto como ID
+ * 2. Insere o payload limpo na tabela repertorios_compartilhados
+ * 3. Constrói URL curta e copia para o clipboard
+ */
+async function compartilharCelebracao(id) {
+    const celeb = buscarCelebracaoPorId(id);
+    if (!celeb) {
+        mostrarToast('❌ Celebração não encontrada.', 'error');
+        return;
+    }
+
+    const instancia = window._supabase || (typeof _supabase !== 'undefined' ? _supabase : null);
+    if (!instancia) {
+        mostrarToast('⏳ Conectando ao servidor... Tente novamente.', 'info');
+        return;
+    }
+
+    const shortId = gerarHashCurto(6);
+    const payloadLimpo = limparPayloadParaCompartilhamento(celeb);
+
+    try {
+        const { error } = await instancia
+            .from('repertorios_compartilhados')
+            .insert({ id: shortId, payload: payloadLimpo });
+
+        if (error) throw error;
+
+        const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
+
+        // Copia para o clipboard
+        try {
+            await navigator.clipboard.writeText(urlCurta);
+            mostrarToast('🔗 Link copiado! Compartilhe com a equipe.', 'success');
+        } catch (clipErr) {
+            // Fallback: exibe o link para cópia manual
+            prompt('Copie o link de compartilhamento:', urlCurta);
+            mostrarToast('📋 Copie o link na janela que abriu.', 'info');
+        }
+
+        // Dispara evento GA4
+        if (typeof gtag === 'function') {
+            gtag('event', 'compartilhar_repertorio', {
+                event_category: 'repertorio',
+                event_label: celeb.titulo,
+                method: 'supabase_link'
+            });
+        }
+    } catch (err) {
+        console.error('[repertorio] Erro ao compartilhar:', err);
+        mostrarToast('❌ Erro ao gerar link. Verifique sua conexão.', 'error');
+    }
 }
 
 function adicionarItem(celebracaoId, item) {
@@ -426,6 +557,7 @@ function renderizarLista() {
                 <div class="celebracao-actions">
                     <button class="btn-action-card btn-edit-list" data-id="${escapeHtml(c.id)}" title="Editar"><i class="bi bi-pencil"></i></button>
                     <button class="btn-action-card btn-setlist" data-id="${escapeHtml(c.id)}" title="Executar"><i class="bi bi-play-fill"></i></button>
+                    <button class="btn-action-card btn-share" data-id="${escapeHtml(c.id)}" title="Copiar Link"><i class="bi bi-link-45deg"></i></button>
                     <button class="btn-action-card btn-del btn-del-list" data-id="${escapeHtml(c.id)}" title="Excluir"><i class="bi bi-trash"></i></button>
                 </div>
             </div>`;
@@ -434,7 +566,7 @@ function renderizarLista() {
     // Eventos nos cards
     container.querySelectorAll('.celebracao-card').forEach(card => {
         card.addEventListener('click', (e) => {
-            if (e.target.closest('.btn-edit-list') || e.target.closest('.btn-setlist') || e.target.closest('.btn-del-list')) return;
+            if (e.target.closest('.btn-edit-list') || e.target.closest('.btn-setlist') || e.target.closest('.btn-share') || e.target.closest('.btn-del-list')) return;
             const id = card.dataset.id;
             abrirEditor(id);
         });
@@ -448,6 +580,14 @@ function renderizarLista() {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             window.location.href = `setlist.html?r=${encodeURIComponent(btn.dataset.id)}`;
+        });
+    });
+
+    // 🔗 Compartilhar via Supabase (link curto)
+    container.querySelectorAll('.btn-share').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            compartilharCelebracao(btn.dataset.id);
         });
     });
 

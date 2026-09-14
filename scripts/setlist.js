@@ -809,25 +809,250 @@ function atualizarIconeAutoScroll() {
 }
 
 /* ============================================================
+   COMPARTILHAMENTO: CARREGAR DO SUPABASE (id=)
+   ============================================================ */
+
+/**
+ * Busca uma celebração compartilhada no Supabase pelo hash curto.
+ * Retorna o objeto celebração reconstruído ou null.
+ */
+async function carregarCelebracaoRemota(id) {
+    const instancia = window._supabase || (typeof _supabase !== 'undefined' ? _supabase : null);
+    if (!instancia) {
+        console.error('[setlist] Supabase não disponível para carregar compartilhamento.');
+        return null;
+    }
+    try {
+        const { data, error } = await instancia
+            .from('repertorios_compartilhados')
+            .select('payload')
+            .eq('id', id)
+            .single();
+        if (error) throw error;
+        if (!data || !data.payload) return null;
+        const celeb = {
+            id: 'shared_' + Date.now(),
+            titulo: data.payload.titulo || 'Celebração Compartilhada',
+            data: data.payload.data || '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            itens: (data.payload.itens || []).map((item, idx) => ({
+                id: 'si_' + idx + '_' + Date.now().toString(36),
+                momento: item.momento || '',
+                tipo: item.tipo || 'cifra',
+                slug: item.slug || '',
+                titulo: item.titulo || '',
+                autor: item.autor || '',
+                tomOriginal: item.tomOriginal != null ? item.tomOriginal : null,
+                tomCustom: item.tomCustom != null ? item.tomCustom : null,
+                ordem: idx,
+                observacao: item.observacao || '',
+                conteudo: item.conteudo || ''
+            }))
+        };
+        return celeb;
+    } catch (err) {
+        console.error('[setlist] Erro ao carregar celebração remota:', err);
+        return null;
+    }
+}
+
+/**
+ * Salva a celebração carregada remotamente no localStorage do aparelho.
+ * Redireciona para a versão local (?r=LOCAL_ID) para uso offline.
+ */
+function salvarCelebracaoLocalmente() {
+    if (!state.celebracao) return;
+    try {
+        const dados = localStorage.getItem(STORAGE_KEY);
+        const lista = dados ? JSON.parse(dados) : [];
+        const jaExiste = lista.some(c =>
+            c.titulo === state.celebracao.titulo &&
+            c.data === state.celebracao.data &&
+            c.itens.length === state.celebracao.itens.length
+        );
+        if (jaExiste) {
+            mostrarToastSetlist('⚠️ Esta celebração já está salva no seu aparelho.', 'info');
+            return;
+        }
+        lista.unshift(state.celebracao);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
+        mostrarToastSetlist('💾 Repertório salvo com sucesso!', 'success');
+        setTimeout(() => {
+            window.location.href = `setlist.html?r=${encodeURIComponent(state.celebracao.id)}`;
+        }, 1500);
+    } catch (e) {
+        console.error('[setlist] Erro ao salvar celebração localmente:', e);
+        mostrarToastSetlist('❌ Erro ao salvar. Armazenamento pode estar cheio.', 'error');
+    }
+}
+
+/* ============================================================
+   TOAST NOTIFICATION (standalone para setlist)
+   ============================================================ */
+function mostrarToastSetlist(mensagem, tipo = 'info') {
+    const existente = document.querySelector('.setlist-toast');
+    if (existente) existente.remove();
+    const toast = document.createElement('div');
+    toast.className = 'setlist-toast';
+    toast.textContent = mensagem;
+    const cores = {
+        success: { bg: '#065f46', border: '#34d399', color: '#ecfdf5' },
+        error:   { bg: '#7f1d1d', border: '#f87171', color: '#fef2f2' },
+        info:    { bg: '#1e3a5f', border: '#60a5fa', color: '#eff6ff' }
+    };
+    const c = cores[tipo] || cores.info;
+    toast.style.cssText = `
+        position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+        z-index: 99999; padding: 12px 24px; border-radius: 8px; font-size: 14px;
+        font-weight: 600; max-width: 90vw; text-align: center; white-space: nowrap;
+        background: ${c.bg}; border: 1px solid ${c.border}; color: ${c.color};
+        box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: opacity 0.3s ease;
+        animation: toastSlideUp 0.3s ease;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+    }, 3000);
+}
+
+/* ============================================================
+   COMPARTILHAMENTO DA SETLIST ATUAL (Supabase)
+   ============================================================ */
+
+/**
+ * Gera um hash aleatório curto para usar como ID do link compartilhado.
+ */
+function gerarHashCurtoSetlist(tamanho = 6) {
+    const caracteres = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let hash = '';
+    for (let i = 0; i < tamanho; i++) {
+        hash += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    return hash;
+}
+
+/**
+ * Limpa o payload da celebração atual para compartilhamento.
+ */
+function limparPayloadSetlist(celeb) {
+    return {
+        titulo: celeb.titulo || '',
+        data: celeb.data || '',
+        itens: (celeb.itens || []).map(item => ({
+            momento: item.momento || '',
+            tipo: item.tipo || 'cifra',
+            slug: item.slug || '',
+            titulo: item.titulo || '',
+            autor: item.autor || '',
+            tomOriginal: item.tomOriginal != null ? item.tomOriginal : null,
+            tomCustom: item.tomCustom != null ? item.tomCustom : null,
+            observacao: item.observacao || '',
+            conteudo: item.conteudo || ''
+        }))
+    };
+}
+
+/**
+ * Compartilha a setlist atual via Supabase e copia o link para o clipboard.
+ */
+async function compartilharSetlistAtual() {
+    if (!state.celebracao) {
+        mostrarToastSetlist('❌ Nenhum repertório carregado.', 'error');
+        return;
+    }
+
+    const instancia = window._supabase || (typeof _supabase !== 'undefined' ? _supabase : null);
+    if (!instancia) {
+        mostrarToastSetlist('⏳ Conectando ao servidor... Tente novamente.', 'info');
+        return;
+    }
+
+    const shortId = gerarHashCurtoSetlist(6);
+    const payloadLimpo = limparPayloadSetlist(state.celebracao);
+
+    try {
+        const { error } = await instancia
+            .from('repertorios_compartilhados')
+            .insert({ id: shortId, payload: payloadLimpo });
+
+        if (error) throw error;
+
+        const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
+
+        try {
+            await navigator.clipboard.writeText(urlCurta);
+            mostrarToastSetlist('🔗 Link copiado! Compartilhe com a equipe.', 'success');
+        } catch (clipErr) {
+            prompt('Copie o link de compartilhamento:', urlCurta);
+            mostrarToastSetlist('📋 Copie o link na janela que abriu.', 'info');
+        }
+
+        if (typeof gtag === 'function') {
+            gtag('event', 'compartilhar_setlist', {
+                event_category: 'setlist',
+                event_label: state.celebracao.titulo,
+                method: 'supabase_link'
+            });
+        }
+    } catch (err) {
+        console.error('[setlist] Erro ao compartilhar:', err);
+        mostrarToastSetlist('❌ Erro ao gerar link. Verifique sua conexão.', 'error');
+    }
+}
+
+/* ============================================================
    INICIALIZAÇÃO
    ============================================================ */
 async function init() {
     carregarToolbarPrefs();
 
-    const repId = getQueryParam('r');
-    if (!repId) {
-        document.getElementById('setlist-content').innerHTML = `<div class="setlist-empty"><h2>Repertório não especificado</h2><p>Use ?r=ID na URL ou <a href="repertorio.html" style="color:var(--accent)">volte ao repertório</a>.</p></div>`;
-        document.getElementById('setlist-titulo').textContent = 'Nenhum repertório';
-        return;
+    // 🔗 Verifica se é um link compartilhado via Supabase (?id=)
+    const sharedId = getQueryParam('id');
+    if (sharedId) {
+        document.getElementById('setlist-content').innerHTML = `<div class="setlist-loading">Carregando repertório compartilhado...</div>`;
+        document.getElementById('setlist-titulo').textContent = 'Carregando...';
+
+        const celebRemota = await carregarCelebracaoRemota(sharedId);
+        if (!celebRemota) {
+            document.getElementById('setlist-content').innerHTML = `<div class="setlist-empty"><h2>Link inválido ou expirado</h2><p>O repertório compartilhado não foi encontrado. <a href="repertorio.html" style="color:var(--accent)">Voltar</a></p></div>`;
+            document.getElementById('setlist-titulo').textContent = 'Não encontrado';
+            return;
+        }
+
+        state.celebracao = celebRemota;
+        state.itens = ordenarItens(celebRemota.itens.filter(i => i.tipo === 'cifra' || i.tipo === 'texto'));
+        document.getElementById('setlist-titulo').textContent = celebRemota.titulo;
+
+        // Adiciona botão "💾 Salvar no Meu Aparelho" no header
+        const subnav = document.querySelector('.setlist-subnav');
+        if (subnav && !document.getElementById('btn-salvar-local')) {
+            const btnSalvar = document.createElement('button');
+            btnSalvar.id = 'btn-salvar-local';
+            btnSalvar.className = 'setlist-subnav-btn';
+            btnSalvar.title = 'Salvar no Meu Aparelho';
+            btnSalvar.innerHTML = '<i class="bi bi-download"></i> Salvar';
+            btnSalvar.addEventListener('click', salvarCelebracaoLocalmente);
+            subnav.appendChild(btnSalvar);
+        }
+    } else {
+        // Modo tradicional: carrega do localStorage (?r=)
+        const repId = getQueryParam('r');
+        if (!repId) {
+            document.getElementById('setlist-content').innerHTML = `<div class="setlist-empty"><h2>Repertório não especificado</h2><p>Use ?r=ID na URL ou <a href="repertorio.html" style="color:var(--accent)">volte ao repertório</a>.</p></div>`;
+            document.getElementById('setlist-titulo').textContent = 'Nenhum repertório';
+            return;
+        }
+        state.celebracao = carregarCelebracaoLocal(repId);
+        if (!state.celebracao) {
+            document.getElementById('setlist-content').innerHTML = `<div class="setlist-empty"><h2>Celebração não encontrada</h2><p>O repertório pode ter sido excluído. <a href="repertorio.html" style="color:var(--accent)">Voltar</a></p></div>`;
+            document.getElementById('setlist-titulo').textContent = 'Não encontrado';
+            return;
+        }
+        state.itens = ordenarItens(state.celebracao.itens.filter(i => i.tipo === 'cifra' || i.tipo === 'texto'));
+        document.getElementById('setlist-titulo').textContent = state.celebracao.titulo;
     }
-    state.celebracao = carregarCelebracaoLocal(repId);
-    if (!state.celebracao) {
-        document.getElementById('setlist-content').innerHTML = `<div class="setlist-empty"><h2>Celebração não encontrada</h2><p>O repertório pode ter sido excluído. <a href="repertorio.html" style="color:var(--accent)">Voltar</a></p></div>`;
-        document.getElementById('setlist-titulo').textContent = 'Não encontrado';
-        return;
-    }
-    state.itens = ordenarItens(state.celebracao.itens.filter(i => i.tipo === 'cifra' || i.tipo === 'texto'));
-    document.getElementById('setlist-titulo').textContent = state.celebracao.titulo;
 
     const slugsParaBuscar = state.itens.filter(i => i.tipo === 'cifra' && i.slug && !state.cacheCifras[i.slug]).map(i => i.slug);
     if (slugsParaBuscar.length > 0) {
@@ -843,6 +1068,13 @@ async function init() {
     document.getElementById('btn-fechar-drawer')?.addEventListener('click', fecharDrawer);
     document.getElementById('drawer-overlay')?.addEventListener('click', fecharDrawer);
     document.getElementById('btn-fullscreen')?.addEventListener('click', toggleFullscreen);
+
+    // 🔗 Botão de compartilhamento da setlist (visível em ambos os modos: local e remoto)
+    const btnShareSetlist = document.getElementById('btn-share-setlist');
+    if (btnShareSetlist && state.celebracao) {
+        btnShareSetlist.style.display = '';
+        btnShareSetlist.addEventListener('click', compartilharSetlistAtual);
+    }
 
     // ---------------------------------------------------------------
     // EVENTOS DA BARRA DE FERRAMENTAS (MODO PALCO)

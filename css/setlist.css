@@ -310,6 +310,12 @@ body.setlist-body {
     #setlist-content { padding: 16px 14px 80px; }
 }
 
+/* Toast notification animation (compatível com repertorio e setlist) */
+@keyframes toastSlideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 /* ==========================================================
    IMPRESSAO: Reset do container fixo para fluir normalmente
    ========================================================== */
