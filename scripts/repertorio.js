@@ -240,12 +240,17 @@ async function compartilharCelebracao(id) {
     }
 
     const shortId = gerarHashCurto(6);
-    const payloadLimpo = limparPayloadParaCompartilhamento(celeb);
+    // Sanitiza o payload: JSON.parse(JSON.stringify(...)) remove undefined e garante JSON limpo
+    const payloadLimpo = JSON.parse(JSON.stringify(limparPayloadParaCompartilhamento(celeb)));
 
     try {
         const { error } = await instancia
             .from('repertorios_compartilhados')
-            .insert({ id: shortId, payload: payloadLimpo });
+            .insert({
+                id: shortId,
+                payload: payloadLimpo,
+                created_at: new Date().toISOString()
+            });
 
         if (error) throw error;
 
@@ -270,8 +275,51 @@ async function compartilharCelebracao(id) {
             });
         }
     } catch (err) {
-        console.error('[repertorio] Erro ao compartilhar:', err);
-        mostrarToast('❌ Erro ao gerar link. Verifique sua conexão.', 'error');
+        // Log detalhado do erro para diagnóstico
+        console.error('[repertorio] ❌ Erro ao compartilhar:', {
+            message: err?.message || err,
+            code: err?.code,
+            details: err?.details,
+            hint: err?.hint,
+            status: err?.status
+        });
+
+        // Tenta upsert como fallback para colisão de hash (código 23505)
+        if (err?.code === '23505') {
+            console.warn('[repertorio] ⚠️ Colisão de hash detectada, tentando upsert...');
+            try {
+                const { error: upsertErr } = await instancia
+                    .from('repertorios_compartilhados')
+                    .upsert({
+                        id: shortId,
+                        payload: payloadLimpo,
+                        created_at: new Date().toISOString()
+                    });
+
+                if (upsertErr) throw upsertErr;
+
+                const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
+                try {
+                    await navigator.clipboard.writeText(urlCurta);
+                    mostrarToast('🔗 Link copiado! Compartilhe com a equipe.', 'success');
+                } catch (clipErr) {
+                    prompt('Copie o link de compartilhamento:', urlCurta);
+                    mostrarToast('📋 Copie o link na janela que abriu.', 'info');
+                }
+                return;
+            } catch (upsertErr) {
+                console.error('[repertorio] ❌ Upsert também falhou:', upsertErr?.message || upsertErr);
+            }
+        }
+
+        // Mensagem amigável baseada no tipo de erro
+        if (err?.code === '42501' || (err?.message && err.message.includes('permission'))) {
+            mostrarToast('🔒 Permissão negada. Verifique as políticas RLS no Supabase.', 'error');
+        } else if (err?.code === '23505') {
+            mostrarToast('⚠️ Link já existe. Tentando novamente...', 'info');
+        } else {
+            mostrarToast('❌ Erro ao gerar link. Verifique sua conexão.', 'error');
+        }
     }
 }
 
