@@ -294,10 +294,6 @@ svg:not(.st0):not(.st1) {
     -moz-column-gap: 20mm !important;
     column-gap: 20mm !important;
 
-    -webkit-column-rule: 0.5pt solid #cccccc !important;
-    -moz-column-rule: 0.5pt solid #cccccc !important;
-    column-rule: 0.5pt solid #cccccc !important;
-
     /* balance evita colapso para 1 coluna no Chrome com pouco conteúdo */
     -webkit-column-fill: balance !important;
     -moz-column-fill: balance !important;
@@ -707,24 +703,24 @@ body.print-batch-mode #print-batch-container {
 }
 
 /* Página individual por música: cada música inicia no topo de uma NOVA folha.
-   Força quebra de página antes de cada card, preservando o layout de 2 colunas.
-   ⚠️ NÃO usa break-inside: avoid — músicas longas podem quebrar entre páginas;
-   a trava cabeçalho↔conteúdo (print-song-header + print-cifra-render) garante
-   que o título nunca fique órfão no rodapé. */
+   ⚠️ O layout de 2 colunas foi movido para .print-cifra-render (filho).
+   Isso elimina o bug do column-span:all no primeiro filho que causava
+   uma quebra grande de página antes do título no Chrome/Edge/Firefox.
+
+   💥 break-inside: avoid-page = se a música couber em UMA página,
+   ela NÃO será dividida. Se for longa demais, o navegador quebra
+   naturalmente (a dica é um "evite", não uma proibição absoluta). */
 .setlist-print-page {
     /* 💥 FORÇA CADA MÚSICA EM PÁGINA PRÓPRIA */
     break-before: page !important;
     page-break-before: always !important;
 
-    /* Layout de 2 colunas */
-    column-count: 2 !important;
-    -webkit-column-count: 2 !important;
-    -moz-column-count: 2 !important;
-    column-gap: 24px !important;
-    -webkit-column-gap: 24px !important;
-    -moz-column-gap: 24px !important;
-    column-fill: auto !important;
-    -webkit-column-fill: auto !important;
+    /* 💥 MANTÉM A MÚSICA INTEIRA SE COUBER NA PÁGINA */
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+
+    /* Layout normal (bloco) — NÃO usa column-count aqui */
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
@@ -736,8 +732,9 @@ body.print-batch-mode #print-batch-container {
     page-break-before: auto !important;
 }
 
-/* Cabeçalho de impressão da música: ocupa toda a largura (span all) antes
-   das 2 colunas da cifra. NÃO permite quebra entre o título e a cifra. */
+/* Cabeçalho de impressão da música: flui normalmente em bloco
+   (largura total). O column-count agora está no .print-cifra-render,
+   então NÃO precisamos de column-span: all aqui. */
 .print-song-header {
     margin-top: 4mm !important;
     margin-bottom: 4mm !important;
@@ -749,9 +746,6 @@ body.print-batch-mode #print-batch-container {
     break-after: avoid-page !important;
     page-break-after: avoid !important;
     -webkit-column-break-after: avoid !important;
-    column-span: all !important;
-    -webkit-column-span: all !important;
-    -moz-column-span: all !important;
 }
 
 /* 💥 Filhos do cabeçalho (badge, título, artista, tom) nunca se separam entre si */
@@ -812,13 +806,50 @@ body.print-batch-mode #print-batch-container {
     margin-top: 4px !important;
 }
 
-/* Corpo da cifra renderizada no papel */
+/* Corpo da cifra renderizada no papel — layout de 2 colunas APENAS aqui.
+   O cabeçalho (.print-song-header) fica em fluxo normal acima, sem column-span. */
 .print-cifra-render {
     margin-top: 3mm !important;
     color: #000000 !important;
     font-family: 'JetBrains Mono', 'Roboto Mono', monospace !important;
     font-size: 10pt !important;
     line-height: 1.15 !important;
+
+    /* Layout de 2 colunas no corpo da cifra */
+    -webkit-column-count: 2 !important;
+    -moz-column-count: 2 !important;
+    column-count: 2 !important;
+
+    -webkit-column-gap: 24px !important;
+    -moz-column-gap: 24px !important;
+    column-gap: 24px !important;
+
+    -webkit-column-fill: balance !important;
+    -moz-column-fill: balance !important;
+    column-fill: balance !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+/* 💥 Single-column: músicas curtas não precisam de 2 colunas.
+   Aplicada dinamicamente pelo setlist.js com base na altura real
+   medida no DOM — se couber em 1 página A4, mantém 1 coluna;
+   se exceder 950px, remove e usa 2 colunas padrão. */
+.print-cifra-render.single-column {
+    -webkit-column-count: 1 !important;
+    -moz-column-count: 1 !important;
+    column-count: 1 !important;
+
+    -webkit-column-rule: none !important;
+    -moz-column-rule: none !important;
+    column-rule: none !important;
+
+    -webkit-column-gap: 0 !important;
+    -moz-column-gap: 0 !important;
+    column-gap: 0 !important;
 }
 
 .print-cifra-render .c-line {
@@ -910,6 +941,32 @@ body.print-batch-mode #print-batch-container {
     page-break-before: avoid !important;
     -webkit-column-break-before: avoid !important;
 }
+/* ==========================================================
+   CONTROLE DE QUEBRA MULTI-COLUNA (print batch 2 colunas)
+   Garante que estrofes/seções nunca sejam partidas ao meio
+   na transição entre as 2 colunas do .print-cifra-render.
+   ========================================================= */
+.print-cifra-render .c-section,
+.print-cifra-render .c-block,
+.print-cifra-render .estrofe {
+    display: inline-block !important;
+    width: 100% !important;
+    margin-bottom: 8pt !important;
+
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+
+/* Linhas vazias (separadores de estrofes) são pontos naturais de quebra */
+.print-cifra-render .c-line:empty,
+.print-cifra-render .c-blank-line {
+    break-before: auto !important;
+    break-after: auto !important;
+    -webkit-column-break-before: auto !important;
+    -webkit-column-break-after: auto !important;
+}
+
 /* Conteúdo textual (itens tipo "texto") */
 .print-text-content {
     font-size: 11pt !important;

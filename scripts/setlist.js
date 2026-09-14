@@ -505,6 +505,28 @@ async function renderizarCelebracaoCompletaParaImpressao() {
                         <span class="print-song-tom">TOM: ${escapeHtml(tomExibicao)}</span>
                     </div>
                     <div class="print-cifra-render">${cifraHtml}</div>`;
+
+                // 💥 Mede altura REAL com 1 coluna. Só aplica 2 colunas se
+                //    a música NÃO couber em 1 página A4 completa.
+                const cifraRender = pageDiv.querySelector('.print-cifra-render');
+                cifraRender.classList.add('single-column'); // força 1 coluna p/ medição
+
+                const measureDiv = document.createElement('div');
+                measureDiv.style.cssText = 'position:absolute;left:-9999px;top:0;width:186mm;visibility:hidden;';
+                document.body.appendChild(measureDiv);
+                measureDiv.appendChild(pageDiv);
+
+                const alturaTotal = pageDiv.scrollHeight;
+                // A4 portrait: 297mm − 18mm top − 15mm bottom = 264mm ≈ 998px
+                // Usamos 950px como folga para variações de DPI e arredondamento
+                if (alturaTotal > 950) {
+                    // Não cabe em 1 coluna → remove single-column (usa 2 colunas padrão)
+                    cifraRender.classList.remove('single-column');
+                }
+                // Se ≤950px, mantém single-column (cabe folgado em 1 coluna)
+
+                measureDiv.removeChild(pageDiv);
+                document.body.removeChild(measureDiv);
             }
         }
         batchContainer.appendChild(pageDiv);
