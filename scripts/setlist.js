@@ -865,6 +865,7 @@ function atualizarIconeAutoScroll() {
 
 /**
  * Busca uma celebração compartilhada no Supabase pelo hash curto.
+ * 🔁 SEMPRE consulta o banco diretamente (sem cache) para garantir a versão mais recente.
  * Retorna o objeto celebração reconstruído ou null.
  */
 async function carregarCelebracaoRemota(id) {
@@ -874,15 +875,28 @@ async function carregarCelebracaoRemota(id) {
         return null;
     }
     try {
+        console.log('[setlist] 🔄 Consultando Supabase para id:', id, '(leitura em tempo real)');
         const { data, error } = await instancia
             .from('repertorios_compartilhados')
             .select('payload')
             .eq('id', id)
-            .single();
-        if (error) throw error;
-        if (!data || !data.payload) return null;
+            .maybeSingle();
+
+        if (error) {
+            console.error('[setlist] Erro na consulta Supabase:', error);
+            return null;
+        }
+        if (!data || !data.payload) {
+            console.warn('[setlist] Nenhum registro encontrado para id:', id);
+            return null;
+        }
+
+        console.log('[setlist] ✅ Dados recebidos do Supabase para id:', id,
+                    '| itens:', data.payload.itens?.length || 0);
+
         const celeb = {
-            id: 'shared_' + Date.now(),
+            id: id,                              // 🔁 Usa o sharedId do Supabase como identificador principal
+            sharedId: id,                        // 🔁 Preserva o ID da URL para operações de upsert
             titulo: data.payload.titulo || 'Celebração Compartilhada',
             data: data.payload.data || '',
             createdAt: new Date().toISOString(),
@@ -1006,7 +1020,9 @@ function limparPayloadSetlist(celeb) {
 }
 
 /**
- * Compartilha a setlist atual via Supabase e copia o link para o clipboard.
+ * Compartilha/atualiza a setlist atual via Supabase.
+ * - Se a página foi aberta com ?id=XXX, faz UPSERT no registro existente (mantém a URL).
+ * - Caso contrário, cria um novo registro e copia o link para o clipboard.
  */
 async function compartilharSetlistAtual() {
     if (!state.celebracao) {
@@ -1020,40 +1036,66 @@ async function compartilharSetlistAtual() {
         return;
     }
 
-    const shortId = gerarHashCurtoSetlist(6);
+    // 🔁 Reaproveita o ID existente: prioridade → URL (?id=) > state.celebracao.sharedId
+    // Se qualquer um existir, faz UPSERT no registro existente (NUNCA gera novo hash).
+    const urlId = getQueryParam('id');
+    const celebId = state.celebracao?.sharedId;
+    const existingId = urlId || celebId || null;
+    const isUpdate = !!existingId;
+    const shortId = existingId || gerarHashCurtoSetlist(6);
+
     // Sanitiza o payload: JSON.parse(JSON.stringify(...)) remove undefined e garante JSON limpo
     const payloadLimpo = JSON.parse(JSON.stringify(limparPayloadSetlist(state.celebracao)));
     const body = { id: shortId, payload: payloadLimpo };
 
-    console.log('[setlist] 🔍 DEBUG — payload a enviar:', JSON.stringify(body).substring(0, 200));
+    console.log('[setlist] 🔍 DEBUG —', isUpdate ? 'UPSERT (atualização)' : 'INSERT (novo)', '— id:', shortId,
+                '| payload:', JSON.stringify(body).substring(0, 200));
 
     try {
-        const { error } = await instancia
-            .from('repertorios_compartilhados')
-            .insert(body);
+        if (isUpdate) {
+            // Atualiza o registro existente sem mudar a URL
+            const { error } = await instancia
+                .from('repertorios_compartilhados')
+                .upsert(body);
+            if (error) throw error;
+            mostrarToastSetlist('✅ Repertório atualizado com sucesso!', 'success');
 
-        if (error) throw error;
+            if (typeof gtag === 'function') {
+                gtag('event', 'atualizar_setlist', {
+                    event_category: 'setlist',
+                    event_label: state.celebracao.titulo,
+                    method: 'supabase_upsert'
+                });
+            }
+        } else {
+            // Novo compartilhamento: insere e copia o link
+            const { error } = await instancia
+                .from('repertorios_compartilhados')
+                .insert(body);
+            if (error) throw error;
 
-        const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
+            const urlCurta = `${window.location.origin}${window.location.pathname}?id=${shortId}`;
 
-        try {
-            await navigator.clipboard.writeText(urlCurta);
-            mostrarToastSetlist('🔗 Link copiado! Compartilhe com a equipe.', 'success');
-        } catch (clipErr) {
-            prompt('Copie o link de compartilhamento:', urlCurta);
-            mostrarToastSetlist('📋 Copie o link na janela que abriu.', 'info');
-        }
+            try {
+                await navigator.clipboard.writeText(urlCurta);
+                mostrarToastSetlist('🔗 Link copiado! Compartilhe com a equipe.', 'success');
+            } catch (clipErr) {
+                prompt('Copie o link de compartilhamento:', urlCurta);
+                mostrarToastSetlist('📋 Copie o link na janela que abriu.', 'info');
+            }
 
-        if (typeof gtag === 'function') {
-            gtag('event', 'compartilhar_setlist', {
-                event_category: 'setlist',
-                event_label: state.celebracao.titulo,
-                method: 'supabase_link'
-            });
+            if (typeof gtag === 'function') {
+                gtag('event', 'compartilhar_setlist', {
+                    event_category: 'setlist',
+                    event_label: state.celebracao.titulo,
+                    method: 'supabase_link'
+                });
+            }
         }
     } catch (err) {
         // 🔬 LOG ULTRA-DETALHADO para diagnóstico
-        console.error('[setlist] ❌ Erro ao compartilhar — DIAGNÓSTICO COMPLETO:');
+        console.error('[setlist] ❌ Erro ao compartilhar/atualizar — DIAGNÓSTICO COMPLETO:');
+        console.error('  Modo:', isUpdate ? 'UPSERT' : 'INSERT', '| id:', shortId);
         console.error('  Tipo:', typeof err, '| Construtor:', err?.constructor?.name);
         console.error('  Keys próprias:', Object.keys(err || {}));
         console.error('  Todas as props:', Object.getOwnPropertyNames(err || {}));
@@ -1078,7 +1120,7 @@ async function compartilharSetlistAtual() {
             }
         }
 
-        // Fallback: tenta upsert para colisão de hash
+        // Fallback: se insert falhar por colisão, tenta upsert como plano B
         if (err?.code === '23505') {
             console.warn('[setlist] ⚠️ Colisão de hash, tentando upsert...');
             try {
@@ -1087,9 +1129,14 @@ async function compartilharSetlistAtual() {
                     .upsert(body);
                 if (upsertErr) throw upsertErr;
 
-                const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
-                try { await navigator.clipboard.writeText(urlCurta); mostrarToastSetlist('🔗 Link copiado!', 'success'); }
-                catch { prompt('Copie o link:', urlCurta); }
+                const urlCurta = `${window.location.origin}${window.location.pathname}?id=${shortId}`;
+                // Só copia o link se for um NOVO compartilhamento (não update)
+                if (!isUpdate) {
+                    try { await navigator.clipboard.writeText(urlCurta); mostrarToastSetlist('🔗 Link copiado!', 'success'); }
+                    catch { prompt('Copie o link:', urlCurta); }
+                } else {
+                    mostrarToastSetlist('✅ Repertório atualizado com sucesso!', 'success');
+                }
                 return;
             } catch (upsertErr) {
                 console.error('[setlist] ❌ Upsert também falhou:', upsertErr?.message || upsertErr);
@@ -1113,6 +1160,7 @@ async function init() {
     carregarToolbarPrefs();
 
     // 🔗 Verifica se é um link compartilhado via Supabase (?id=)
+    // 📌 Os dados do Supabase SEMPRE prevalecem sobre qualquer cache local.
     const sharedId = getQueryParam('id');
     if (sharedId) {
         document.getElementById('setlist-content').innerHTML = `<div class="setlist-loading">Carregando repertório compartilhado...</div>`;
@@ -1125,9 +1173,25 @@ async function init() {
             return;
         }
 
+        // ✅ Dados remotos prevalecem — sobrescreve o state e o cache local
         state.celebracao = celebRemota;
         state.itens = ordenarItens(celebRemota.itens.filter(i => i.tipo === 'cifra' || i.tipo === 'texto'));
         document.getElementById('setlist-titulo').textContent = celebRemota.titulo;
+
+        // Atualiza localStorage com a versão mais recente do Supabase (cache offline)
+        try {
+            const dados = localStorage.getItem(STORAGE_KEY);
+            const lista = dados ? JSON.parse(dados) : [];
+            const idxExistente = lista.findIndex(c => c.titulo === celebRemota.titulo && c.data === celebRemota.data);
+            if (idxExistente >= 0) {
+                lista[idxExistente] = celebRemota;
+            } else {
+                lista.unshift(celebRemota);
+            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
+        } catch (e) {
+            // Silencioso — localStorage é apenas cache
+        }
 
         // Adiciona botão "💾 Salvar no Meu Aparelho" no header
         const subnav = document.querySelector('.setlist-subnav');

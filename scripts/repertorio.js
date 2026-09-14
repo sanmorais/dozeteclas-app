@@ -221,10 +221,10 @@ function gerarHashCurto(tamanho = 6) {
 }
 
 /**
- * Compartilha uma celebração via Supabase:
- * 1. Gera um hash curto como ID
- * 2. Insere o payload limpo na tabela repertorios_compartilhados
- * 3. Constrói URL curta e copia para o clipboard
+ * Compartilha/atualiza uma celebração via Supabase:
+ * - Se a celebração já foi compartilhada antes (possui sharedId), faz UPSERT no registro existente.
+ * - Caso contrário, cria um novo registro e armazena o sharedId na celebração.
+ * Constrói URL curta e copia para o clipboard.
  */
 async function compartilharCelebracao(id) {
     const celeb = buscarCelebracaoPorId(id);
@@ -239,40 +239,60 @@ async function compartilharCelebracao(id) {
         return;
     }
 
-    const shortId = gerarHashCurto(6);
+    // 🔁 Reaproveita o sharedId existente para atualizar o mesmo registro
+    const isUpdate = !!celeb.sharedId;
+    const shortId = celeb.sharedId || gerarHashCurto(6);
+
     // Sanitiza o payload: JSON.parse(JSON.stringify(...)) remove undefined e garante JSON limpo
     const payloadLimpo = JSON.parse(JSON.stringify(limparPayloadParaCompartilhamento(celeb)));
     const body = { id: shortId, payload: payloadLimpo };
 
-    console.log('[repertorio] 🔍 DEBUG — payload a enviar:', JSON.stringify(body).substring(0, 200));
+    console.log('[repertorio] 🔍 DEBUG —', isUpdate ? 'UPSERT (atualização)' : 'INSERT (novo)', '— id:', shortId,
+                '| payload:', JSON.stringify(body).substring(0, 200));
 
     try {
-        const { error } = await instancia
-            .from('repertorios_compartilhados')
-            .insert(body);
+        if (isUpdate) {
+            // Atualiza o registro existente — mesmo link, dados novos
+            const { error } = await instancia
+                .from('repertorios_compartilhados')
+                .upsert(body);
+            if (error) throw error;
 
-        if (error) throw error;
+            const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
+            mostrarToast('✅ Repertório atualizado no link de compartilhamento!', 'success');
 
-        const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
+            if (typeof gtag === 'function') {
+                gtag('event', 'atualizar_repertorio', {
+                    event_category: 'repertorio',
+                    event_label: celeb.titulo,
+                    method: 'supabase_upsert'
+                });
+            }
+        } else {
+            // Novo compartilhamento: insere e salva o sharedId na celebração
+            const { error } = await instancia
+                .from('repertorios_compartilhados')
+                .insert(body);
+            if (error) throw error;
 
-        try {
-            await navigator.clipboard.writeText(urlCurta);
-            mostrarToast('🔗 Link copiado! Compartilhe com a equipe.', 'success');
-        } catch (clipErr) {
-            prompt('Copie o link de compartilhamento:', urlCurta);
-            mostrarToast('📋 Copie o link na janela que abriu.', 'info');
-        }
+            // ✅ Guarda o sharedId na celebração para futuras atualizações
+            celeb.sharedId = shortId;
+            salvarCelebracoes();
 
-        if (typeof gtag === 'function') {
-            gtag('event', 'compartilhar_repertorio', {
-                event_category: 'repertorio',
-                event_label: celeb.titulo,
-                method: 'supabase_link'
-            });
+            const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
+
+            try {
+                await navigator.clipboard.writeText(urlCurta);
+                mostrarToast('🔗 Link copiado! Compartilhe com a equipe.', 'success');
+            } catch (clipErr) {
+                prompt('Copie o link de compartilhamento:', urlCurta);
+                mostrarToast('📋 Copie o link na janela que abriu.', 'info');
+            }
         }
     } catch (err) {
         // 🔬 LOG ULTRA-DETALHADO para diagnóstico
         console.error('[repertorio] ❌ Erro ao compartilhar — DIAGNÓSTICO COMPLETO:');
+        console.error('  Modo:', isUpdate ? 'UPSERT' : 'INSERT', '| id:', shortId);
         console.error('  Tipo:', typeof err, '| Construtor:', err?.constructor?.name);
         console.error('  Keys próprias:', Object.keys(err || {}));
         console.error('  Todas as props:', Object.getOwnPropertyNames(err || {}));
@@ -306,9 +326,19 @@ async function compartilharCelebracao(id) {
                     .upsert(body);
                 if (upsertErr) throw upsertErr;
 
+                // Se for novo compartilhamento, salva o sharedId
+                if (!isUpdate) {
+                    celeb.sharedId = shortId;
+                    salvarCelebracoes();
+                }
+
                 const urlCurta = `https://dozeteclas.com.br/setlist.html?id=${shortId}`;
-                try { await navigator.clipboard.writeText(urlCurta); mostrarToast('🔗 Link copiado!', 'success'); }
-                catch { prompt('Copie o link:', urlCurta); }
+                if (!isUpdate) {
+                    try { await navigator.clipboard.writeText(urlCurta); mostrarToast('🔗 Link copiado!', 'success'); }
+                    catch { prompt('Copie o link:', urlCurta); }
+                } else {
+                    mostrarToast('✅ Repertório atualizado!', 'success');
+                }
                 return;
             } catch (upsertErr) {
                 console.error('[repertorio] ❌ Upsert também falhou:', upsertErr?.message || upsertErr);
