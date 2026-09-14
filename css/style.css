@@ -303,15 +303,53 @@ body {
 }
 
 /* 6. Modos de ExibiÃ§Ã£o de Cifra (Colunas e Texto Puro) */
-.two-columns {
+/* =========================================================
+   CORREÇÃO: anula flex/grid em qualquer nível do contêiner
+   de cifra. Flex/Grid cancela nativamente a propriedade
+   column-count nos navegadores modernos.
+   ========================================================= */
+.setlist-main,
+.setlist-content,
+#setlist-content,
+.setlist-cifra-container,
+.setlist-container,
+.cifra-wrapper,
+#cifra-render.two-columns {
     display: block !important;
     width: 100% !important;
-    column-count: 2 !important; 
-    column-gap: 40px;
-    column-rule: 1px solid #333;
-    column-fill: auto;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Quando a classe two-columns estiver ativa no #cifra-render */
+#cifra-render.two-columns,
+.cifra-conteudo.two-columns,
+.two-columns {
+    display: block !important;
+    -webkit-column-count: 2 !important;
+    -moz-column-count: 2 !important;
+    column-count: 2 !important;
+
+    -webkit-column-gap: 32px !important;
+    -moz-column-gap: 32px !important;
+    column-gap: 32px !important;
+
+    -webkit-column-rule: 1px solid rgba(255, 255, 255, 0.1) !important;
+    -moz-column-rule: 1px solid rgba(255, 255, 255, 0.1) !important;
+    column-rule: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+
+    /* column-fill:auto + height:auto colapsa em UMA coluna no Chrome.
+       Usamos balance para garantir 2 colunas reais e balanceadas. */
+    -webkit-column-fill: balance !important;
+    -moz-column-fill: balance !important;
+    column-fill: balance !important;
     height: auto !important;
     max-height: none !important;
+    overflow: visible !important;
 }
 
 /* ------------------------------------------------
@@ -321,10 +359,28 @@ body {
    fiquem órfãos no rodapé da coluna.
    ------------------------------------------------ */
 .two-columns .c-line,
-.two-columns .c-chord-line {
+#cifra-render.two-columns .c-line,
+.two-columns .chord-line,
+.two-columns .lyrics-line {
     break-inside: avoid !important;
     -webkit-column-break-inside: avoid !important;
     page-break-inside: avoid !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
+}
+
+/* Garantir que as Estrofes fiquem Unidas sem Bloquear a Coluna Pai */
+.two-columns .c-section,
+.two-columns .c-block,
+.two-columns .estrofe {
+    display: inline-block !important;
+    width: 100% !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 1.2rem !important;
 }
 
 /* Mantém a linha de acorde colada à linha de letra seguinte */
@@ -458,11 +514,17 @@ body {
 
 .btn-tool.active,
 #btn-columns.active,
-#btn-preview.active {
+#btn-preview.active,
+#btn-setlist-columns.active {
     background-color: var(--primary) !important;
     color: #000 !important;
     font-weight: bold;
     box-shadow: 0 0 10px rgba(255, 197, 2, 0.4);
+}
+
+.btn-tool.active svg path,
+#btn-setlist-columns.active svg path {
+    stroke: #000 !important;
 }
 
 .original-btn {
@@ -485,9 +547,16 @@ body {
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    #cifra-render.two-columns,
+    .cifra-conteudo.two-columns,
+    .setlist-cifra.two-columns,
     .two-columns {
+        -webkit-column-count: 1 !important;
+        -moz-column-count: 1 !important;
         column-count: 1 !important;
+        -webkit-column-rule: none !important;
+        -moz-column-rule: none !important;
         column-rule: none !important;
     }
 }
@@ -499,13 +568,35 @@ body {
     background: #000;
     border-radius: 8px;
     overflow: hidden;
-    border: 2px solid #333; 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); 
+    border: 2px solid #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
-
 #yt-player {
     width: 100%;
     height: 100%;
+}
+
+#setlist-preview-container {
+    width: 50% !important;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    max-width: 900px !important;
+    margin: 14px auto 20px auto !important;
+}
+
+#setlist-yt-player {
+    width: 100%;
+    height: 100%;
+}
+/* Mobile: player ocupa 100% da largura */
+@media (max-width: 640px) {
+    #setlist-preview-container {
+        width: 100% !important;
+    }
 }
 
 /* ==========================================
@@ -1217,7 +1308,8 @@ body.light-theme .btn-tool {
 
 body.light-theme .btn-tool.active,
 body.light-theme #btn-columns.active,
-body.light-theme #btn-preview.active {
+body.light-theme #btn-preview.active,
+body.light-theme #btn-setlist-preview.active {
     background-color: var(--primary) !important;
     color: #000 !important;
 }
@@ -1383,14 +1475,17 @@ body.light-theme .vitrine-secao-titulo {
 
 /* Ãcones da barra de ferramentas: Imprimir e Preview (SVGs internos com fill fixo) */
 body.light-theme #btn-print,
-body.light-theme #btn-preview {
+body.light-theme #btn-preview,
+body.light-theme #btn-setlist-preview {
     color: #121416;
 }
 
 body.light-theme #btn-print svg,
 body.light-theme #btn-preview svg,
+body.light-theme #btn-setlist-preview svg,
 body.light-theme #btn-print svg path,
-body.light-theme #btn-preview svg path {
+body.light-theme #btn-preview svg path,
+body.light-theme #btn-setlist-preview svg path {
     fill: currentColor;
 }
 

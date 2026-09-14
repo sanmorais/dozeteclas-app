@@ -88,6 +88,7 @@ body.setlist-body {
     overflow-y: auto;
     scrollbar-width: auto;
     scrollbar-color: #272c35 transparent;
+    padding: 5px;
 }
 /* Barra de rolagem personalizada (igual ao cifra.html) */
 .setlist-main::-webkit-scrollbar {
@@ -219,26 +220,114 @@ body.setlist-body {
    internamente e que cabeçalhos de seção não
    fiquem órfãos no rodapé da coluna.
    ------------------------------------------------ */
-.two-columns {
-    column-fill: auto;
+/* =========================================================
+   CORREÇÃO: anula flex/grid em qualquer nível do contêiner
+   de cifra do setlist. Flex/Grid cancela nativamente a
+   propriedade column-count nos navegadores modernos.
+   ========================================================= */
+.setlist-main,
+.setlist-content,
+#setlist-content,
+.setlist-cifra-container,
+.setlist-container,
+.cifra-wrapper,
+#cifra-render.two-columns {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
-.two-columns #cifra-render .c-line,
-.two-columns .c-chord-line {
+/* Quando a classe two-columns estiver ativa no #cifra-render */
+#cifra-render.two-columns,
+.setlist-cifra.two-columns,
+.two-columns {
+    display: block !important;
+    -webkit-column-count: 2 !important;
+    -moz-column-count: 2 !important;
+    column-count: 2 !important;
+
+    -webkit-column-gap: 32px !important;
+    -moz-column-gap: 32px !important;
+    column-gap: 32px !important;
+
+    -webkit-column-rule: 1px solid rgba(255, 255, 255, 0.1) !important;
+    -moz-column-rule: 1px solid rgba(255, 255, 255, 0.1) !important;
+    column-rule: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+
+    /* column-fill:auto + height:auto colapsa em UMA coluna no Chrome.
+       Usamos balance para garantir 2 colunas reais e balanceadas. */
+    -webkit-column-fill: balance !important;
+    -moz-column-fill: balance !important;
+    column-fill: balance !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Dispositivos móveis (< 768px): força 1 coluna */
+@media (max-width: 768px) {
+    #cifra-render.two-columns,
+    .cifra-conteudo.two-columns,
+    .setlist-cifra.two-columns,
+    .two-columns {
+        -webkit-column-count: 1 !important;
+        -moz-column-count: 1 !important;
+        column-count: 1 !important;
+        -webkit-column-rule: none !important;
+        -moz-column-rule: none !important;
+        column-rule: none !important;
+    }
+}
+
+/* Em telas de tablet (768px–1024px), colunas com gap menor */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .two-columns {
+        -webkit-column-gap: 24px;
+        -moz-column-gap: 24px;
+        column-gap: 24px;
+    }
+}
+
+.two-columns .c-line,
+#cifra-render.two-columns .c-line,
+.two-columns .chord-line,
+.two-columns .lyrics-line {
     break-inside: avoid !important;
     -webkit-column-break-inside: avoid !important;
     page-break-inside: avoid !important;
+    /* 🔧 Garante que o texto da linha não vaze da coluna */
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
+}
+
+/* Garantir que as Estrofes fiquem Unidas sem Bloquear a Coluna Pai */
+.two-columns .c-section,
+.two-columns .c-block,
+.two-columns .estrofe {
+    display: inline-block !important;
+    width: 100% !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 1.2rem !important;
 }
 
 /* Mantém a linha de acorde colada à linha de letra seguinte */
-.two-columns #cifra-render .c-line:has(.c-chord) {
+.two-columns .c-line:has(.c-chord) {
     break-after: avoid !important;
     -webkit-column-break-after: avoid !important;
     page-break-after: avoid !important;
 }
 
 /* 💥 TRAVA DUPLA: linha de letra NUNCA se descola da linha de acorde acima */
-.two-columns #cifra-render .c-line:has(.c-chord) + .c-line {
+.two-columns .c-line:has(.c-chord) + .c-line {
     break-before: avoid !important;
     -webkit-column-break-before: avoid !important;
     page-break-before: avoid !important;
@@ -265,7 +354,7 @@ body.setlist-body {
 }
 
 /* Linhas vazias (separadores de estrofes) são pontos naturais de quebra */
-.two-columns #cifra-render .c-line:empty,
+.two-columns .c-line:empty,
 .two-columns .c-blank-line {
     break-before: auto !important;
     break-after: auto !important;

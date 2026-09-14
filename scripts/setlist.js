@@ -1,4 +1,4 @@
-// setlist.js - Modo Execução ao Vivo de Repertórios Litúrgicos
+﻿// setlist.js - Modo Execução ao Vivo de Repertórios Litúrgicos
 // Depende de: supabase-db.js (window._supabase), chordpro-parser.js (window.converterBlocoParaChordPro),
 //             music-engine.js (window.renderizarMusica), auto-scroll.js (window.autoScrollEngine)
 
@@ -268,6 +268,7 @@ function removerMarcasApenasTexto(html) {
 function aplicarEstadoToolbar() {
     const cifraRender = document.getElementById('cifra-render');
     if (!cifraRender) return;
+
     cifraRender.style.fontSize = toolbarState.fontSize + 'px';
     if (toolbarState.onlyText) cifraRender.classList.add('only-text-mode');
     else cifraRender.classList.remove('only-text-mode');
@@ -318,18 +319,36 @@ function toggleTxtSetlist() {
         if (btn) btn.classList.remove('active');
     }
     cifraRender.style.fontSize = toolbarState.fontSize + 'px';
-    if (toolbarState.twoColumns) cifraRender.classList.add('two-columns');
+    if (toolbarState.twoColumns) {
+        cifraRender.classList.add('two-columns');
+    }
     salvarToolbarPrefs();
 }
 
 function toggleColumnsSetlist() {
+    // 1. Inverte o booleano explicitamente
     toolbarState.twoColumns = !toolbarState.twoColumns;
-    const cifraRender = document.getElementById('cifra-render');
-    const btn = document.getElementById('btn-setlist-columns');
-    if (cifraRender) cifraRender.classList.toggle('two-columns', toolbarState.twoColumns);
-    if (btn) btn.classList.toggle('active', toolbarState.twoColumns);
+
+    // 2. Localiza o botão e o container da cifra
+    const btn = document.getElementById('btn-setlist-columns') || document.querySelector('#btn-toggle-columns');
+    const container = document.getElementById('cifra-render') || document.querySelector('.setlist-cifra');
+
+    // 3. Aplica ou Remove as classes sem ambiguidades
+    if (toolbarState.twoColumns) {
+        if (btn) btn.classList.add('active');
+        if (container) container.classList.add('two-columns');
+    } else {
+        if (btn) btn.classList.remove('active');
+        if (container) container.classList.remove('two-columns');
+    }
+
+    // 4. Salva a nova preferência invertida
     salvarToolbarPrefs();
+
+    // 5. Força o navegador a recalcular o layout
+    if (container) void container.offsetHeight;
 }
+window.toggleColumnsSetlist = toggleColumnsSetlist;
 
 /* ============================================================
    IMPRESSÃO: ESCOLHA DO MODO E GERAÇÃO DO LIVRETO COMPLETO
@@ -563,6 +582,16 @@ function exibirAutoScrollSetlist() {
 function renderItemAtual() {
     const container = document.getElementById('setlist-content');
     if (!container) return;
+
+    // Fecha o preview ao trocar de música
+    const previewContainer = document.getElementById('setlist-preview-container');
+    const previewBtn = document.getElementById('btn-setlist-preview');
+    if (previewContainer && previewContainer.style.display === 'block') {
+        previewContainer.style.display = 'none';
+        const ytPlayer = document.getElementById('setlist-yt-player');
+        if (ytPlayer) ytPlayer.innerHTML = '';
+        if (previewBtn) previewBtn.classList.remove('active');
+    }
 
     if (!state.celebracao || state.itens.length === 0) {
         container.innerHTML = `<div class="setlist-empty"><h2>Repertório vazio</h2><p>Nenhum item encontrado nesta celebração.</p></div>`;
@@ -1130,6 +1159,71 @@ async function init() {
     }
 
     // ---------------------------------------------------------------
+    // FUNÇÃO DE PREVIEW DO YOUTUBE (SETLIST)
+    // ---------------------------------------------------------------
+    function extractIdSetlist(url) {
+        if (!url) return null;
+        // 1. Tratamento específico para o formato Shorts
+        if (url.includes('/shorts/')) {
+            const partes = url.split('/shorts/');
+            const videoId = partes[1].split('?')[0].split('&')[0];
+            return (videoId && videoId.length === 11) ? videoId : false;
+        }
+        // 2. Fluxo original com a Regex para links normais e encurtados
+        const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[7].length === 11) ? match[7] : false;
+    }
+
+    function togglePreviewSetlist() {
+        const container = document.getElementById('setlist-preview-container');
+        const btn = document.getElementById('btn-setlist-preview');
+        const item = state.itens[state.itemAtualIdx];
+        const dadosCifra = item?.slug ? state.cacheCifras[item.slug] : null;
+        const url = dadosCifra?.link_referencia || dadosCifra?.linkReferencia;
+
+        if (!url) {
+            mostrarToastSetlist('Nenhum link de referência disponível para esta música.', 'info');
+            return;
+        }
+
+        if (!container) {
+            console.error('[setlist] Elemento #setlist-preview-container não encontrado no HTML.');
+            return;
+        }
+
+        if (container.style.display === 'none' || container.style.display === '') {
+            const videoId = extractIdSetlist(url);
+            if (!videoId) {
+                mostrarToastSetlist('Não foi possível extrair o ID do vídeo. Verifique o formato do link.', 'error');
+                return;
+            }
+
+            container.style.display = 'block';
+            btn?.classList.add('active');
+
+            const ytPlayer = document.getElementById('setlist-yt-player');
+            if (ytPlayer) {
+                ytPlayer.innerHTML = `<iframe 
+                width="100%" 
+                height="100%" 
+                src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1&rel=0" 
+                title="Preview do YouTube" 
+                frameborder="0" 
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" 
+                allowfullscreen>
+                </iframe>`;
+            }
+
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            container.style.display = 'none';
+            btn?.classList.remove('active');
+            const ytPlayer = document.getElementById('setlist-yt-player');
+            if (ytPlayer) ytPlayer.innerHTML = '';
+        }
+    }
+    // ---------------------------------------------------------------
     // EVENTOS DA BARRA DE FERRAMENTAS (MODO PALCO)
     // ---------------------------------------------------------------
     document.getElementById('btn-setlist-zoom-out')?.addEventListener('click', () => changeZoomSetlist(-1));
@@ -1137,8 +1231,21 @@ async function init() {
     document.getElementById('btn-setlist-zoom-in')?.addEventListener('click', () => changeZoomSetlist(1));
     document.getElementById('btn-setlist-toggle-txt')?.addEventListener('click', toggleTxtSetlist);
     document.getElementById('btn-setlist-acc')?.addEventListener('click', toggleAccidentalSetlist);
-    document.getElementById('btn-setlist-columns')?.addEventListener('click', toggleColumnsSetlist);
+
+    // 🔗 Vinculação do botão de colunas (com fallback de ID)
+    (function bindColunas() {
+        const btnColunas = document.getElementById('btn-setlist-columns')
+                        || document.getElementById('btn-toggle-columns');
+        if (btnColunas) {
+            btnColunas.onclick = (e) => {
+                e.preventDefault();
+                toggleColumnsSetlist();
+            };
+        }
+    })();
+
     document.getElementById('btn-setlist-print')?.addEventListener('click', triggerPrintSetlist);
+    document.getElementById('btn-setlist-preview')?.addEventListener('click', togglePreviewSetlist);
 
     // ---------------------------------------------------------------
     // FECHA POPUP DE TOM AO CLICAR FORA
@@ -1194,6 +1301,26 @@ async function init() {
    ============================================================ */
 // Como setlist.js é type="module", o DOM já está pronto e DOMContentLoaded já disparou.
 // Verificamos o Supabase e iniciamos imediatamente ou via polling.
+
+/* ============================================================
+   VINCULAÇÃO IMEDIATA DA TOOLBAR (não depende de Supabase)
+   Os botões da barra de ferramentas são HTML estático — devem
+   funcionar mesmo antes do conteúdo das cifras carregar.
+   ============================================================ */
+function bindToolbarImediato() {
+    const btnCols = document.getElementById('btn-setlist-columns')
+                 || document.getElementById('btn-toggle-columns');
+    if (btnCols) {
+        btnCols.onclick = (e) => {
+            e.preventDefault();
+            toggleColumnsSetlist();
+        };
+    }
+}
+
+bindToolbarImediato();
+document.addEventListener('DOMContentLoaded', bindToolbarImediato);
+
 function iniciarQuandoPronto() {
     const check = setInterval(() => {
         if (window._supabase || typeof _supabase !== 'undefined') {

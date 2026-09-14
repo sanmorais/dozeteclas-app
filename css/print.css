@@ -59,6 +59,8 @@ body {
 #tone-popup,
 #preview-container,
 #yt-player,
+#setlist-preview-container,
+#setlist-yt-player,
 .btn-tool,
 .tools-wrapper,
 #auto-scroll-container,
@@ -81,6 +83,8 @@ svg {
 #tone-popup,
 #preview-container,
 #yt-player,
+#setlist-preview-container,
+#setlist-yt-player,
 .btn-tool,
 .tools-wrapper,
 #auto-scroll-container,
@@ -266,16 +270,153 @@ svg:not(.st0):not(.st1) {
     page-break-after: avoid !important;
 }
 
-/* 5. Modos de Exibição de Duas Colunas */
+/* 5. Modos de Exibição de Duas Colunas — Impressão / PDF Otimizada */
+/* ==========================================================
+   CORREÇÃO: Força column-count com todos os prefixos vendor.
+   Sem -webkit-column-count o Chrome/Edge colapsa para 1 coluna
+   na prévia de impressão e no PDF gerado pelo navegador.
+   Também anula qualquer flex/grid herdado do tema escuro.
+   ========================================================= */
+#cifra-render.two-columns,
+.cifra-conteudo.two-columns,
+.setlist-cifra.two-columns,
 .two-columns {
     display: block !important;
     width: 100% !important;
+    max-width: 100% !important;
+
+    /* Layout Multi-Coluna com todos os prefixos */
+    -webkit-column-count: 2 !important;
+    -moz-column-count: 2 !important;
     column-count: 2 !important;
-    column-gap: 30mm !important;
-    column-rule: 0.5pt solid #dddddd !important;
-    column-fill: auto !important;
+
+    -webkit-column-gap: 20mm !important;
+    -moz-column-gap: 20mm !important;
+    column-gap: 20mm !important;
+
+    -webkit-column-rule: 0.5pt solid #cccccc !important;
+    -moz-column-rule: 0.5pt solid #cccccc !important;
+    column-rule: 0.5pt solid #cccccc !important;
+
+    /* balance evita colapso para 1 coluna no Chrome com pouco conteúdo */
+    -webkit-column-fill: balance !important;
+    -moz-column-fill: balance !important;
+    column-fill: balance !important;
+
     height: auto !important;
     max-height: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+}
+
+/* ==========================================================
+   CONTROLE DE QUEBRA: EVITA ESTROFES CORTADAS ENTRE COLUNAS
+   .c-section, .c-block e .estrofe NUNCA devem ser partidos
+   ao meio na transição de coluna ou virada de página.
+   ========================================================= */
+#cifra-render.two-columns .c-section,
+#cifra-render.two-columns .c-block,
+.two-columns .c-section,
+.two-columns .c-block,
+.two-columns .estrofe {
+    display: inline-block !important;
+    width: 100% !important;
+    margin-bottom: 8pt !important;
+
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+
+/* ==========================================================
+   LINHAS: Mantém letra e acorde alinhados com fonte monospace.
+   Impede que uma .c-line individual seja partida ao meio.
+   ========================================================= */
+#cifra-render.two-columns .c-line,
+.two-columns .c-line,
+.two-columns .chord-line,
+.two-columns .lyrics-line {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
+    font-family: 'Roboto Mono', 'Courier New', monospace !important;
+
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+/* ==========================================================
+   TRAVA ACORDE ↔ LETRA: Linha de acorde NUNCA se separa
+   da linha de letra imediatamente abaixo dela.
+   ========================================================= */
+#cifra-render.two-columns .c-line:has(.c-chord),
+.two-columns .c-line:has(.c-chord) {
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
+}
+
+#cifra-render.two-columns .c-line:has(.c-chord) + .c-line,
+.two-columns .c-line:has(.c-chord) + .c-line {
+    break-before: avoid !important;
+    -webkit-column-break-before: avoid !important;
+    page-break-before: avoid !important;
+}
+
+/* ==========================================================
+   SECTION LABELS: Rótulos de seção (Intro, Refrão, etc.)
+   nunca ficam órfãos no rodapé da coluna/página.
+   ========================================================= */
+#cifra-render.two-columns .section-label,
+.two-columns .section-label {
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
+
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+/* ==========================================================
+   COMENTÁRIOS: Não devem ser partidos entre colunas.
+   ========================================================= */
+#cifra-render.two-columns .c-comment,
+.two-columns .c-comment {
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-inside: avoid !important;
+
+    break-after: avoid !important;
+    -webkit-column-break-after: avoid !important;
+    page-break-after: avoid !important;
+}
+
+/* ==========================================================
+   LINHAS VAZIAS: Separadores de estrofes são pontos naturais
+   de quebra — NÃO bloqueamos a quebra aqui.
+   ========================================================= */
+#cifra-render.two-columns .c-line:empty,
+.two-columns .c-line:empty,
+#cifra-render.two-columns .c-blank-line,
+.two-columns .c-blank-line {
+    break-before: auto !important;
+    break-after: auto !important;
+    -webkit-column-break-before: auto !important;
+    -webkit-column-break-after: auto !important;
+}
+
+/* ==========================================================
+   CABEÇALHO DA MÚSICA: O song-header (título + artista)
+   deve ocupar toda a largura (span all) antes das colunas.
+   ========================================================= */
+#cifra-render.two-columns .song-header,
+.two-columns .song-header {
+    column-span: all !important;
+    -webkit-column-span: all !important;
+    -moz-column-span: all !important;
 }
 
 /* ==========================================================
