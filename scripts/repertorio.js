@@ -915,18 +915,37 @@ function togglePopover(btnRef, itemId) {
     if (!celeb) return;
     const item = celeb.itens.find(i => i.id === itemId);
     if (!item) return;
-    const tomAtual = (item.tomCustom != null ? item.tomCustom : item.tomOriginal) || 0;
+
+    // Converte o valor armazenado (deslocado em +3) para índice 0-11 da ESCALA_NOTAS
+    const storedTom = (item.tomCustom != null ? item.tomCustom : item.tomOriginal) || 0;
+    const popoverIdx = ((storedTom - 3 + 12) % 12);
+
     const rect = btnRef.getBoundingClientRect();
     const popover = document.createElement('div');
     popover.className = 'transpose-popover';
     popover.style.top = (rect.bottom + 8) + 'px';
     popover.style.left = Math.max(8, rect.left) + 'px';
     popover.style.position = 'fixed';
-    popover.innerHTML = `<p class="popover-label">Tom: ${escapeHtml(item.titulo)}</p><div class="popover-notes">${ESCALA_NOTAS.map((nota, i) => `<button class="popover-note-btn ${i === tomAtual ? 'active' : ''}" data-nota-idx="${i}">${nota}</button>`).join('')}</div>`;
+    popover.innerHTML = `<p class="popover-label">Tom: ${escapeHtml(item.titulo)}</p><div class="popover-notes">${ESCALA_NOTAS.map((nota, i) => `<button class="popover-note-btn ${i === popoverIdx ? 'active' : ''}" data-nota-idx="${i}">${nota}</button>`).join('')}</div>`;
     document.body.appendChild(popover);
     popoverAtivo = popover;
     popover.querySelectorAll('.popover-note-btn').forEach(btn => {
-        btn.addEventListener('click', () => { atualizarItem(state.editandoId, itemId, { tomCustom: parseInt(btn.dataset.notaIdx, 10) }); popover.remove(); popoverAtivo = null; renderizarEditor(); });
+        btn.addEventListener('click', () => {
+            const popoverIdxSelecionado = parseInt(btn.dataset.notaIdx, 10);
+            // Converte índice do popover (0-11) de volta para valor armazenado (deslocado em +3)
+            const novoTomCustom = (popoverIdxSelecionado + 3) % 12;
+            atualizarItem(state.editandoId, itemId, { tomCustom: novoTomCustom });
+
+            // Atualização imediata do botão no card (antes do re-render completo)
+            const btnTomCard = document.querySelector(`.slot-item[data-item-id="${itemId}"] .btn-transpose-slot`);
+            if (btnTomCard) {
+                btnTomCard.textContent = ESCALA_NOTAS[popoverIdxSelecionado];
+            }
+
+            popover.remove();
+            popoverAtivo = null;
+            renderizarEditor();
+        });
     });
     setTimeout(() => { document.addEventListener('click', fecharPopoverExterno, { once: true }); }, 0);
 }
