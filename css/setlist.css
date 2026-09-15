@@ -492,7 +492,7 @@ body.setlist-body {
 /* 1. MODO NORMAL — botões empilhados (▶ auto-scroll em cima, ⛶ tela cheia embaixo) */
 .btn-fullscreen-float {
     position: fixed !important;
-    bottom: 90px !important; /* Abaixo do auto-scroll (bottom: 140px), gap de 60px */
+    bottom: 80px !important; /* Abaixo do auto-scroll (bottom: 140px), gap de 60px */
     width: 50px !important;
     height: 50px !important;
     border-radius: 50% !important;
