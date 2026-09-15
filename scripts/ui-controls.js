@@ -627,20 +627,82 @@ document.getElementById('btn-preview')?.addEventListener('click', () => {
 // exclusivo por gerenciar a alternância entre temas claro e escuro.
 
 // =========================================================================
-// 🖥️ TELA CHEIA / MODO IMERSIVO (compatível com Safari / iPadOS / webkit)
+// 🖥️ TELA CHEIA / MODO IMERSIVO — API nativa com fallbacks para Edge/Safari
 // =========================================================================
 
 function toggleFullscreen() {
-    // Alterna a classe no body para atuar via CSS sem disparar o aviso do sistema
-    const isFullscreenActive = document.body.classList.toggle('fullscreen-mode');
+    const isFullscreen = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+    );
+    const docEl = document.documentElement;
 
-    // Atualiza o ícone do botão flutuante
-    const btnIcon = document.querySelector('#btn-fullscreen-float i, .btn-fullscreen-float i');
-    if (btnIcon) {
-        btnIcon.className = isFullscreenActive ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+    if (!isFullscreen) {
+        // Entra no modo tela cheia nativo
+        if (docEl.requestFullscreen) {
+            docEl.requestFullscreen().catch(err => console.log('[Fullscreen] erro ao entrar:', err));
+        } else if (docEl.webkitRequestFullscreen) {
+            docEl.webkitRequestFullscreen();
+        } else if (docEl.msRequestFullscreen) { /* Edge / IE antigos */
+            docEl.msRequestFullscreen();
+        }
+        document.body.classList.add('fullscreen-mode');
+    } else {
+        // Sai do modo tela cheia nativo
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(err => console.log('[Fullscreen] erro ao sair:', err));
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+        document.body.classList.remove('fullscreen-mode');
     }
+
+    // Atualiza ícone após a transição
+    atualizarIconeFullscreen(!isFullscreen);
 }
 window.toggleFullscreen = toggleFullscreen;
+
+/** Atualiza ícone e tooltip do botão de fullscreen */
+function atualizarIconeFullscreen(emFullscreen) {
+    const btnIcon = document.querySelector('#btn-fullscreen-float i, .btn-fullscreen-float i');
+    if (btnIcon) {
+        btnIcon.className = emFullscreen ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+    }
+    const altIcon = document.getElementById('btn-fullscreen-icon');
+    if (altIcon && altIcon !== btnIcon) {
+        altIcon.className = emFullscreen ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+    }
+    const btn = document.getElementById('btn-fullscreen-float');
+    if (btn) {
+        btn.title = emFullscreen ? 'Sair da tela cheia' : 'Tela cheia';
+    }
+}
+
+/** Sincroniza o estado quando o usuário sai via ESC ou gesto do sistema */
+function syncFullscreenState() {
+    const isFullscreen = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+    );
+
+    if (isFullscreen) {
+        document.body.classList.add('fullscreen-mode');
+    } else {
+        document.body.classList.remove('fullscreen-mode');
+    }
+
+    atualizarIconeFullscreen(isFullscreen);
+}
+
+document.addEventListener('fullscreenchange', syncFullscreenState);
+document.addEventListener('webkitfullscreenchange', syncFullscreenState);
+document.addEventListener('MSFullscreenChange', syncFullscreenState);
 
 document.getElementById('btn-fullscreen-float')?.addEventListener('click', toggleFullscreen);
 
