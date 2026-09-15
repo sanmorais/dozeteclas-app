@@ -144,6 +144,9 @@ function exibirBotaoAutoScroll() {
         autoScrollContainer.classList.add('visible');
         console.log('✅ Botão de auto-scroll exibido');
     }
+    // Exibe também o botão flutuante de tela cheia
+    const btnFS = document.getElementById('btn-fullscreen-float');
+    if (btnFS) btnFS.classList.add('visible');
 }
 
 /**
@@ -155,6 +158,9 @@ function ocultarBotaoAutoScroll() {
         autoScrollContainer.classList.remove('visible');
         console.log('🔒 Botão de auto-scroll ocultado');
     }
+    // Oculta também o botão flutuante de tela cheia
+    const btnFS = document.getElementById('btn-fullscreen-float');
+    if (btnFS) btnFS.classList.remove('visible');
 }
 
 function getQueryParam(param) {
@@ -619,6 +625,24 @@ document.getElementById('btn-preview')?.addEventListener('click', () => {
 // A funcionalidade de alternância de tema foi movida para theme-toggle.js
 // para evitar conflitos entre scripts. O theme-toggle.js é o responsável
 // exclusivo por gerenciar a alternância entre temas claro e escuro.
+
+// =========================================================================
+// 🖥️ TELA CHEIA / MODO IMERSIVO (compatível com Safari / iPadOS / webkit)
+// =========================================================================
+
+function toggleFullscreen() {
+    // Alterna a classe no body para atuar via CSS sem disparar o aviso do sistema
+    const isFullscreenActive = document.body.classList.toggle('fullscreen-mode');
+
+    // Atualiza o ícone do botão flutuante
+    const btnIcon = document.querySelector('#btn-fullscreen-float i, .btn-fullscreen-float i');
+    if (btnIcon) {
+        btnIcon.className = isFullscreenActive ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+    }
+}
+window.toggleFullscreen = toggleFullscreen;
+
+document.getElementById('btn-fullscreen-float')?.addEventListener('click', toggleFullscreen);
 
 
 // --- RENDERIZADOR DE DIAGRAMAS DE TECLADO ---

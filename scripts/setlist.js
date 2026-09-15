@@ -599,6 +599,9 @@ function toggleAccidentalSetlist() {
 function exibirAutoScrollSetlist() {
     const autoScrollContainer = document.getElementById('auto-scroll-container');
     if (autoScrollContainer) autoScrollContainer.classList.add('visible');
+    // Exibe também o botão flutuante de tela cheia
+    const btnFS = document.getElementById('btn-fullscreen-float');
+    if (btnFS) btnFS.classList.add('visible');
 }
 
 /* ============================================================
@@ -662,6 +665,8 @@ function renderItemAtual() {
         // Oculta auto-scroll para itens de texto
         const ac = document.getElementById('auto-scroll-container');
         if (ac) ac.classList.remove('visible');
+        const btnFS = document.getElementById('btn-fullscreen-float');
+        if (btnFS) btnFS.classList.remove('visible');
         return;
     }
 
@@ -824,21 +829,26 @@ function fecharDrawer() {
    UTILITÁRIOS DE TELA
    ============================================================ */
 function toggleFullscreen() {
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        const el = document.documentElement;
-        if (el.requestFullscreen) el.requestFullscreen();
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    // Alterna a classe no body para atuar via CSS sem disparar o aviso do sistema
+    const isFullscreenActive = document.body.classList.toggle('fullscreen-mode');
+    
+    // Atualiza o ícone do botão flutuante
+    const btnIcon = document.querySelector('#btn-fullscreen-float i, .btn-fullscreen-float i');
+    if (btnIcon) {
+        btnIcon.className = isFullscreenActive ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+    }
+    // Atualiza também o ícone alternativo (#btn-fullscreen-icon) se existir
+    const altIcon = document.getElementById('btn-fullscreen-icon');
+    if (altIcon && altIcon !== btnIcon) {
+        altIcon.className = isFullscreenActive ? 'bi bi-fullscreen-exit' : 'bi bi-arrows-fullscreen';
+    }
+    // Atualiza o título (tooltip) do botão
+    const btn = document.getElementById('btn-fullscreen-float');
+    if (btn) {
+        btn.title = isFullscreenActive ? 'Sair da tela cheia' : 'Tela cheia';
     }
 }
-
-/** Sincroniza classe .fullscreen-mode no body com o estado real de fullscreen */
-function onFullscreenChange() {
-    const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement);
-    document.body.classList.toggle('fullscreen-mode', isFull);
-}
+window.toggleFullscreen = toggleFullscreen;
 
 /* ============================================================
    AUTO-SCROLL TOGGLE (Integrado com auto-scroll.js)
@@ -1306,9 +1316,7 @@ async function init() {
     document.getElementById('btn-drawer')?.addEventListener('click', abrirDrawer);
     document.getElementById('btn-fechar-drawer')?.addEventListener('click', fecharDrawer);
     document.getElementById('drawer-overlay')?.addEventListener('click', fecharDrawer);
-    document.getElementById('btn-fullscreen')?.addEventListener('click', toggleFullscreen);
-    document.addEventListener('fullscreenchange', onFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+    document.getElementById('btn-fullscreen-float')?.addEventListener('click', toggleFullscreen);
 
     // 🔗 Botão de compartilhamento da setlist (visível em ambos os modos: local e remoto)
     const btnShareSetlist = document.getElementById('btn-share-setlist');

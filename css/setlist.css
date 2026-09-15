@@ -402,12 +402,12 @@ body.setlist-body {
     .setlist-titulo { font-size: 0.78rem; }
     .setlist-musica-titulo { font-size: 1.05rem; }
     .setlist-main { top: 130px; }
-    #setlist-content { padding: 12px 10px 70px; }
+    #setlist-content { padding: 12px 10px 0px; }
     #setlist-content .cifra-titulo { font-size: 1.2rem; }
     .drawer { width: 280px; }
 }
 @media (min-width: 641px) and (max-width: 1024px) {
-    #setlist-content { padding: 16px 14px 80px; }
+    #setlist-content { padding: 16px 14px 40px; }
 }
 
 /* Toast notification animation (compatível com repertorio e setlist) */
@@ -462,19 +462,7 @@ body.setlist-body {
     }
 }
 
-/* Mantem o botao de auto-scroll visivel */
-:fullscreen .auto-scroll-container,
-.fullscreen-mode .auto-scroll-container,
-:fullscreen #auto-scroll-container,
-.fullscreen-mode #auto-scroll-container,
-:fullscreen .btn-autoscroll-float,
-.fullscreen-mode .btn-autoscroll-float {
-    display: flex !important;
-    position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
-    z-index: 9999 !important;
-}
+
 
 /* Header centralizado e visivel em fullscreen */
 :fullscreen .setlist-header,
@@ -489,6 +477,73 @@ body.setlist-body {
     top: 0 !important;
     z-index: 1000 !important;
     background-color: #12151c !important;
+}
+
+/* ==========================================================
+   BOTÃO FLUTUANTE DE TELA CHEIA (Amarelo Doze Teclas)
+   Posicionado acima do auto-scroll, SEMPRE visível.
+   ========================================================== */
+
+/* ESPAÇAMENTO DE RESPIRO NO FIM DA CIFRA */
+#cifra-render {
+    padding-bottom: 70px !important;
+}
+
+/* 1. MODO NORMAL — botões empilhados (▶ auto-scroll em cima, ⛶ tela cheia embaixo) */
+.btn-fullscreen-float {
+    position: fixed !important;
+    bottom: 90px !important; /* Abaixo do auto-scroll (bottom: 140px), gap de 60px */
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 50% !important;
+    background-color: #ffc107 !important;
+    color: #000000 !important;
+    border: none !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    z-index: 99999 !important;
+    cursor: pointer !important;
+    font-size: 1.2rem !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+    padding: 0 !important;
+}
+.btn-fullscreen-float.visible {
+    display: flex !important;
+}
+.btn-fullscreen-float:hover {
+    background-color: #ffd700 !important;
+    transform: scale(1.05) !important;
+}
+.btn-fullscreen-float:active {
+    transform: scale(0.92) !important;
+}
+
+/* 2. MODO TELA CHEIA / IMERSIVO — mesma coluna, auto-scroll em cima */
+:fullscreen #cifra-render,
+.fullscreen-mode #cifra-render {
+    padding-bottom: 50px !important;
+}
+:fullscreen .btn-fullscreen-float,
+.fullscreen-mode .btn-fullscreen-float {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 20px !important; /* Embaixo (auto-scroll em 80px) */
+    right: 20px !important;
+    z-index: 99999 !important;
+}
+:fullscreen .auto-scroll-container,
+.fullscreen-mode .auto-scroll-container,
+:fullscreen #auto-scroll-container,
+.fullscreen-mode #auto-scroll-container,
+:fullscreen .btn-autoscroll-float,
+.fullscreen-mode .btn-autoscroll-float {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 80px !important; /* Em cima (fullscreen em 20px) */
+    right: 20px !important;
+    z-index: 9999 !important;
 }
 
 /* ==========================================================

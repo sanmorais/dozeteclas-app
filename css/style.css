@@ -1493,12 +1493,18 @@ body.light-theme #btn-setlist-preview svg path {
    ðŸŽµ AUTO-SCROLL FLUTUANTE (Rolagem AutomÃ¡tica Fluida)
    ========================================================== */
 
+/* ESPAÇAMENTO DE RESPIRO NO FIM DA CIFRA */
+#cifra-render {
+    padding-bottom: 160px !important; /* Garante que a última estrofe fique visível acima dos botões */
+}
+
+/* 1. MODO NORMAL — auto-scroll em cima, tela cheia embaixo */
 .auto-scroll-container {
     position: fixed;
-    bottom: 20px;
+    bottom: 140px; /* Em cima (60px acima do fullscreen em 80px) */
     right: 20px;
     z-index: 1001;
-    display: none; /* Oculto por padrÃ£o - sÃ³ aparece apÃ³s carregamento da cifra */
+    display: none; /* Oculto por padrão - só aparece após carregamento da cifra */
     flex-direction: column;
     align-items: center;
     gap: 22px;
@@ -1510,8 +1516,8 @@ body.light-theme #btn-setlist-preview svg path {
 }
 
 .auto-scroll-btn {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background: var(--primary);
     border: none;
@@ -1699,7 +1705,7 @@ body.light-theme .speed-slider::-moz-range-track {
 /* Responsividade mobile */
 @media (max-width: 768px) {
     .auto-scroll-container {
-        bottom: 90px; /* Acima da barra de ferramentas */
+        bottom: 150px; /* Em cima no mobile (60px acima do fullscreen) */
         right: 15px;
     }
     
@@ -2194,4 +2200,137 @@ body.cifra-page {
 /* Footer dentro do wrapper */
 .cifra-scroll-wrapper > footer {
     margin-bottom: 20px;
+}
+
+/* ==========================================================
+   TELA CHEIA / MODO IMERSIVO (cifra.html)
+   Compatível com Safari / iPadOS via .fullscreen-mode no body.
+   A barra .header-tools (toolbar inferior) permanece visível
+   como ponto de saída do fullscreen em todos os dispositivos.
+   ========================================================== */
+
+/* Esconde o header superior (logo + voltar) e o footer */
+:fullscreen .header-main,
+.fullscreen-mode .header-main,
+:fullscreen .cifra-page > footer,
+.fullscreen-mode .cifra-page > footer,
+:fullscreen .cifra-scroll-wrapper > footer,
+.fullscreen-mode .cifra-scroll-wrapper > footer {
+    display: none !important;
+}
+
+/* Ajusta o container principal para ocupar toda a tela */
+:fullscreen .cifra-page > main,
+.fullscreen-mode .cifra-page > main,
+:fullscreen .content,
+.fullscreen-mode .content {
+    margin-top: 0 !important;
+    padding-top: 8px !important;
+}
+
+/* Garante que a barra de ferramentas inferior fique visível */
+:fullscreen .header-tools,
+.fullscreen-mode .header-tools {
+    display: flex !important;
+    z-index: 10000 !important;
+}
+
+/* Ajusta o espaçamento inferior para não sobrepor a toolbar */
+:fullscreen #cifra-render,
+.fullscreen-mode #cifra-render {
+    padding-bottom: 120px !important;
+}
+
+/* 2. MODO TELA CHEIA / IMERSIVO — auto-scroll em cima, fullscreen embaixo */
+:fullscreen .auto-scroll-container,
+.fullscreen-mode .auto-scroll-container,
+:fullscreen #auto-scroll-container,
+.fullscreen-mode #auto-scroll-container {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 80px !important; /* Em cima */
+    right: 20px !important;
+    z-index: 9999 !important;
+}
+
+:fullscreen .btn-fullscreen-float,
+.fullscreen-mode .btn-fullscreen-float {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 20px !important; /* Embaixo (60px abaixo do auto-scroll) */
+    right: 20px !important;
+    z-index: 99999 !important;
+}
+
+/* ==========================================================
+   BOTÃO FLUTUANTE DE TELA CHEIA (Amarelo Doze Teclas)
+   Empilhado abaixo do auto-scroll.
+   ========================================================== */
+.btn-fullscreen-float {
+    position: fixed !important;
+    bottom: 80px !important; /* Embaixo do auto-scroll (bottom: 140px) */
+    right: 20px !important;
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 50% !important;
+    background-color: #ffc107 !important;
+    color: #000000 !important;
+    border: none !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    z-index: 99999 !important;
+    cursor: pointer !important;
+    font-size: 1.2rem !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+    padding: 0 !important;
+}
+.btn-fullscreen-float.visible {
+    display: flex !important;
+}
+.btn-fullscreen-float:hover {
+    background-color: #ffd700 !important;
+    transform: scale(1.05) !important;
+}
+.btn-fullscreen-float:active {
+    transform: scale(0.92) !important;
+}
+
+/* Tema claro - botão fullscreen */
+body.light-theme .btn-fullscreen-float {
+    background-color: #b8860b !important;
+    color: #ffffff !important;
+}
+body.light-theme .btn-fullscreen-float:hover {
+    background-color: #916a08 !important;
+}
+
+/* Responsividade mobile */
+@media (max-width: 768px) {
+    .auto-scroll-container {
+        bottom: 150px; /* Em cima no mobile */
+        right: 15px;
+    }
+    .btn-fullscreen-float {
+        bottom: 90px !important; /* Embaixo do auto-scroll mobile */
+        right: 15px !important;
+        width: 48px !important;
+        height: 48px !important;
+    }
+    /* Fullscreen mobile: auto-scroll em cima, fullscreen embaixo */
+    :fullscreen .btn-fullscreen-float,
+    .fullscreen-mode .btn-fullscreen-float {
+        bottom: 20px !important;
+        right: 15px !important;
+    }
+}
+
+/* Ajusta o body para ocupar tela cheia no Safari */
+:fullscreen body.cifra-page,
+.fullscreen-mode body.cifra-page {
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
+    background: var(--bg) !important;
 }
