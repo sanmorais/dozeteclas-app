@@ -480,6 +480,35 @@ body.setlist-body {
 }
 
 /* ==========================================================
+   CORREÇÃO: TELA CHEIA + MODO CLARO simultâneos
+   Garante fundo claro e texto escuro no header quando ambos
+   os modos estão ativos (evita texto escuro sobre fundo escuro)
+   ========================================================== */
+:fullscreen body.light-theme .setlist-header,
+body.fullscreen-mode.light-theme .setlist-header,
+body.light-theme .fullscreen-mode .setlist-header {
+    background-color: #f8f9fa !important;
+    color: #1a1d24 !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* Garante cor escura nos elementos internos do header no tema claro + fullscreen */
+:fullscreen body.light-theme .setlist-header *,
+body.fullscreen-mode.light-theme .setlist-header *,
+body.light-theme .fullscreen-mode .setlist-header * {
+    color: #1a1d24 !important;
+}
+
+/* Mantém botões de navegação visíveis ao passar o mouse no tema claro */
+body.light-theme .setlist-header .setlist-nav-btn:hover,
+body.light-theme .setlist-header .setlist-nav-btn:active,
+:fullscreen body.light-theme .setlist-header .setlist-nav-btn:hover,
+body.fullscreen-mode.light-theme .setlist-header .setlist-nav-btn:hover {
+    background-color: #ced4da !important;
+    color: #000000 !important;
+}
+
+/* ==========================================================
    BOTÃO FLUTUANTE DE TELA CHEIA (Amarelo Doze Teclas)
    Posicionado acima do auto-scroll, SEMPRE visível.
    ========================================================== */

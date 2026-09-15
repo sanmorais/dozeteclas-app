@@ -1476,16 +1476,19 @@ body.light-theme .vitrine-secao-titulo {
 /* Ãcones da barra de ferramentas: Imprimir e Preview (SVGs internos com fill fixo) */
 body.light-theme #btn-print,
 body.light-theme #btn-preview,
-body.light-theme #btn-setlist-preview {
+body.light-theme #btn-setlist-preview,
+body.light-theme #btn-setlist-print {
     color: #121416;
 }
 
 body.light-theme #btn-print svg,
 body.light-theme #btn-preview svg,
 body.light-theme #btn-setlist-preview svg,
+body.light-theme #btn-setlist-print svg,
 body.light-theme #btn-print svg path,
 body.light-theme #btn-preview svg path,
-body.light-theme #btn-setlist-preview svg path {
+body.light-theme #btn-setlist-preview svg path,
+body.light-theme #btn-setlist-print svg path {
     fill: currentColor;
 }
 
