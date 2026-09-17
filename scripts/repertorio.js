@@ -648,7 +648,7 @@ const TAGS_CONHECIDAS = [
     'adoracao', 'santo', 'aclamacao', 'cordeiro', 'comunhao', 'louvor',
     'entrada', 'gloria', 'ato', 'ofertorio', 'reflexao', 'espirito',
     'maria', 'animacao', 'oracao', 'quaresma', 'cruz', 'casamento',
-    'amizade', 'familia'
+    'amizade', 'familia', 'salmo', 'amem'
 ];
 
 function extrairTagsUnicas() {
@@ -917,6 +917,43 @@ function moverItem(celebracaoId, itemId, direcao) {
 /* ============================================================
    MODAIS
    ============================================================ */
+/**
+ * Retorna o filtro de tag correspondente a um momento litúrgico
+ * para pré-seleção contextual ao abrir o modal de busca de cifras.
+ * Retorna '' (vazio) para momentos que devem mostrar "Todas as categorias".
+ * @param {string} momentoId - ID interno do momento litúrgico
+ * @returns {string} Valor da tag a ser pré-selecionada ou '' para "todos"
+ */
+function obterFiltroPorMomento(momentoId) {
+    if (!momentoId) return '';
+
+    const m = momentoId.toLowerCase().trim();
+
+    // Mapeamento explícito: momentos → tag normalizada
+    const MAPA = {
+        'santo':      'santo',
+        'amem':       'amem',
+        'salmo':      'salmo',
+        'entrada':    'entrada',
+        'ato':        'ato',
+        'gloria':     'gloria',
+        'aclamacao':  'aclamacao',
+        'ofertorio':  'ofertorio',
+        'cordeiro':   'cordeiro',
+        'comunhao':   'comunhao',
+        'adoracao':   'adoracao'
+    };
+
+    if (MAPA.hasOwnProperty(m)) {
+        return MAPA[m];
+    }
+
+    // Momentos que devem exibir "Todos" (sem filtro ativo):
+    // 'refrao_meditativo', 'homilia', 'oracao' (Pós-Comunhão),
+    // 'final', 'homenagem' e quaisquer outros não mapeados
+    return '';
+}
+
 function abrirModalBusca(momentoId) {
     console.log('[repertorio] abrirModalBusca — momentoAlvo:', momentoId, '| editandoId:', state.editandoId);
     momentoAlvoBusca = momentoId;
@@ -932,23 +969,20 @@ function abrirModalBusca(momentoId) {
         // 🏷️ Pré-seleção contextual inteligente: mapeia momentoId → tag correspondente
         const select = document.getElementById('filtro-tag-musica');
         if (select && momentoId) {
-            // Mapeamento direto: maioria dos IDs de momento batem com nomes de tag
-            const MAPEAMENTO_MOMENTO_TAG = {
-                'penitencial': 'ato',      // "Ato Penitencial" → tag "ato"
-                'salmo': 'reflexao',       // Salmo → reflexão
-                'refrao_meditativo': 'reflexao', // Refrão Meditativo → reflexão
-                'amem': 'santo',           // Amém geralmente associado ao Santo
-                'final': 'louvor',         // Final → louvor
-                'homenagem': 'maria',      // Homenagem → maria (mais comum)
-                'homilia': 'reflexao'      // Homilia → reflexão
-            };
-            const tagCorrespondente = MAPEAMENTO_MOMENTO_TAG[momentoId] || momentoId;
-            const option = Array.from(select.options).find(o => o.value === tagCorrespondente);
-            if (option) {
-                select.value = tagCorrespondente;
-                // Dispara busca inicial com a tag pré-selecionada
-                executarBuscaComFiltros();
+            const filtro = obterFiltroPorMomento(momentoId);
+            if (filtro) {
+                // Tag específica: verifica se a opção existe no dropdown e seleciona
+                const option = Array.from(select.options).find(o => o.value === filtro);
+                if (option) {
+                    select.value = filtro;
+                    // Dispara busca inicial com a tag pré-selecionada
+                    executarBuscaComFiltros();
+                } else {
+                    // Tag não disponível no dropdown → fallback para "todos"
+                    select.value = '';
+                }
             } else {
+                // "todos": sem filtro ativo
                 select.value = '';
             }
         }
