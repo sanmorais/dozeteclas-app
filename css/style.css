@@ -1496,15 +1496,10 @@ body.light-theme #btn-setlist-print svg path {
    ðŸŽµ AUTO-SCROLL FLUTUANTE (Rolagem AutomÃ¡tica Fluida)
    ========================================================== */
 
-/* ESPAÇAMENTO DE RESPIRO NO FIM DA CIFRA */
-/* #cifra-render {
-    padding-bottom: 160px !important; /* Garante que a última estrofe fique visível acima dos botões */
-} */
-
-/* 1. MODO NORMAL — auto-scroll em cima, tela cheia embaixo */
+/* 1. MODO NORMAL — auto-scroll no canto inferior direito (right: 20px, bottom: 135px) */
 .auto-scroll-container {
     position: fixed;
-    bottom: 140px; /* Em cima (60px acima do fullscreen em 80px) */
+    bottom: 135px; /* Acima do btn-fullscreen (70px) e da barra de ferramentas inferior */
     right: 20px;
     z-index: 1001;
     display: none; /* Oculto por padrão - só aparece após carregamento da cifra */
@@ -1516,6 +1511,16 @@ body.light-theme #btn-setlist-print svg path {
 /* Classe para exibir o container quando a cifra estiver carregada */
 .auto-scroll-container.visible {
     display: flex;
+}
+
+/* Seletores adicionais para botão de auto-scroll flutuante (canto inferior direito) */
+.btn-autoscroll-float,
+#btn-autoscroll {
+    position: fixed !important;
+    right: 20px !important;
+    bottom: 135px !important; /* Acima do btn-fullscreen (70px) e da header-tools */
+    left: auto !important;   /* Desfaz alinhamentos antigos à esquerda */
+    z-index: 9999 !important;
 }
 
 .auto-scroll-btn {
@@ -1708,7 +1713,7 @@ body.light-theme .speed-slider::-moz-range-track {
 /* Responsividade mobile */
 @media (max-width: 768px) {
     .auto-scroll-container {
-        bottom: 150px; /* Em cima no mobile (60px acima do fullscreen) */
+        bottom: 135px; /* Acima do btn-fullscreen (70px) e da header-tools */
         right: 15px;
     }
     
@@ -2244,7 +2249,7 @@ body.cifra-page {
     padding-bottom: 120px !important;
 }
 
-/* 2. MODO TELA CHEIA / IMERSIVO — auto-scroll em cima, fullscreen embaixo */
+/* 2. MODO TELA CHEIA / IMERSIVO — auto-scroll no canto inferior direito */
 :fullscreen .auto-scroll-container,
 .fullscreen-mode .auto-scroll-container,
 :fullscreen #auto-scroll-container,
@@ -2265,13 +2270,25 @@ body.cifra-page {
     z-index: 99999 !important;
 }
 
+/* Ajuste para o Modo Imersivo / Tela Cheia — botões de auto-scroll flutuantes (desce para a base quando barra inferior oculta) */
+:fullscreen .btn-autoscroll-float,
+.fullscreen-mode .btn-autoscroll-float,
+:fullscreen #btn-autoscroll,
+.fullscreen-mode #btn-autoscroll {
+    position: fixed !important;
+    right: 20px !important;
+    bottom: 20px !important; /* Desce para a base quando a barra inferior estiver oculta */
+    left: auto !important;
+    z-index: 9999 !important;
+}
+
 /* ==========================================================
    BOTÃO FLUTUANTE DE TELA CHEIA (Amarelo Doze Teclas)
-   Empilhado abaixo do auto-scroll.
+   Posicionado no canto inferior direito (abaixo do auto-scroll e acima da header-tools).
    ========================================================== */
 .btn-fullscreen-float {
     position: fixed !important;
-    bottom: 80px !important; /* Embaixo do auto-scroll (bottom: 140px) */
+    bottom: 70px !important; /* Abaixo do auto-scroll (bottom: 135px) e acima da header-tools (~60px) */
     right: 20px !important;
     width: 50px !important;
     height: 50px !important;
@@ -2312,11 +2329,11 @@ body.light-theme .btn-fullscreen-float:hover {
 /* Responsividade mobile */
 @media (max-width: 768px) {
     .auto-scroll-container {
-        bottom: 150px; /* Em cima no mobile */
+        bottom: 135px; /* Acima do btn-fullscreen (70px) e da header-tools */
         right: 15px;
     }
     .btn-fullscreen-float {
-        bottom: 90px !important; /* Embaixo do auto-scroll mobile */
+        bottom: 70px !important; /* Acima da header-tools, abaixo do auto-scroll */
         right: 15px !important;
         width: 48px !important;
         height: 48px !important;

@@ -65,8 +65,12 @@ body {
 .tools-wrapper,
 #auto-scroll-container,
 .auto-scroll-container,
+.btn-autoscroll-float,
+#btn-autoscroll,
 .auto-scroll-btn,
 #speed-slider-container,
+#btn-fullscreen-float,
+.btn-fullscreen-float,
 #setlist-header,
 .setlist-header,
 .setlist-subnav,
@@ -89,8 +93,12 @@ svg {
 .tools-wrapper,
 #auto-scroll-container,
 .auto-scroll-container,
+.btn-autoscroll-float,
+#btn-autoscroll,
 .auto-scroll-btn,
 #speed-slider-container,
+#btn-fullscreen-float,
+.btn-fullscreen-float,
 .cifra-actions-footer,       /* <-- NOVO: Oculta o botão 'Ver Acordes' */
 .btn-diagramas-cifra,        /* <-- NOVO */
 .btn-fechar-painel,          /* <-- NOVO: Oculta o botão (X) */
@@ -990,6 +998,11 @@ body.print-batch-mode #setlist-tools,
 body.print-batch-mode #drawer,
 body.print-batch-mode #drawer-overlay,
 body.print-batch-mode #auto-scroll-container,
+body.print-batch-mode .auto-scroll-container,
+body.print-batch-mode .btn-autoscroll-float,
+body.print-batch-mode #btn-autoscroll,
+body.print-batch-mode #btn-fullscreen-float,
+body.print-batch-mode .btn-fullscreen-float,
 body.print-batch-mode #print-loading-indicator {
     display: none !important;
 }
