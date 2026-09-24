@@ -37,7 +37,8 @@
         /* Container Principal Grid */
         .offers-container {
             margin: 0 auto;
-            margin-top: 25px; /* Adiciona o respiro vertical no topo */
+            margin-top: 30px; 
+            margin-bottom: 30px;
             width: 100%; 
             max-width: 900px;
             /* padding: 20px 10px; <-- Linha que você comentou */

@@ -1497,9 +1497,9 @@ body.light-theme #btn-setlist-print svg path {
    ========================================================== */
 
 /* ESPAÇAMENTO DE RESPIRO NO FIM DA CIFRA */
-#cifra-render {
+/* #cifra-render {
     padding-bottom: 160px !important; /* Garante que a última estrofe fique visível acima dos botões */
-}
+} */
 
 /* 1. MODO NORMAL — auto-scroll em cima, tela cheia embaixo */
 .auto-scroll-container {
